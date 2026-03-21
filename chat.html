@@ -972,27 +972,25 @@ Respond ONLY valid JSON, no markdown:
 
 Message: ${JSON.stringify(text)}`;
 
+    // Skip AI moderation locally (CORS), use regex only
+    if (_isLocal) return { decision: 'ALLOW', reason: '', violationType: '' };
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 8000);
     try {
-      // Skip AI moderation locally (CORS), use regex only
-      if (_isLocal) return { decision: 'ALLOW', reason: '', violationType: '' };
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 8000);
-      try {
-        const res = await fetch(MODERATE_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text }),
-          signal: controller.signal
-        });
-        clearTimeout(timer);
-        return await res.json();
-      } catch(e) {
-        clearTimeout(timer);
-        if (e.name === 'AbortError') console.warn('Moderation timed out — falling back to regex-only');
-        else console.error('Moderation error:', e);
-        return { decision:'ALLOW', reason:'', violationType:'' };
-      }
-  }
+      const res = await fetch(MODERATE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+        signal: controller.signal
+      });
+      clearTimeout(timer);
+      return await res.json();
+    } catch(e) {
+      clearTimeout(timer);
+      if (e.name === 'AbortError') console.warn('Moderation timed out — falling back to regex-only');
+      else console.error('Moderation error:', e);
+      return { decision:'ALLOW', reason:'', violationType:'' };
+    }
 
   // ── SEND ─────────────────────────────────────────────────────
   async function sendMessage() {

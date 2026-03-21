@@ -1254,6 +1254,23 @@
     });
   }
 
+  function approveMessage(logId) {
+    const log   = getModLog();
+    const entry = log.find(e => e.id === logId);
+    if (!entry) return;
+    // Write approved message directly to Firestore — chat.html onMessages listener picks it up
+    const approvedMsg = { id: logId, senderIdentity: entry.senderIdentity, senderId: entry.senderId, senderName: entry.senderName, text: entry.text, ts: Date.now(), moderatorApproved: true, chatId: entry.chatId };
+    RF.saveMessage(entry.chatId, approvedMsg).catch(e => console.warn('[RF] approveMessage msg', e));
+    // Decrement violation count in-memory and Firestore
+    const vio = { ...(_vioByChat[entry.chatId] || {}) };
+    if ((vio[entry.senderIdentity] || 0) > 0) { vio[entry.senderIdentity]--; }
+    _vioByChat[entry.chatId] = vio;
+    RF.saveViolations(entry.chatId, vio).catch(e => console.warn('[RF] approveMessage vio', e));
+    updateLogEntry(logId, { status: 'approved', actorName: MOD_NAME, actorTs: Date.now() });
+    showToast('✓ Message approved and delivered', 'success');
+    loadDashboard();
+  }
+
   function dismissFlag(logId) { updateLogEntry(logId, { status: 'dismissed', actorName: MOD_NAME, actorTs: Date.now() }); showToast('Flag dismissed', ''); loadDashboard(); }
 
   // ── JOIN CHAT ────────────────────────────────────────────────

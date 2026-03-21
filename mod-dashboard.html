@@ -882,7 +882,7 @@
     const assignments = getAssignments();
     const chats       = getChatsIndex();
     let changed       = false;
-    chats.forEach(c => {
+    chats.filter(c => !c.archived && !c.autoArchived && !c.manualArchived).forEach(c => {
       if (!assignments[c.chatId]) {
         // Deterministic: hash the chatId so same chat always gets same mod
         assignments[c.chatId] = pool[hashChatId(c.chatId) % pool.length].id;
@@ -1079,18 +1079,16 @@
       }
     });
     // ── Auto-archive: deals inactive 30 days ────────────────────
-    let _dealAutoArchived = false;
     getDeals().forEach(deal => {
-      if (deal.stage === 'Cancelled' || deal.stage_complete) return;
+      if (deal.stage === 'Cancelled' || deal.stage_complete || deal.stage === 'Complete') return;
       const lastAct = deal.lastActionTs || deal.initiatedTs || 0;
       if (_now - lastAct > THIRTY_DAYS) {
         deal.stage = 'Cancelled'; deal.cancelledTs = _now; deal.lastActionTs = _now;
         deal.cancelNotes = 'Auto-archived: no activity for 30 days.';
         postDealSystemMsg(deal.chatId, '🕒 This deal has been auto-archived due to 30 days of inactivity.');
-        _dealAutoArchived = true;
+        RF.saveDeal(deal.chatId, deal).catch(e => console.warn('[RF] auto-archive deal', e));
       }
     });
-    if (_dealAutoArchived) saveDeals(getDeals());
 
     assignNewChats();
     renderModPanel();
@@ -1129,7 +1127,7 @@
     renderFlaggedList(modLog.filter(e => e.status === 'pending'), document.getElementById('flagged-list'), modLog.filter(e => e.status !== 'pending').length);
     renderDealsList(getDeals(), document.getElementById('deals-list'));
     renderAppealsList(appeals, document.getElementById('appeals-list'));
-    renderUsersTable(chats, modLog, getBanned());
+    renderUsersTable(allChats, modLog, getBanned());
     const _acl = document.getElementById('archived-chats-list'); if (_acl) renderArchivedChats(_acl);
     const _adl = document.getElementById('archived-deals-list'); if (_adl) renderArchivedDeals(_adl);
     renderHistoryList(document.getElementById('history-list'));
@@ -2381,10 +2379,8 @@
 
   function permanentDeleteDeal(chatId) {
     if (!confirm(`Permanently delete this deal record? This cannot be undone.`)) return;
-    try {
-      const deals = getDeals().filter(d => d.chatId !== chatId);
-      _deals = deals;
-    } catch {}
+    _deals = _deals.filter(d => d.chatId !== chatId);
+    RF.deleteDeal(chatId).catch(e => console.warn('[RF] deleteDeal', e));
     showToast('Deal record permanently deleted', 'error');
     loadDashboard();
   }
