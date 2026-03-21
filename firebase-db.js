@@ -227,21 +227,33 @@ const RF = (function() {
   }
 
 
-  async function saveModContact(contact) {
-    try { await db.collection('modcontacts').doc(String(contact.id)).set(contact); }
-    catch(e) { console.error('[RF] saveModContact', e); }
+  async function saveModCall(call) {
+    try { await db.collection('modcalls').doc(String(call.id)).set(call); }
+    catch(e) { console.error('[RF] saveModCall', e); }
   }
 
-  async function updateModContact(id, patch) {
-    try { await db.collection('modcontacts').doc(String(id)).update(patch); }
-    catch(e) { console.error('[RF] updateModContact', e); }
+  async function updateModCall(id, patch) {
+    try { await db.collection('modcalls').doc(String(id)).update(patch); }
+    catch(e) { console.error('[RF] updateModCall', e); }
   }
 
-  function onModContacts(cb) {
-    return db.collection('modcontacts').onSnapshot(
-      snap => cb(snap.docs.map(d => d.data())),
-      e => console.error('[RF] onModContacts', e)
-    );
+  function onModCalls(modId, cb) {
+    try {
+      const col = db.collection('modcalls');
+      const q = col.where ? col.where('assignedModId', '==', modId) : col;
+      return q.onSnapshot(
+        snap => cb(snap.docs.map(d => d.data()).filter(d => !modId || d.assignedModId === modId)),
+        e => console.error('[RF] onModCalls', e)
+      );
+    } catch(e) { console.error('[RF] onModCalls setup', e); return () => {}; }
+  }
+
+  function onAllModCalls(cb) {
+    return db.collection('modcalls')
+      .onSnapshot(
+        snap => cb(snap.docs.map(d => d.data())),
+        e => console.error('[RF] onAllModCalls', e)
+      );
   }
 
   return {
@@ -256,8 +268,7 @@ const RF = (function() {
     onAllChats, onDeals, deleteDeal, saveDefaulter,
     getUserChats, saveUserChats,
     saveModCall, updateModCall, onModCalls, onAllModCalls,
-    postSystemMsg,
-    saveModContact, updateModContact, onModContacts
+    postSystemMsg
   };
 
 })();

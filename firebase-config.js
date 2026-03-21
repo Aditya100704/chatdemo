@@ -15,6 +15,7 @@ if (_isLocal) {
         onSnapshot: (cb)=>{ cb({exists:false,data:()=>({})}); return ()=>{}; }
       }),
       orderBy: ()=>({ onSnapshot:(cb)=>{ cb({docs:[]}); return ()=>{}; } }),
+      where: function() { return this; },
       onSnapshot: (cb)=>{ cb({docs:[]}); return ()=>{}; },
       get: async()=>({docs:[],forEach:()=>{}})
     }),
