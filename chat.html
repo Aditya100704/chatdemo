@@ -991,6 +991,7 @@ Message: ${JSON.stringify(text)}`;
       else console.error('Moderation error:', e);
       return { decision:'ALLOW', reason:'', violationType:'' };
     }
+  }
 
   // ── SEND ─────────────────────────────────────────────────────
   async function sendMessage() {

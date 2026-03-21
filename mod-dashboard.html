@@ -994,6 +994,7 @@
   // ── IN-MEMORY STATE — Firebase is the only source of truth ──
   let _chatsIndex      = [];
   let _msgsByChat      = {};
+  let _msgListeners    = new Set();
   let _vioByChat       = {};
   let _dealByChat      = {};
   let _meetingByChat   = {};
@@ -2427,12 +2428,15 @@
         if (c.deal)       _dealByChat[c.chatId]     = c.deal;
         if (c.meeting)    _meetingByChat[c.chatId]  = c.meeting;
         if (c.joinSlots)  _joinSlotsByChat[c.chatId]= c.joinSlots;
-        // Real-time messages per chat
-        db.collection('chats').doc(c.chatId).collection('messages')
-          .orderBy('ts','asc').onSnapshot(snap => {
-            _msgsByChat[c.chatId] = snap.docs.map(d => d.data());
-            loadDashboard();
-          });
+        // Real-time messages per chat (guard prevents duplicate listeners)
+        if (!_msgListeners.has(c.chatId)) {
+          _msgListeners.add(c.chatId);
+          db.collection('chats').doc(c.chatId).collection('messages')
+            .orderBy('ts','asc').onSnapshot(snap => {
+              _msgsByChat[c.chatId] = snap.docs.map(d => d.data());
+              loadDashboard();
+            });
+        }
       });
       loadDashboard();
     });
