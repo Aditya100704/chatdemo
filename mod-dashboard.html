@@ -542,6 +542,12 @@
   .perf-bar-wrap{width:80px;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;display:inline-block;vertical-align:middle;}
   .perf-bar{height:6px;border-radius:3px;background:var(--gold);}
 
+
+  /* Mod metrics period filter buttons */
+  .perf-period-btn{padding:4px 10px;border-radius:6px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;background:rgba(255,255,255,0.04);color:var(--muted);border:1px solid var(--border);transition:all 0.15s;}
+  .perf-period-btn:hover{background:rgba(255,255,255,0.08);color:var(--text);}
+  .perf-period-btn.active{background:rgba(212,160,23,0.15);color:var(--gold);border-color:rgba(212,160,23,0.4);}
+
 </style>
 </head>
 <body>
@@ -643,12 +649,21 @@
           </div>
         </div>
       </div>
-      <div class="section-header"><div class="section-title">Pending Review</div><div class="section-sub">Flagged messages awaiting your decision</div></div>
-      <div id="pending-flagged-list" class="flag-list"></div>
-      <div class="section-header" style="margin-top:28px;"><div class="section-title">Mod Performance</div><div class="section-sub">Flags reviewed · approval rate · avg response time</div></div>
+      <div class="section-header" style="flex-wrap:wrap;gap:8px;">
+        <div><div class="section-title">Mod Performance</div><div class="section-sub">Flags reviewed · approval rate · avg response time</div></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-left:auto;">
+          <button class="perf-period-btn"        data-days="1"    onclick="setModMetricsPeriod(1)">Today</button>
+          <button class="perf-period-btn"        data-days="7"    onclick="setModMetricsPeriod(7)">7 Days</button>
+          <button class="perf-period-btn active" data-days="30"   onclick="setModMetricsPeriod(30)">1 Month</button>
+          <button class="perf-period-btn"        data-days="90"   onclick="setModMetricsPeriod(90)">3 Months</button>
+          <button class="perf-period-btn"        data-days="180"  onclick="setModMetricsPeriod(180)">6 Months</button>
+          <button class="perf-period-btn"        data-days="365"  onclick="setModMetricsPeriod(365)">1 Year</button>
+          <button class="perf-period-btn"        data-days="0"    onclick="setModMetricsPeriod(0)">All Time</button>
+        </div>
+      </div>
       <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
         <table class="mod-metrics-table"><thead><tr>
-          <th>Mod / Admin</th><th>Flags Reviewed</th><th>Approved / Dismissed</th><th>Approval Rate</th><th>Avg Response</th>
+          <th>Mod / Admin</th><th>Reviewed</th><th>Approved / Dismissed</th><th>Approval %</th><th>Avg Response</th><th>Last Action</th>
         </tr></thead><tbody id="mod-metrics-body"></tbody></table>
       </div>
     </div>
@@ -1143,7 +1158,6 @@
     document.getElementById('tab-deals-count').textContent  = activeDeals;
 
 
-    renderFlaggedList(modLog.filter(e => e.status === 'pending'), document.getElementById('pending-flagged-list'));
     renderChatsList(chats, document.getElementById('all-chats-list'));
     document.getElementById('chat-count-sub').textContent = `${chats.length} chat${chats.length !== 1 ? 's' : ''} initiated`;
     renderFlaggedList(modLog.filter(e => e.status === 'pending'), document.getElementById('flagged-list'), modLog.filter(e => e.status !== 'pending').length);
@@ -1674,41 +1688,67 @@
   }
 
 
+  let _modMetricsDays = 30; // default: 1 month
+
+  function setModMetricsPeriod(days) {
+    _modMetricsDays = days;
+    document.querySelectorAll('.perf-period-btn').forEach(b => {
+      b.classList.toggle('active', Number(b.dataset.days) === days);
+    });
+    renderModMetrics();
+  }
+
   function renderModMetrics() {
     const container = document.getElementById('mod-metrics-body');
     if (!container) return;
+    const now = Date.now();
+    const cutoff = _modMetricsDays > 0 ? (now - _modMetricsDays * 86400000) : 0;
+
     const modLog = getModLog();
-    const resolved = modLog.filter(e => e.status !== 'pending' && e.actorName);
-    container.innerHTML = '';
-    if (!resolved.length) {
-      container.innerHTML = '<tr><td colspan="5" style="color:var(--muted);text-align:center;padding:16px;">No resolved flags yet.</td></tr>';
-      return;
-    }
-    // Group by actorName
+    const inPeriod = modLog.filter(e => e.status !== 'pending' && e.actorName && (e.actorTs || e.ts || 0) >= cutoff);
+
+    // Build a full list of actors: all MODS + Admin, even if they have 0 actions
+    const allActors = ['Admin', ...MODS.map(m => m.name)];
     const byMod = {};
-    resolved.forEach(e => {
-      const name = e.actorName || 'Unknown';
-      if (!byMod[name]) byMod[name] = { approved:0, dismissed:0, totalTime:0, count:0 };
+    allActors.forEach(name => { byMod[name] = { approved:0, dismissed:0, totalTime:0, count:0, lastTs:0 }; });
+
+    inPeriod.forEach(e => {
+      const name = e.actorName;
+      if (!byMod[name]) byMod[name] = { approved:0, dismissed:0, totalTime:0, count:0, lastTs:0 };
       if (e.status === 'approved') byMod[name].approved++;
       else byMod[name].dismissed++;
+      const ts = e.actorTs || e.ts || 0;
       if (e.actorTs && e.ts) { byMod[name].totalTime += (e.actorTs - e.ts); byMod[name].count++; }
+      if (ts > byMod[name].lastTs) byMod[name].lastTs = ts;
     });
+
+    container.innerHTML = '';
     const maxTotal = Math.max(...Object.values(byMod).map(m => m.approved + m.dismissed), 1);
-    Object.entries(byMod).sort((a,b) => (b[1].approved+b[1].dismissed) - (a[1].approved+a[1].dismissed)).forEach(([name, d]) => {
-      const total = d.approved + d.dismissed;
-      const approvalRate = total ? Math.round((d.approved / total) * 100) : 0;
-      const avgMins = d.count ? Math.round(d.totalTime / d.count / 60000) : null;
-      const avgStr = avgMins !== null ? (avgMins < 60 ? `${avgMins}m` : `${Math.round(avgMins/60)}h`) : '—';
-      const barW = Math.round((total / maxTotal) * 80);
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td style="font-weight:600;">${escH(name)}</td>
-        <td><div class="perf-bar-wrap"><div class="perf-bar" style="width:${barW}px;"></div></div> <span style="margin-left:6px;">${total}</span></td>
-        <td><span style="color:#34d399;">${d.approved}</span> / <span style="color:#f87171;">${d.dismissed}</span></td>
-        <td><span style="color:${approvalRate>=70?'#34d399':approvalRate>=40?'#fcd34d':'#f87171'};font-weight:700;">${approvalRate}%</span></td>
-        <td style="color:var(--muted);">${avgStr}</td>`;
-      container.appendChild(tr);
-    });
+
+    // Sort: most active first, then alphabetical
+    Object.entries(byMod)
+      .sort((a,b) => (b[1].approved+b[1].dismissed) - (a[1].approved+a[1].dismissed) || a[0].localeCompare(b[0]))
+      .forEach(([name, d]) => {
+        const total = d.approved + d.dismissed;
+        const approvalRate = total ? Math.round((d.approved / total) * 100) : null;
+        const avgMins = d.count ? Math.round(d.totalTime / d.count / 60000) : null;
+        const avgStr = avgMins !== null ? (avgMins < 60 ? `${avgMins}m` : `${Math.round(avgMins/60)}h`) : '—';
+        const barW = total ? Math.round((total / maxTotal) * 80) : 0;
+        const lastStr = d.lastTs ? fmtTs(d.lastTs) : '—';
+        const rateStr = approvalRate !== null
+          ? `<span style="color:${approvalRate>=70?'#34d399':approvalRate>=40?'#fcd34d':'#f87171'};font-weight:700;">${approvalRate}%</span>`
+          : '<span style="color:var(--muted);">—</span>';
+        const tr = document.createElement('tr');
+        tr.style.opacity = total === 0 ? '0.45' : '1';
+        tr.innerHTML = `
+          <td style="font-weight:600;">${escH(name)}</td>
+          <td><div class="perf-bar-wrap"><div class="perf-bar" style="width:${barW}px;"></div></div> <span style="margin-left:6px;">${total}</span></td>
+          <td><span style="color:#34d399;">${d.approved}</span> / <span style="color:#f87171;">${d.dismissed}</span></td>
+          <td>${rateStr}</td>
+          <td style="color:var(--muted);">${avgStr}</td>
+          <td style="color:var(--muted);font-size:11px;">${lastStr}</td>`;
+        container.appendChild(tr);
+      });
   }
   function filterArchivedChats() {
     const q = document.getElementById('search-archived-chats')?.value.trim().toLowerCase()||'';
