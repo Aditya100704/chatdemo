@@ -1,0 +1,916 @@
+<!--
+╔══════════════════════════════════════════════════════════════════════╗
+║       RENTERFINDER.COM — SINGLE FILE SOURCE  vRF173 SEO V27         ║
+║                                                                      ║
+║  HOW TO NAVIGATE THIS FILE (use Ctrl+F / Cmd+F to jump):            ║
+║                                                                      ║
+║  ── GLOBAL STYLES & SHARED COMPONENTS ──────────────── [SECTION:CSS]║
+║  ── MAIN NAVIGATION ───────────────────────────── [SECTION:nav]     ║
+║  ── PAGE 1  · Home (SEO-OPTIMIZED) ────────────── [PAGE:home]      ║
+║  ── PAGE 2  · About Us (SEO-OPTIMIZED) ───────── [PAGE:about]      ║
+║  ── PAGE 3  · Services (SEO-OPTIMIZED) ───────── [PAGE:services]   ║
+║  ── PAGE 4  · Fees (SEO-OPTIMIZED) ────────────── [PAGE:fees]      ║
+║  ── PAGE 5  · Rental Properties (SEO-OPTIMIZED) ── [PAGE:properties]║
+║  ── PAGE 6  · Renter's List (SEO-OPTIMIZED) ──── [PAGE:renters-list]║
+║  ── PAGE 7  · Login / Sign Up (SEO-OPTIMIZED) ──── [PAGE:login]     ║
+║  ── PAGE 8  · FAQ (SEO-OPTIMIZED) ─────────────── [PAGE:faq]       ║
+║  ── PAGE 9  · Terms & Conditions (SEO-OPTIMIZED) ── [PAGE:terms]   ║
+║  ── PAGE 10 · Disclaimer (SEO-OPTIMIZED) ──────── [PAGE:disclaimer]║
+║  ── PAGE 11 · Privacy Policy (SEO-OPTIMIZED) ──── [PAGE:privacy]   ║
+║  ── PAGE 12 · Match Terms Agreement (SEO-OPT) ──── [PAGE:mta]      ║
+║  ── PAGE 13 · Refer & Earn (SEO-OPTIMIZED) ─────── [PAGE:refer]     ║
+║  ── PAGE 14 · Internship (SEO-OPTIMIZED) ──────── [PAGE:internship]║
+║  ── PAGE 15 · Rent Agreement Helper (SEO-OPT) ──── [PAGE:rent-agreement]║
+║  ── PAGE 16 · Feedback (SEO-OPTIMIZED) ─────────── [PAGE:feedback]  ║
+║  ── PAGE 17 · User Dashboard (SEO-OPT) ─────────── [PAGE:dashboard] ║
+║  ── PAGE 18 · Blog & Articles (SEO-OPTIMIZED) ───── [PAGE:blog]     ║
+║  ── SHARED FOOTER ──────────────────────────────── [SECTION:footer] ║
+║  ── JAVASCRIPT ─────────────────────────────────── [SECTION:js]     ║
+║                                                                      ║
+║  ── FILE SPLIT INSTRUCTIONS (for when breaking into individual pages)║
+║  When splitting this SPA into individual HTML files, PAGE 18        ║
+║  (Blog & Articles, id="page-blog") must be extracted as its own     ║
+║  standalone file: blog.html (or /blog/index.html).                  ║
+║  It contains: blog listing index, full Article (id="blog-post-1"),  ║
+║  Article JSON-LD schema, BreadcrumbList schema, and SEO aside.      ║
+║  Each subsequent blog post should also be its own file:             ║
+║  /blog/post-slug.html — never merged back into the SPA shell.       ║
+║                                                                      ║
+║  SEO CHANGES (vRF173 SEO V2):                                        ║
+║  • Meta description, keywords, robots, theme-color added             ║
+║  • Open Graph + Twitter Card meta tags                               ║
+║  • JSON-LD: Organization, WebSite, RealEstateAgent, FAQ, Breadcrumb ║
+║  • Canonical URL                                                     ║
+║  • Semantic HTML: <main>, <header>, <section>, <aside>, <footer>    ║
+║  • ARIA roles/labels on nav, sections, buttons                       ║
+║  • H1 kept original ("Let's Find a Good Renter for Your Home")      ║
+║  • H2s enriched with geo + service keywords                          ║
+║  • Hidden semantic content block for crawlers                        ║
+║  • Preconnect + dns-prefetch for Google Fonts                        ║
+║  • <noscript> fallback                                               ║
+║  • geo.region and content-language meta tags                         ║
+║  • "Verified" removed from all user-facing text (kept in meta only) ║
+║                                                                      ║
+║  SEO CHANGES (vRF173 SEO V3):                                        ║
+║  • font-display: swap added to Google Fonts for performance          ║
+║  • ABOUT PAGE: + aria-label on page wrapper              ║
+║  • ABOUT PAGE: All sections enriched with keyword aria-labels        ║
+║  • ABOUT PAGE: H2s enriched with geo/service keywords                ║
+║  • ABOUT PAGE: Hidden semantic <aside> for crawlers                  ║
+║  • ABOUT PAGE: CTA buttons keyword-optimized                        ║
+║  • ABOUT PAGE: Hero subtitle expanded with city names                ║
+║  • SERVICES PAGE: + aria-label on page wrapper           ║
+║  • SERVICES PAGE: All sections enriched with keyword aria-labels     ║
+║  • SERVICES PAGE: H2s enriched with rental/India keywords            ║
+║  • SERVICES PAGE: Hidden semantic <aside> for crawlers               ║
+║  • SERVICES PAGE: CTA buttons keyword-optimized                     ║
+║  • SERVICES PAGE: Hero subtitle expanded with city names             ║
+║  • JSON-LD: Two new Service schemas (Renter Search + Property Search)║
+║  • FEES PAGE: + aria-label on page wrapper              ║
+║  • FEES PAGE: Hero subtitle expanded with city names                ║
+║  • FEES PAGE: Intro H2 enriched with transparency keywords          ║
+║  • FEES PAGE: Sections enriched with keyword aria-labels            ║
+║  • FEES PAGE: CTA buttons keyword-optimized                        ║
+║  • FEES PAGE: Hidden semantic <aside> for crawlers                  ║
+║  • FAQ PAGE: + aria-label on page wrapper               ║
+║  • FAQ PAGE: Hero subtitle expanded with rental topics + India      ║
+║  • FAQ PAGE: Section enriched with keyword aria-label               ║
+║  • FAQ PAGE: Hidden semantic <aside> for crawlers                   ║
+║  • FAQ PAGE: JSON-LD FAQPage expanded from 4 to 10 questions        ║
+║  • PROPERTIES PAGE: + keyword aria-label on wrapper     ║
+║  • PROPERTIES PAGE: Hero subtitle added with property types + cities║
+║  • PROPERTIES PAGE: Search bar aria-labels on all form elements     ║
+║  • PROPERTIES PAGE: Search button keyword-optimized                 ║
+║  • PROPERTIES PAGE: Hidden semantic <aside> for crawlers            ║
+║  • RENTERS LIST PAGE: + keyword aria-label on wrapper   ║
+║  • RENTERS LIST PAGE: Hero subtitle — "find a renter first time"   ║
+║  • RENTERS LIST PAGE: Intro H2 + body enriched with USP keywords   ║
+║  • RENTERS LIST PAGE: CTA buttons keyword-optimized                 ║
+║  • RENTERS LIST PAGE: Filters + grid aria-labels added              ║
+║  • RENTERS LIST PAGE: Hidden semantic <aside> for crawlers          ║
+║  • USP KEYWORDS added across ALL pages: "find a renter (first time  ║
+║    ever)" + "transparent fees / no hidden charges"                   ║
+║  • Meta description + OG + Twitter updated with USP keywords        ║
+║  • Meta keywords expanded with USP-specific terms                   ║
+║  • All 7 hidden <aside> blocks enriched with USP keyword phrases    ║
+║                                                                      ║
+║  BUG FIXES (vRF173 SEO V5):                                         ║
+║  • Home CTA "Ready to find your perfect rental match?" now           ║
+║    responsive: CSS Grid 1fr 1fr (50-50) on desktop, single-column   ║
+║    stack on mobile (≤768px)                                          ║
+║                                                                      ║
+║  SEO + UI CHANGES (vRF173 SEO V6):                                   ║
+║  • HOME: Meta description rewritten to user's exact copy             ║
+║  • HOME: twitter:site + twitter:creator @RenterFinderIn added        ║
+║  • HOME: Reviews expanded from 6 → 15 genuine human-sounding cards  ║
+║  • HOME: Mix of 5★ and 4★ ratings for authenticity                  ║
+║  • HOME: JSON-LD AggregateRating updated (15 reviews, 4.8 rating)   ║
+║  • HOME: All 15 reviews matched in JSON-LD structured data          ║
+║  • ABOUT: aria-label + role="img" on animated India arc canvas      ║
+║  • ABOUT: AboutPage JSON-LD schema added (foundingDate, sameAs)     ║
+║  • ABOUT: Organization sameAs populated (LI, IG, FB, X, YouTube)    ║
+║  • ABOUT: Visible breadcrumb navigation added (Home › About Us)     ║
+║  • ABOUT: Breadcrumb CSS component added (.page-breadcrumb)         ║
+║                                                                      ║
+║  SEO CHANGES (vRF173 SEO V7):                                        ║
+║  • TERMS: + keyword aria-label on page wrapper           ║
+║  • TERMS: Visible breadcrumb added (Home › Terms of Use)            ║
+║  • TERMS: aria-label on legal-body content section                   ║
+║  • TERMS: Hidden semantic <aside> for crawlers                      ║
+║  • TERMS: SEO-OPTIMIZED comment block added                         ║
+║  • DISCLAIMER: + keyword aria-label on page wrapper     ║
+║  • DISCLAIMER: Visible breadcrumb added (Home › Disclaimer)         ║
+║  • DISCLAIMER: aria-label on legal-body content section              ║
+║  • DISCLAIMER: Hidden semantic <aside> for crawlers                 ║
+║  • DISCLAIMER: SEO-OPTIMIZED comment block added                    ║
+║  • PRIVACY: + keyword aria-label on page wrapper        ║
+║  • PRIVACY: Visible breadcrumb added (Home › Privacy Policy)        ║
+║  • PRIVACY: aria-label on legal-body content section                 ║
+║  • PRIVACY: Hidden semantic <aside> for crawlers                    ║
+║  • PRIVACY: SEO-OPTIMIZED comment block added                       ║
+║  • All 3 legal pages: zero changes to legal content text            ║
+║                                                                      ║
+║  SEO CHANGES (vRF173 SEO V8):                                        ║
+║  • LOGIN: + keyword aria-label on page wrapper           ║
+║  • LOGIN: Hidden semantic <aside> for crawlers                      ║
+║  • LOGIN: SEO-OPTIMIZED comment block added                         ║
+║  • REFER: + keyword aria-label on page wrapper          ║
+║  • REFER: Visible breadcrumb added (Home › Refer & Earn)            ║
+║  • REFER: Hero subtitle expanded with earnings details              ║
+║  • REFER: aria-label on refer-section                                ║
+║  • REFER: Hidden semantic <aside> for crawlers                      ║
+║  • INTERNSHIP: + keyword aria-label on page wrapper     ║
+║  • INTERNSHIP: Visible breadcrumb added (Home › Internship)         ║
+║  • INTERNSHIP: Hero subtitle expanded with online/offline + India   ║
+║  • INTERNSHIP: aria-label on internship-section                      ║
+║  • INTERNSHIP: Hidden semantic <aside> for crawlers                 ║
+║  • FEEDBACK: + keyword aria-label on page wrapper       ║
+║  • FEEDBACK: Visible breadcrumb added (Home › Feedback)             ║
+║  • FEEDBACK: Hero subtitle expanded with service context            ║
+║  • FEEDBACK: aria-label on form section                              ║
+║  • FEEDBACK: Hidden semantic <aside> for crawlers                   ║
+║                                                                      ║
+║  SEO CHANGES (vRF173 SEO V9) — FINAL 3 PAGES:                       ║
+║  • MTA: + keyword aria-label on page wrapper            ║
+║  • MTA: Visible breadcrumb (Home › Model Tenancy Act, 2021)        ║
+║  • MTA: Hero subtitle expanded with chapter topics                  ║
+║  • MTA: aria-label on legal-body section                            ║
+║  • MTA: Hidden semantic <aside> for crawlers                        ║
+║  • RENT AGREEMENT: + keyword aria-label on wrapper      ║
+║  • RENT AGREEMENT: Visible breadcrumb (Home › Rent Agreement)       ║
+║  • RENT AGREEMENT: Hero subtitle expanded with context              ║
+║  • RENT AGREEMENT: Hidden semantic <aside> for crawlers             ║
+║  • DASHBOARD: + keyword aria-label on wrapper           ║
+║  • DASHBOARD: Hidden semantic <aside> for crawlers                  ║
+║  ═══ ALL 17 PAGES NOW SEO-OPTIMIZED ═══                             ║
+║                                                                      ║
+║  CRITICAL FIXES (vRF173 SEO V14):                                    ║
+║  • DUPLICATE SCRIPT: Removed second Cloudflare email-decode.min.js  ║
+║  • CSS PARSE ERROR: Orphaned margin-top/max-width/line-height props  ║
+║    merged into .page-hero p; stray closing brace removed             ║
+║  • FOUNDING DATE: Normalised to "2025" across all schemas            ║
+║    (head Organization, head AboutPage, JS-injected About schema)     ║
+║  • SAMEAS CONSISTENCY: JS-injected About schema now includes full    ║
+║    social sameAs array (was only ["https://www.renterfinder.com"])   ║
+║  • TWITTER/X URL: Normalised twitter.com → x.com/RenterFinderIn     ║
+║    in all sameAs arrays and footer social link                       ║
+║  • SEARCHACTION REMOVED: WebSite schema potentialAction removed      ║
+║    (target /search?q= URL does not exist in this SPA)               ║
+║                                                                      ║
+║  SEO CHANGES (vRF173 SEO V10):                                       ║
+║  • SERVICES: Visible breadcrumb added (Home › Services)             ║
+║  • SERVICES: Service JSON-LD schemas moved from global <head> to    ║
+║    page-specific JS injection (only active on Services page)         ║
+║  • SERVICES: Enriched schemas with serviceOutput + full provider    ║
+║  • FEES: Page-specific FAQPage schema injected via JS (4 fee Q&As)  ║
+║  • FEES: PriceSpecification schema injected via JS on Fees page     ║
+║  • FEES: Free offer expiry date now checked programmatically (JS)   ║
+║  • FEES: data-offer-text attributes added for dynamic text swap     ║
+║  • FAQ: First 3 FAQ answers auto-open on page load                  ║
+║  • FAQ: Category titles changed from <h3> to <h2> (semantic SEO)   ║
+║  • FAQ: Client-side search/filter added (filterFaqItems function)   ║
+║  • FAQ: Search input with "No results" feedback added to FAQ page   ║
+║  SEO CHANGES (vRF173 SEO V13) — ALL AUDIT PRIORITY FIXES:            ║
+║  • ALL PAGES: document.title updated dynamically in showPage()       ║
+║  • ALL PAGES: <link rel="canonical" href="https://www.renterfinder.com/privacy">
+<link rel="alternate" hreflang="en-in" href="https://www.renterfinder.com/privacy">
+<link rel="alternate" hreflang="en" href="https://www.renterfinder.com/privacy">
+<link rel="alternate" hreflang="x-default" href="https://www.renterfinder.com/privacy">
+
+
+ updated dynamically             ║
+║  • ALL PAGES: og:title, og:description, og:url updated on nav        ║
+║  • FEES: Visible breadcrumb added (Home › Fees)                     ║
+║  • FEES: 2nd section aria-label added to fees-breakdown section     ║
+║  • PROPERTIES: Visible breadcrumb added (Home › Rental Properties)  ║
+║  • PROPERTIES: 2nd H2 added — "Search by City, BHK Type & Budget"  ║
+║  • PROPERTIES: properties-body section gets aria-label on wrapper   ║
+║  • PROPERTIES: ItemList JSON-LD schema injected via JS              ║
+║  • RENTERS-LIST: Visible breadcrumb added (Home › Prospective       ║
+║    Renters' List)                                                    ║
+║  • RENTERS-LIST: rl-filters gets explicit section aria-label        ║
+║  • RENTERS-LIST: Service JSON-LD schema injected via JS             ║
+║  • FAQ: Visible breadcrumb added (Home › FAQ)                       ║
+║  • FAQ: faq-search area gets explicit section aria-label            ║
+║                                                                      ║
+║  SEO + SECURITY CHANGES (vRF173 SEO V12):                             ║
+║  • DASHBOARD: noindex,nofollow confirmed via _noindexPages array     ║
+║  • DASHBOARD: Session-based auth guard added to navigate()           ║
+║    — navigating to #dashboard without rf_auth_token redirects to    ║
+║    login. getActiveSession() checks sessionStorage for rf_auth_token ║
+║  • DASHBOARD: robots.txt + sitemap notes added (see comments)        ║
+║  • _noindexPages expanded: login, register-renter, register-landlord,║
+║    feedback, disclaimer, dashboard all confirmed noindex             ║
+║                                                                      ║
+║  SEO CHANGES (vRF173 SEO V11):                                       ║
+║  • LOGIN: Dynamic noindex/nofollow robots meta added via            ║
+║    updateRobotsMeta() — active for login, register-renter,          ║
+║    register-landlord, feedback, disclaimer, dashboard               ║
+║  • LOGIN: H1 added to login panel (visually hidden, semantic)       ║
+║  • LOGIN: Breadcrumb nav added (Home › Login / Sign Up)             ║
+║  • RENTER FORM: autocomplete attributes added to all 16 inputs      ║
+║  • LANDLORD FORM: autocomplete attributes added to all 16 inputs    ║
+║  SEO CHANGES (vRF173 SEO V18) — CRITICAL SCHEMA, LEGAL & GEO FIXES:  ║
+║  SCHEMA FIXES:                                                        ║
+║  • Global <head> FAQPage removed — was firing on ALL 17 pages         ║
+║    simultaneously (incl. noindex). Now injected per-page only:        ║
+║    injectHomeFaqSchema() on Home, injectFaqPageSchema() on FAQ.       ║
+║  • Global <head> BreadcrumbList (wrong type) replaced with            ║
+║    ItemList of SiteNavigationElement.                                 ║
+║  • HowTo schema on Services removed (deprecated Sept 2023).           ║
+║    Replaced with Article schema.                                      ║
+║  • Internship JobPosting: added jobLocationType:TELECOMMUTE,          ║
+║    applicantLocationRequirements, datePosted, validThrough.           ║
+║    Now eligible for Google Jobs rich results.                         ║
+║  LEGAL FIXES:                                                         ║
+║  • Privacy Policy: DPDP Act 2023 named as primary legislation.        ║
+║    RenterFinder.com = Data Fiduciary. Users = Data Principals.        ║
+║    Updated in intro, Section 6.1, aside, JS schema, _pageMeta.       ║
+║  • Both registration forms: visible DPDP Act 2023 consent notice.    ║
+║  GEO / TECHNICAL FIXES:                                               ║
+║  • llms.txt created — RSL 1.0, AI search allowed, AI training         ║
+║    disallowed, 7 citation-optimised facts, all 13 indexable pages,    ║
+║    excluded pages flagged.                                            ║
+║  • robots.txt created — GPTBot/ClaudeBot/PerplexityBot/               ║
+║    OAI-SearchBot allowed. CCBot/anthropic-ai/cohere-ai blocked.       ║
+║    Private pages disallowed. Sitemap referenced.                      ║
+║  • sitemap.xml created — 13 indexable pages, no priority/             ║
+║    changefreq, only loc + lastmod. Noindex pages excluded.            ║
+║  • <link rel="sitemap"> + <meta name="llms-txt"> added to head.       ║
+║  • IndexNow deployment instructions added as HTML comment.            ║
+║  • Deployment checklist comment added (logo.svg, og-image.jpg,        ║
+║    robots.txt, sitemap.xml, llms.txt paths noted).                    ║
+║                                                                      ║
+║  • _pageMeta TITLES enriched for 5 weak pages:                       ║
+║    - login: "Login or Register Free — ... | Landlord & Renter        ║
+║       Sign Up India"                                                  ║
+║    - terms: "Terms of Use — ... | Landlord & Renter Legal            ║
+║       Agreement India"                                                ║
+║    - disclaimer: "Disclaimer — ... | Liability, RERA &               ║
+║       Platform Limitations India"                                     ║
+║    - privacy: "Privacy Policy — ... | How We Protect Your            ║
+║       Data in India"                                                  ║
+║    - feedback: "Contact Us & Feedback — ... | Suggestions,           ║
+║       Complaints & Support India"                                     ║
+║  • _pageMeta DESCRIPTIONS enriched for same 5 pages                  ║
+║  • TERMS H1: "Terms of Use — RenterFinder.com" (branded)             ║
+║  • TERMS eyebrow: "Legal" → "Legal Agreement"                        ║
+║  • TERMS hero subtitle: now includes platform context                 ║
+║  • TERMS H2: enriched with "Rental Platform Rules"                   ║
+║  • DISCLAIMER H1: "Platform Disclaimer — RenterFinder.com"           ║
+║  • DISCLAIMER eyebrow: "Legal" → "Legal Notice"                      ║
+║  • DISCLAIMER hero subtitle: now includes RERA + liability context   ║
+║  • DISCLAIMER H2: enriched with "RERA Exclusion"                     ║
+║  • PRIVACY H1: "Privacy Policy — RenterFinder.com"                   ║
+║  • PRIVACY eyebrow: "Legal" → "Legal & Data Protection"              ║
+║  • PRIVACY hero subtitle: now includes data types context             ║
+║  • PRIVACY H2: enriched with "Store" and "in India"                  ║
+║  • FEEDBACK H1: "Share Your Feedback — We're Listening"              ║
+║  • FEEDBACK eyebrow: "We're Listening" → "Contact Us"                ║
+║  • FEEDBACK hero subtitle: enriched with contact context             ║
+║  • FEEDBACK body: H2 added "How Can We Help You?"                    ║
+║  • FEEDBACK body: intro paragraph added (keyword-enriched)           ║
+║  • FEEDBACK left column: aria-label added                            ║
+║  • FEEDBACK form: <h3> → <h2> (proper heading hierarchy)            ║
+║  • FEEDBACK form: <section> wrapper with aria-label added            ║
+║  • FEEDBACK form: for/name/autocomplete attrs on all inputs          ║
+║  • FEEDBACK hidden aside: significantly enriched with keywords,      ║
+║    contact info, and pan-India city coverage                          ║
+║  • FEEDBACK schema: ContactPage + Organization contactPoint          ║
+║    schema injected via JS on feedback page nav                        ║
+║  • FEEDBACK schema: BreadcrumbList schema injected via JS            ║
+║  • LEGAL PAGES schema: WebPage + BreadcrumbList schemas injected     ║
+║    via JS for terms, disclaimer, privacy, mta, rent-agreement        ║
+║  • JS IIFE: injectFeedbackSchema() and injectLegalPageSchema()       ║
+║    functions added; showPage hook updated for all new pages           ║
+║                                                                      ║
+║  FAQ EXPANSION (vRF173 SEO V20):                                     ║
+║  • FAQ page: 3 new categories added:                                 ║
+║    - "Tenant Screening & Verification" (4 new Q&As)                  ║
+║    - "Eviction & Tenancy Disputes" (5 new Q&As)                      ║
+║    - "Model Tenancy Act, 2021 — Key Points" (4 new Q&As)            ║
+║  • FAQ page: "Renting & Negotiation" expanded from 2 to 4 Q&As      ║
+║  • Internal links added throughout FAQ to /renters-list,             ║
+║    /rent-agreement, /properties, /mta pages                          ║
+║  • FAQ hero subtitle updated; aria-labels updated across page         ║
+║  • Hidden <aside> SEO block expanded with all new topics             ║
+║  • FAQPage JSON-LD schema expanded from 10 to 20 questions           ║
+║  • FAQ page now targets ~1500 words across 8 categories              ║
+║                                                                      ║
+║  INTERNAL LINKING AUDIT (vRF173 SEO V21):                            ║
+║  • All 17 pages audited and upgraded with keyword-rich interlinks    ║
+║  • HOME: added /rent-agreement and /faq links in CTA section         ║
+║    Anchor text: "Rent Agreement reference", "FAQ for landlords"      ║
+║  • ABOUT: added /properties, /renters-list, /faq, /rent-agreement   ║
+║    links in mission section                                          ║
+║  • SERVICES: added /fees, /faq, /rent-agreement links after         ║
+║    content block                                                     ║
+║  • FEES: added /properties, /renters-list, /faq links at end        ║
+║    of content section                                                ║
+║  • PROPERTIES: new related-pages paragraph injected with            ║
+║    /fees, /renters-list, /faq, /rent-agreement links                ║
+║  • RENTERS-LIST: added /home, /fees, /faq, /properties links        ║
+║    below existing why-use-us callout                                 ║
+║  • TERMS: new related-resources paragraph with /faq,                ║
+║    /rent-agreement, /fees links before footer                        ║
+║  • DISCLAIMER: new related paragraph with /faq, /fees               ║
+║  • PRIVACY: new related paragraph with /faq, /fees                  ║
+║  • MTA: new related paragraph with /rent-agreement, /faq,           ║
+║    /renters-list after Important Note callout                        ║
+║  • REFER: added /home, /fees links in CTA dark block                ║
+║  • INTERNSHIP: added /about, /feedback links after content block    ║
+║  • RENT-AGREEMENT: added /faq, /properties, /renters-list links     ║
+║    after content section                                             ║
+║  • LOGIN: unchanged — login/register pages intentionally            ║
+║    noindex; nav-level links sufficient                               ║
+║  • DASHBOARD: unchanged — post-auth UI, full sidebar links          ║
+║    already present                                                   ║
+║  • FEEDBACK: existing /dashboard link retained; /faq and /about     ║
+║    already linked via page nav; no content block available           ║
+║  Link pattern: every indexable page now links to at least 3         ║
+║  related pages using keyword-rich anchor text per exec summary       ║
+║                                                                      ║
+║  FEE TERMINOLOGY & CONTENT UPDATE (vRF173 SEO V22):                  ║
+║  • "Agency Fee" renamed to "Platform Service Fee" — 110 replacements║
+║    across all 17 pages, meta tags, JSON-LD schemas, FAQ answers,     ║
+║    registration form consent text, and SEO aside blocks              ║
+║  • "Listing Fee" → "Profile Listing Fee" wherever "Profile" missing  ║
+║    — 23 visible-text instances corrected                             ║
+║  • ₹125 → "₹125 (discounted from ₹499 — 75% off)" in all           ║
+║    visible content blocks outside scripts and JSON-LD                ║
+║  • 6-DAYS SPLIT: language updated from "6 days advance + 6 days on  ║
+║    deal finalisation" to "6 days to arrange property meeting + 6     ║
+║    days at deal closure (when agreement is signed)" across:          ║
+║    – Home page fee breakdown card                                    ║
+║    – Home page 3-match guarantee callout                             ║
+║    – Services page fee hero section                                  ║
+║    – Services page fee card subtitle                                 ║
+║    – Fees page fee card (full rewrite)                               ║
+║    – Fees page breakdown table row labels                            ║
+║    – Fees page content block paragraphs (full rewrite)               ║
+║    – Renters List content paragraph and why-use-us callout           ║
+║    – FAQ: "What are the fees?" answer rewritten                      ║
+║    – FAQ: "Why is 6 days charged?" question renamed + answer rewrite ║
+║    – FAQ: "Can I pay 100% at closure?" question renamed + rewrite    ║
+║    – FAQ: "Hidden charges?" answer updated to list 3 fees            ║
+║    – Registration form consent text (landlord + renter forms)        ║
+║    – JSON-LD schemas (fees FAQ, offer description, home FAQ schema)  ║
+║  • ₹99 RE-ACTIVATION: new dedicated section on Fees page added      ║
+║    explaining re-activation at ₹99 (within 6 months of deactivation)║
+║    "What RenterFinder Does Not Charge" section updated to reflect    ║
+║    the 3-fee structure (₹125, ₹99 re-activation, 12-day PSF)        ║
+║    Fees page hidden aside SEO block updated                          ║
+║    Services page aside updated                                       ║
+╚══════════════════════════════════════════════════════════════════════╝
+-->
+<!DOCTYPE html>
+<html lang="en-in" prefix="og: https://ogp.me/ns#">
+<head>
+<meta charset="UTF-8">
+<meta name="indexnow-key" content="007e684f54ca459a8bcfbb619be68281">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- vRF173 SEO V19 -->
+
+<!-- ═══ DEPLOYMENT FILES (serve these at root alongside this HTML) ═══ -->
+<!-- robots.txt  → https://www.renterfinder.com/robots.txt  (see robots.txt in repo) -->
+<!-- sitemap.xml → https://www.renterfinder.com/sitemap.xml (see sitemap.xml in repo) -->
+<!-- llms.txt    → https://www.renterfinder.com/llms.txt    (see llms.txt in repo)   -->
+<!-- logo.svg    → https://www.renterfinder.com/logo.svg    (serve the brand SVG)    -->
+<!-- og-image.jpg→ https://www.renterfinder.com/images/og-image.jpg(1200×630 OG image)      -->
+
+<!-- ═══ SITEMAP DISCOVERY ═══ -->
+<link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+
+<!-- ═══ PRIMARY SEO META TAGS ═══ -->
+<title>Privacy Policy — Data Protection | RenterFinder.com India</title>
+<meta name="description" content="Privacy Policy for RenterFinder.com — compliant with India's DPDP Act 2023. How we collect, use and protect your data, and your rights as a Data Principal.">
+<meta name="keywords" content="RenterFinder privacy policy, privacy policy rental platform, DPDP Act 2023, data protection rental platform India">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+<meta name="author" content="RenterFinder.com">
+<meta name="theme-color" content="#040429">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RenterFinder">
+<meta name="application-name" content="RenterFinder.com">
+<meta name="format-detection" content="telephone=no">
+
+<!-- ═══ GEO / AI DISCOVERY ═══ -->
+<!-- llms.txt: AI search crawlers can find content permissions at /llms.txt -->
+<meta name="llms-txt" content="/llms.txt">
+
+<!-- ═══ INDEXNOW (per seo-technical: Bing, Yandex, Naver instant indexing) ═══ -->
+<!-- IndexNow key file: deploy /[key].txt at root when submitting URL changes -->
+<!-- Submit via: https://www.bing.com/indexnow?url=https://www.renterfinder.com/&key=[key] -->
+
+<!-- ═══ OPEN GRAPH (Facebook, LinkedIn, WhatsApp) ═══ -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="RenterFinder.com">
+<meta property="og:title" content="Privacy Policy — Data Protection | RenterFinder.com India">
+<meta property="og:description" content="Privacy Policy for RenterFinder.com — compliant with India's DPDP Act 2023. How we collect, use and protect your data, and your rights as a Data Principal.">
+<meta property="og:url" content="https://www.renterfinder.com/privacy">
+<meta property="og:image" content="https://www.renterfinder.com/images/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="RenterFinder.com — India's rental-only property matching platform for landlords and tenants">
+<meta property="og:locale" content="en_IN">
+
+<!-- ═══ TWITTER CARD ═══ -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@RenterFinderIn">
+<meta name="twitter:creator" content="@RenterFinderIn">
+<meta name="twitter:title" content="Privacy Policy — Data Protection | RenterFinder.com India">
+<meta name="twitter:description" content="Privacy Policy for RenterFinder.com — compliant with India's DPDP Act 2023. How we collect, use and protect your data, and your rights as a Data Principal.">
+<meta name="twitter:image" content="https://www.renterfinder.com/images/og-image.jpg">
+<meta name="twitter:image:alt" content="RenterFinder.com — India's rental-only property matching platform">
+
+<!-- ═══ GEO & LANGUAGE TARGETING ═══ -->
+<meta name="geo.region" content="IN">
+<meta name="geo.placename" content="India">
+<meta name="language" content="English">
+<meta http-equiv="content-language" content="en-in">
+
+<!-- ═══ STRUCTURED DATA — Organization ═══ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "RenterFinder.com",
+  "alternateName": "RenterFinder",
+  "url": "https://www.renterfinder.com",
+  "logo": "https://www.renterfinder.com/logo.svg",
+  "description": "India's first and only rental-exclusive property platform that connects landlords with genuine prospective renters across all Indian cities and towns.",
+  "foundingDate": "2025",
+  "areaServed": {
+    "@type": "Country",
+    "name": "India"
+  },
+  "serviceType": [
+    "Property Rental Matching",
+    "Tenant Finding Service",
+    "Rental Listing Platform"
+  ],
+  "sameAs": [
+    "https://www.linkedin.com/company/renterfinder",
+    "https://www.instagram.com/renterfinder.in",
+    "https://www.facebook.com/renterfinder",
+    "https://x.com/RenterFinderIn",
+    "https://www.youtube.com/@RenterFinder",
+    "https://www.crunchbase.com/organization/renterfinder"
+  ],
+  "founder": {
+    "@type": "Person",
+    "name": "Aditya Shankar",
+    "email": "renterfinder1@gmail.com",
+    "jobTitle": "Founder"
+  }
+}
+</script>
+
+<!-- ═══ STRUCTURED DATA — AboutPage (Google Knowledge Graph) ═══ -->
+
+
+<!-- ═══ STRUCTURED DATA — WebSite (enables Google sitelinks search) ═══ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "RenterFinder.com",
+  "url": "https://www.renterfinder.com",
+  "description": "India's only rental-exclusive property platform — no buying, no selling, only renting.",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://www.renterfinder.com/properties?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+
+<!-- ═══ STRUCTURED DATA — RealEstateAgent service ═══ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "RenterFinder.com",
+  "url": "https://www.renterfinder.com",
+  "description": "India's first rental-only property matching service. We connect landlords with genuine prospective renters — pan-India, all cities and towns. Platform service fee: only 12 days' rent.",
+  "areaServed": {
+    "@type": "Country",
+    "name": "India"
+  },
+  "priceRange": "₹125 profile listing fee, 12 days' rent platform service fee",
+  "serviceType": "Online Rental Property Matching",
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Rental Services",
+    "itemListElement": [
+      {
+        "@type": "Offer",
+        "name": "Profile Listing Fee",
+        "description": "List your renter or landlord profile on RenterFinder.com for 3 months",
+        "price": "125",
+        "priceCurrency": "INR",
+        "availability": "https://schema.org/InStock"
+      },
+      {
+        "@type": "Offer",
+        "name": "Platform Service Fee",
+        "description": "12 days' rent — 6 days' rent advance to arrange the property meeting (non-refundable) and 6 days' rent at deal closure when the rental agreement is signed",
+        "priceCurrency": "INR"
+      }
+    ]
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "RenterFinder.com",
+    "url": "https://www.renterfinder.com"
+  }
+}
+</script>
+
+<!-- ═══ STRUCTURED DATA — FAQ (injected per-page via JS — see injectHomeFaqSchema() in [SECTION:js]) ═══ -->
+<!-- NOTE vRF173 SEO V18: FAQPage removed from global <head> — it was firing on ALL 17 pages
+     simultaneously (including noindex pages like dashboard/login/feedback), causing
+     conflicting schema signals. FAQPage is now injected only on Home via
+     injectHomeFaqSchema() and on the FAQ page via injectFaqPageSchema(), both called
+     from the showPage() hook. -->
+
+<!-- ═══ STRUCTURED DATA — SiteNavigationElement (global nav links) ═══ -->
+<!-- NOTE vRF173 SEO V18: The previous global BreadcrumbList was incorrect — a BreadcrumbList
+     represents a single page's trail (e.g. Home › Services), not the full site nav.
+     Replaced with ItemList of SiteNavigationElement to correctly describe global navigation. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "RenterFinder.com Main Navigation",
+  "itemListElement": [
+    { "@type": "SiteNavigationElement", "position": 1, "name": "Home", "url": "https://www.renterfinder.com/" },
+    { "@type": "SiteNavigationElement", "position": 2, "name": "About Us", "url": "https://www.renterfinder.com/about" },
+    { "@type": "SiteNavigationElement", "position": 3, "name": "Services", "url": "https://www.renterfinder.com/services" },
+    { "@type": "SiteNavigationElement", "position": 4, "name": "Fees", "url": "https://www.renterfinder.com/fees" },
+    { "@type": "SiteNavigationElement", "position": 5, "name": "Rental Properties", "url": "https://www.renterfinder.com/properties" },
+    { "@type": "SiteNavigationElement", "position": 6, "name": "Renters List", "url": "https://www.renterfinder.com/renters-list" },
+    { "@type": "SiteNavigationElement", "position": 7, "name": "FAQ", "url": "https://www.renterfinder.com/faq" }
+  ]
+}
+</script>
+
+<!-- ═══ STRUCTURED DATA — AggregateRating (for star ratings in SERPs) ═══ -->
+
+
+<!-- Service schemas moved to page-specific JS injection (see showPage function) -->
+
+<!-- ═══ PERFORMANCE: Preconnect to external origins ═══ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+<!-- ═══ FAVICON ═══ -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NiAxMDQiIHdpZHRoPSI5NiIgaGVpZ2h0PSIxMDQiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iUmVudGVyRmluZGVyIGxvZ28iPgogIDwhLS0gSG91c2Ugc2hhcGUgZmlsbGVkIHdpdGggYnJhbmQgbmF2eSwgZ29sZCBib3JkZXIsIHRyYW5zcGFyZW50IG91dHNpZGUgLS0+CiAgPHBhdGggZD0iTTQ4IDQgTDkyIDM2IEw5MiAxMDAgTDQgMTAwIEw0IDM2IFoiIGZpbGw9IiMwNDA0MjkiIHN0cm9rZT0iI2M5YTY2YiIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CiAgPHRleHQgeD0iNDgiIHk9Ijg0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iR2VvcmdpYSwgc2VyaWYiIGZvbnQtc2l6ZT0iNDYiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiNjOWE2NmIiIGxldHRlci1zcGFjaW5nPSItMiI+UkY8L3RleHQ+Cjwvc3ZnPgo=">
+
+<!-- ═══ GOOGLE FONTS ═══ -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600;700&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link rel="preload" href="styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="styles.css"></noscript>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Privacy Policy — Data Protection | RenterFinder.com",
+  "description": "Privacy Policy for RenterFinder.com. Compliant with India's DPDP Act 2023.",
+  "url": "https://www.renterfinder.com/privacy",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "RenterFinder.com",
+    "url": "https://www.renterfinder.com"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://www.renterfinder.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Privacy Policy",
+      "item": "https://www.renterfinder.com/privacy"
+    }
+  ]
+}
+</script>
+<style>
+body{opacity:0;transition:opacity 0.18s ease;}
+body.rf-ready{opacity:1;}
+</style>
+<script>
+(function(){
+  var s=document.createElement('link');
+  s.rel='stylesheet';
+  // will be swapped in by preload onload — this just ensures body shows if preload fires before DOMContentLoaded
+})();
+document.addEventListener('DOMContentLoaded',function(){
+  document.body.classList.add('rf-ready');
+});
+window.addEventListener('pageshow',function(){
+  document.body.classList.add('rf-ready');
+  var ov=document.getElementById('rf-page-transition');
+  if(ov){ov.style.opacity='0';ov.style.pointerEvents='none';}
+});
+</script>
+</head>
+<body>
+<div id="rf-page-transition" style="position:fixed;inset:0;background:#040429;z-index:99999;opacity:0;pointer-events:none;transition:opacity 0.22s ease;display:flex;align-items:center;justify-content:center;" aria-hidden="true">
+  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="24" cy="24" r="20" stroke="rgba(201,166,104,0.2)" stroke-width="3"/>
+    <path d="M24 4 a20 20 0 0 1 20 20" stroke="#c9a668" stroke-width="3" stroke-linecap="round">
+      <animateTransform attributeName="transform" type="rotate" from="0 24 24" to="360 24 24" dur="0.7s" repeatCount="indefinite"/>
+    </path>
+  </svg>
+</div>
+
+<!-- ═══ NOSCRIPT FALLBACK ═══ -->
+<!-- noscript body removed V57: page content renders via CSS without JS; misleading JS-required message deleted -->
+
+<!-- ═══════════════════ NAV ═══════════════════ -->
+<!-- [SECTION:nav] — MAIN NAVIGATION -->
+<header>
+<nav id="main-nav" role="navigation" aria-label="Main navigation">
+  <a href="./index.html" class="logo" onclick="navigate('home')" aria-label="RenterFinder.com — Go to homepage" role="link" tabindex="0">
+    <svg class="logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 82" role="img" aria-label="RenterFinder.com logo — India's rental-only property platform">
+      <rect x="3" y="3" width="354" height="76" fill="none" stroke="#c9a66b" stroke-width="3.5"/>
+      <text y="55" text-anchor="middle" x="180" font-family="Georgia, serif">
+        <tspan font-size="40" font-weight="700" fill="#c9a66b" letter-spacing="-0.5">Renter</tspan><tspan font-size="40" font-weight="700" fill="#040429" letter-spacing="-0.5">Finder</tspan><tspan font-size="22" font-weight="400" fill="#040429">.com</tspan>
+      </text>
+    </svg>
+  </a>
+  <ul class="nav-links" id="nav-links" role="menubar">
+    <li role="none"><a href="./index.html" onclick="navigate('home')" data-page="home" role="menuitem" tabindex="0">Home</a></li>
+    <li role="none"><a href="./about.html" onclick="navigate('about')" data-page="about" role="menuitem" tabindex="0">About Us</a></li>
+    <li role="none"><a href="./services.html" onclick="navigate('services')" data-page="services" role="menuitem" tabindex="0">Services</a></li>
+    <li role="none"><a href="./fees.html" onclick="navigate('fees')" data-page="fees" role="menuitem" tabindex="0">Fees</a></li>
+    <li role="none"><a href="./faq.html" onclick="navigate('faq')" data-page="faq" role="menuitem" tabindex="0">FAQ</a></li>
+    <li role="none"><a href="./properties.html" onclick="navigate('properties')" data-page="properties" role="menuitem" tabindex="0">Rental Properties</a></li>
+    <li role="none"><a href="./renters-list.html" onclick="navigate('renters-list')" data-page="renters-list" role="menuitem" tabindex="0">Renter's List</a></li>
+    <li role="none"><a href="./login.html" onclick="navigate('login')" data-page="login" class="nav-login" role="menuitem" tabindex="0">Login / Sign Up</a></li>
+  </ul>
+  <div class="nav-hamburger" id="hamburger" onclick="toggleMenu()" role="button" aria-label="Toggle mobile menu" aria-expanded="false" tabindex="0">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+</header>
+<div class="page active" id="page-privacy" aria-label="Privacy Policy for RenterFinder.com — data collection, storage, protection, and user rights on India's rental-only property platform">
+  <div class="page-hero" style="min-height:220px;">
+    <div class="page-hero-pattern"></div>
+    <div class="page-hero-inner">
+      <nav class="page-breadcrumb" aria-label="Breadcrumb navigation">
+        <a href="./index.html" onclick="navigate('home')">Home</a>
+        <span class="bc-sep">›</span>
+        <span class="bc-current">Privacy Policy</span>
+      </nav>
+      <div class="page-hero-eyebrow">Legal &amp; Data Protection</div>
+      <h1>Privacy <em>Policy</em> — RenterFinder.com</h1>
+      <p>How we collect, use, and protect your personal data on India's only rental-exclusive property platform &middot; Effective: June 07, 2025 &middot; Last Updated: March 11, 2026</p>
+    </div>
+  </div>
+  <div class="legal-body reveal" aria-label="Full Privacy Policy for RenterFinder.com rental platform">
+    <div class="legal-content">
+      <p class="legal-intro">This Privacy Policy ("Policy") governs the collection, use, storage, protection, and disclosure of personal data by RenterFinder.com ("Platform," "Portal," "Website," "we," "us," or "our"), an online technology-based intermediary facilitating connections between landlords and renters in India. We operate as a <strong>Data Fiduciary</strong> under the <strong>Digital Personal Data Protection Act, 2023 ("DPDP Act")</strong>, India's primary data protection legislation, and comply with the Information Technology Act, 2000 and associated SPDI Rules. By accessing or using the Services, including www.renterfinder.com, its mobile applications, and related functionalities (collectively, the "Services"), you consent to the data practices described herein. If you do not agree, you must immediately cease use of the Services.</p>
+
+      <h2 class="section-title" style="font-size:clamp(20px,1.8vw,28px);margin:32px 0 20px;">Privacy Policy — Rental Platform Data Protection &amp; DPDP Act 2023 India</h2>
+
+      <div class="mta-toc reveal"><h4>Contents</h4><div class="mta-toc-grid"><span onclick="document.getElementById('priv-s1').scrollIntoView({behavior:'smooth'})">1. Data Collection</span><span onclick="document.getElementById('priv-s2').scrollIntoView({behavior:'smooth'})">2. Data Use and Disclosure</span><span onclick="document.getElementById('priv-s3').scrollIntoView({behavior:'smooth'})">3. Data Protection and Security</span><span onclick="document.getElementById('priv-s4').scrollIntoView({behavior:'smooth'})">4. Cookies and Tracking Technologies</span><span onclick="document.getElementById('priv-s5').scrollIntoView({behavior:'smooth'})">5. User Rights</span><span onclick="document.getElementById('priv-s6').scrollIntoView({behavior:'smooth'})">6. Compliance with Applicable Laws</span><span onclick="document.getElementById('priv-s7').scrollIntoView({behavior:'smooth'})">7. Third-Party Websites</span><span onclick="document.getElementById('priv-s8').scrollIntoView({behavior:'smooth'})">8. Children's Privacy</span><span onclick="document.getElementById('priv-s9').scrollIntoView({behavior:'smooth'})">9. Amendments to this Policy</span><span onclick="document.getElementById('priv-s10').scrollIntoView({behavior:'smooth'})">10. Miscellaneous Provisions</span></div></div>
+
+      <div id="priv-s1" class="legal-section"><h3>1. Data Collection</h3><p>
+        <strong>1.1 Categories of Data Collected:</strong><br>
+        &bull; <strong>Personal Data:</strong> Includes, but is not limited to, your name, email address, phone number, address, Aadhaar number (where legally permitted), PAN, property photos, and other identifiers provided during account registration, property listings, or interactions with the Services.<br>
+        &bull; <strong>Sensitive Personal Data:</strong> Includes payment information (e.g., bank account or credit card details), passwords, and other data classified as sensitive under the Information Technology (Reasonable Security Practices and Procedures and Sensitive Personal Data or Information) Rules, 2011 ("SPDI Rules").<br>
+        &bull; <strong>Non-Personal Data:</strong> Includes anonymized usage statistics, device information (e.g., IP address, browser type, operating system), location data, cookies, web beacons, and log data.<br><br>
+        <strong>1.2 Methods of Collection:</strong> Data is collected:<br>
+        &bull; Directly from you when you register, create listings, post user-generated content (e.g., reviews), or communicate with us or other Users.<br>
+        &bull; Automatically through cookies, web beacons, server logs, or other tracking technologies when you interact with the Services.<br>
+        &bull; From third parties, such as payment processors or analytics providers, where necessary to facilitate or enhance the Services.<br><br>
+        <strong>1.3 Mobile-Specific Data:</strong> For mobile application users, we may request access to:<br>
+        &bull; <strong>Location Data:</strong> To provide geographically relevant property listings.<br>
+        &bull; <strong>Phone Numbers:</strong> For authentication and service-related communications.<br>
+        &bull; <strong>Phonebook Contacts:</strong> To facilitate referrals, with your explicit consent.<br>
+        &bull; <strong>Installed Application Data:</strong> To detect and prevent fraud, ensuring secure transactions.<br>
+        You may deny or revoke these permissions via device settings, though this may limit certain Service functionalities.<br><br>
+        <strong>1.4 Purpose of Collection:</strong> We collect data to:<br>
+        &bull; Facilitate connections between landlords and renters.<br>
+        &bull; Process transactions, verify identities, and authenticate Users.<br>
+        &bull; Enhance, personalize, and maintain the Services.<br>
+        &bull; Conduct analytics, troubleshoot issues, and improve Platform functionality.<br>
+        &bull; Deliver targeted advertisements, subject to your preferences.<br>
+        &bull; Comply with legal obligations under Indian laws, including the Information Technology Act, 2000.<br><br>
+        <strong>1.5 Accuracy of User Information:</strong> You are responsible for ensuring the accuracy and completeness of all personal data provided to us. We rely on the information you submit and are not liable for any errors, omissions, or consequences arising from inaccurate or outdated data. You may update your information via account settings or by contacting us at report@renterfinder.com.
+      </p></div>
+
+      <div id="priv-s2" class="legal-section"><h3>2. Data Use and Disclosure</h3><p>
+        <strong>2.1 Use of Data:</strong> Your data may be used to:<br>
+        &bull; Provide, administer, and personalize the Services.<br>
+        &bull; Communicate with you regarding account activity, service updates, or promotional offers (subject to your consent where required).<br>
+        &bull; Detect, prevent, and address fraud, security breaches, or illegal activities.<br>
+        &bull; Conduct market research, analytics, and performance optimization.<br>
+        &bull; Fulfill contractual or legal obligations.<br><br>
+        <strong>2.2 Disclosure of Data:</strong> We may disclose your data:<br>
+        &bull; <strong>To Service Providers:</strong> With third-party vendors (e.g., cloud hosting providers, payment gateways) under strict confidentiality agreements to support the Services.<br>
+        &bull; <strong>For Legal Compliance:</strong> To governmental authorities, law enforcement, or courts as required by law, including under the Information Technology Act, 2000, or in response to lawful requests.<br>
+        &bull; <strong>In Emergencies:</strong> If we reasonably believe disclosure is necessary to address an emergency involving imminent danger of death or serious physical injury to any person, in accordance with applicable laws.<br>
+        &bull; <strong>For Advertising:</strong> Non-personally identifiable information (Non-PII), such as anonymized usage data or browsing patterns, may be shared with third-party advertising partners (e.g., Google) to deliver targeted advertisements across the internet.<br>
+        &bull; <strong>In Business Transfers:</strong> To a successor entity in the event of a merger, acquisition, or sale of all or part of our assets, subject to equivalent data protection standards.<br>
+        &bull; <strong>With Consent:</strong> To other parties where you have provided explicit consent.<br><br>
+        <strong>2.3 User-Generated Content:</strong> Any personally identifiable information you voluntarily submit in user-generated content, such as reviews, comments, or public posts, may be visible to other Users or third parties. We are not responsible for the collection, use, or disclosure of such information by others, and you assume all risks associated with its public dissemination.<br><br>
+        <strong>2.4 No Unauthorized Sharing:</strong> We do not sell, rent, or lease your personal data to third parties for marketing purposes without your explicit consent.
+      </p></div>
+
+      <div id="priv-s3" class="legal-section"><h3>3. Data Protection and Security</h3><p>
+        <strong>3.1 Security Measures:</strong> We implement reasonable and industry-standard technical and organizational measures, including encryption, firewalls, access controls, and secure socket layer (SSL) technology, to safeguard your data against unauthorized access, alteration, disclosure, or destruction.<br><br>
+        <strong>3.2 No Absolute Guarantee:</strong> Despite our efforts, no electronic transmission or storage method is entirely secure. We do not warrant absolute security and disclaim liability for unauthorized access, data breaches, or losses beyond our reasonable control, including those resulting from errors in transmission or acts of third parties.<br><br>
+        <strong>3.3 Data Retention:</strong> We retain your data only for as long as necessary to fulfill the purposes outlined in this Policy, comply with legal obligations, resolve disputes, or enforce our agreements. Data no longer required is securely deleted or anonymized in accordance with applicable laws.
+      </p></div>
+
+      <div id="priv-s4" class="legal-section"><h3>4. Cookies and Tracking Technologies</h3><p>
+        <strong>4.1 Types of Cookies:</strong> We utilize the following cookies to enhance your experience and analyze Service usage:<br>
+        &bull; <strong>Technical Cookies:</strong> Essential for enabling core functionality, such as navigation and account access.<br>
+        &bull; <strong>Analytical Cookies:</strong> Used by us or third-party providers (e.g., Google Analytics) to analyze usage patterns, track performance, and optimize content based on your location or interactions.<br>
+        &bull; <strong>Functionality Cookies:</strong> Store preferences (e.g., language, region) to provide a personalized experience.<br>
+        &bull; <strong>Advertising Cookies:</strong> Enable targeted advertisements by recording browsing history and interests, delivered by us or third-party advertising partners.<br><br>
+        <strong>4.2 Management of Cookies:</strong> You may manage cookie preferences via the Platform's cookie consent banner, accessible at the bottom of each webpage, or through your browser settings. Disabling cookies may impair certain Service features. Third-party providers may deploy cookies subject to their own privacy policies, for which we bear no responsibility.<br><br>
+        <strong>4.3 Third-Party Analytics:</strong> We engage third-party analytics providers to monitor usage patterns and improve the Services. These providers operate under their own privacy policies, and we are not liable for their data practices.
+      </p></div>
+
+      <div id="priv-s5" class="legal-section"><h3>5. User Rights</h3><p>
+        <strong>5.1 Access and Correction:</strong> You may access, review, or update your personal data via your account settings or by contacting us at report@renterfinder.com.<br><br>
+        <strong>5.2 Data Deletion:</strong> You may request deletion of your personal data, subject to our legal retention obligations (e.g., tax or audit requirements). Submit deletion requests to report@renterfinder.com.<br><br>
+        <strong>5.3 Withdrawal of Consent:</strong> Where data processing is based on consent, you may withdraw consent at any time by contacting us or using Platform functionalities, though this may limit your ability to use certain features of the Services.<br><br>
+        <strong>5.4 Opt-Out of Marketing and Advertising:</strong> You may opt out of receiving promotional communications, including marketing emails, text messages, or telephone calls, by contacting our Grievance Officer at report@renterfinder.com or using the unsubscribe functionality provided in such communications. You may also opt out of tailored advertising by adjusting cookie preferences. Opting out will not affect transactional or service-related communications.<br><br>
+        <strong>5.5 Portability:</strong> Upon request, we will provide your personal data in a structured, commonly used, and machine-readable format, where technically feasible and legally required.<br><br>
+        <strong>5.6 Grievance Redressal:</strong> For privacy-related concerns, contact our Grievance Officer at:<br>
+        &bull; Name: Aditya Shankar<br>
+        &bull; Designation: Grievance Officer<br>
+        &bull; Email: report@renterfinder.com<br>
+        &bull; Response Time: Within 30 days, as mandated under the Information Technology Act, 2000.
+      </p></div>
+
+      <div id="priv-s6" class="legal-section"><h3>6. Compliance with Applicable Laws</h3><p>
+        <strong>6.1 Indian Legal Framework:</strong> We comply with the Information Technology Act, 2000, the Information Technology (Reasonable Security Practices and Procedures and Sensitive Personal Data or Information) Rules, 2011 ("SPDI Rules"), and the <strong>Digital Personal Data Protection Act, 2023 ("DPDP Act")</strong>, India's primary data protection legislation. Under the DPDP Act, we act as a Data Fiduciary in respect of personal data processed through the Platform. You, as a Data Principal, have the rights described in Section 5 of this Policy, including rights of access, correction, erasure, grievance redressal, and nomination, as provided under the DPDP Act. This Policy will be updated as necessary to reflect changes in legal requirements and rules notified under the DPDP Act.<br><br>
+        <strong>6.2 Cross-Border Transfers:</strong> Your data may be stored or processed outside India (e.g., on cloud servers) subject to compliance with applicable data protection laws, including restrictions on cross-border data transfers under the DPDP Act, and contractual safeguards ensuring equivalent protection.
+      </p></div>
+
+      <div id="priv-s7" class="legal-section"><h3>7. Third-Party Websites</h3><p>
+        <strong>7.1 No Liability for Linked Websites:</strong> The Services may contain links to third-party websites or services not operated by us. We are not responsible for the privacy practices, content, or security of such third-party websites, which are governed by their own policies. Your interaction with linked websites is at your sole risk, and we disclaim all liability arising therefrom.
+      </p></div>
+
+      <div class="legal-section"><h3>8. Children's Privacy</h3><p>
+        <strong>8.1 Age Restriction:</strong> The Services are not intended for individuals under 18 years of age. We do not knowingly collect personal data from minors. If such data is inadvertently collected, it will be promptly deleted upon discovery.
+      </p></div>
+
+      <div id="priv-s9" class="legal-section"><h3>9. Amendments to this Policy</h3><p>
+        <strong>9.1 Right to Modify:</strong> We reserve the right to amend this Policy at our discretion. Amendments will be posted on the Platform with an updated "Last Updated" date. Continued use of the Services following such changes constitutes your acceptance of the revised Policy.<br><br>
+        <strong>9.2 Notification:</strong> Material changes affecting your rights will be communicated via email (to the address associated with your account) or a prominent notice on the Platform, where required by law.
+      </p></div>
+
+      <div id="priv-s10" class="legal-section"><h3>10. Miscellaneous Provisions</h3><p>
+        <strong>10.1 Governing Law and Jurisdiction:</strong> This Policy is governed by the laws of the State of Bihar, India. Any disputes arising hereunder shall be subject to the exclusive jurisdiction of the courts in Patna, Bihar.<br><br>
+        <strong>10.2 Severability:</strong> If any provision of this Policy is deemed invalid or unenforceable, the remaining provisions shall remain in full force and effect.<br><br>
+        <strong>10.3 No Waiver:</strong> Our failure to enforce any right or provision herein does not constitute a waiver of such right or provision.<br><br>
+        <strong>10.4 Public Content, Private Listings, and Platform Promotion:</strong><br><br>
+        (a) <strong>Publicly Visible Content:</strong> Content submitted to publicly accessible areas of the Platform, including reviews, ratings, comments, and public profile information, may be indexed by third-party search engines, aggregated by external platforms, or otherwise accessed, reproduced, or shared by other Users or members of the public entirely beyond our control. You are solely responsible for exercising discretion regarding the nature and extent of information included in any publicly visible Content, and we shall not be liable for the access, use, reproduction, or further dissemination of such Content by any third party once it has been made publicly available through your own action.<br><br>
+        (b) <strong>Private Listings and Restricted Content:</strong> Content submitted to non-public areas of the Platform, including private property listings, renter profiles pending approval, and any Content shared exclusively with matched Users, shall be accessible only to the intended recipients and to us for the purposes of administering the Services. We shall not reproduce, distribute, or otherwise disclose such Content beyond the scope necessary for Service delivery, except as required by Applicable Law or as expressly permitted under this Policy.<br><br>
+        (c) <strong>Platform Promotion Rights:</strong> Notwithstanding sub-clause (b) above, publicly visible Content, including approved property listings, anonymised user reviews, and general Platform activity, may be reproduced, featured, or shared by us on external channels, including but not limited to blogs, social media platforms, affiliated digital media, and promotional materials, for the purposes of promoting the Services or enhancing Platform visibility. By submitting publicly visible Content, you acknowledge and consent to such use. We shall not, however, feature or reproduce any Content in a manner that identifies you personally without your prior explicit written consent, in accordance with Section 2.4 of this Policy.<br><br>
+        (d) <strong>Savings Clause:</strong> Nothing in this Section 10.4 shall be construed to authorise the disclosure, sale, or commercial exploitation of your personal data or Sensitive Personal Data or Information beyond the scope expressly permitted under this Policy and Applicable Law, including the SPDI Rules. This clause operates in addition to, and not in derogation of, the Content Licence granted under the Terms of Use, and must be read harmoniously with Section 2.4 of this Policy.<br><br>
+        <strong>10.5 Contact Information:</strong> For questions or concerns regarding this Policy, contact us at info@renterfinder.com.
+      </p></div>
+
+      <p class="legal-copyright">Your use of the Services signifies your acceptance of this Privacy Policy and any subsequent amendments thereto.</p>
+    </div>
+  </div>
+  <div id="privacy-footer"></div>
+  <section style="padding:12px 60px 40px;" aria-label="Related platform resources">
+    <p style="font-size:13px;line-height:1.9;color:var(--mid);">
+      <strong>Related:</strong>
+      <a href="./faq.html" onclick="navigate('faq')" style="color:var(--gold-dk);font-weight:600;cursor:pointer;">Landlord and renter FAQ →</a> &nbsp;|&nbsp;
+      <a href="./fees.html" onclick="navigate('fees')" style="color:var(--gold-dk);font-weight:600;cursor:pointer;">Our transparent fee structure →</a>
+    </p>
+  </section>
+</div>
+
+<!-- ═══════════════════ PAGE: MODEL TENANCY ACT (SEO-OPTIMIZED) ═══════════════════ -->
+<!-- ═══════════════════════════════════════════════════════════════
+     [PAGE:mta] — PAGE 12: MATCH TERMS AGREEMENT (SEO-OPTIMIZED)
+     Search [PAGE:mta] to jump here
+═══════════════════════════════════════════════════════════════ -->
+
+<template id="footer-template">
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <h4 style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin:0 0 16px;">Contact</h4>
+        <p class="footer-brand-desc" style="margin:0;line-height:1.9;">
+          <strong style="color:rgba(255,255,255,0.92);font-weight:700;">VAMY Properties Pvt Ltd</strong><br>
+          Phone: +91 73031 04550<br>
+          <span style="font-size:11.5px;color:var(--mid);">(WhatsApp only)</span><br>
+          Email: <a href="mailto:renterfinder1@gmail.com" style="color:var(--gold-dk);text-decoration:none;">renterfinder1@gmail.com</a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <h4>For Renters</h4>
+        <ul>
+          <li><a href="./login.html" onclick="navigate('login')">List Your Profile</a></li>
+          <li><a href="./properties.html" onclick="navigate('properties')">Browse Properties</a></li>
+          <li><a href="./services.html" onclick="navigate('services')">How It Works</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>For Landlords</h4>
+        <ul>
+          <li><a href="./login.html" onclick="navigate('login')">List a Property</a></li>
+          <li><a href="./renters-list.html" onclick="navigate('renters-list')">Renter's List</a></li>
+          <li><a href="./fees.html" onclick="navigate('fees')">Closing Fees</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="./blog.html" onclick="navigate('blog')">Blog &amp; Articles</a></li>
+          <li><a href="./refer.html" onclick="navigate('refer')">Refer &amp; Earn</a></li>
+          <li><a href="./internship.html" onclick="navigate('internship')">Internship</a></li>
+          <li><a href="./feedback.html" onclick="navigate('feedback')">Share Feedback</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="./privacy.html" onclick="navigate('privacy')">Privacy Policy</a></li>
+          <li><a href="./terms.html" onclick="navigate('terms')">Terms of Use</a></li>
+          <li><a href="./disclaimer.html" onclick="navigate('disclaimer')">Disclaimer</a></li>
+          <li><a href="./mta.html" onclick="navigate('mta')">Model Tenancy Act</a></li>
+          <li><a href="./rent-agreement.html" onclick="navigate('rent-agreement')">Rent Agreement (Sample)</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+  <div style="background:var(--offwhite);padding:16px 60px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);">
+    <p style="font-size:12px;color:var(--mid);margin:0;">© 2026 RenterFinder.com · No Buying. No Selling. Only Renting. · India &nbsp;·&nbsp; <a href="/sitemap.xml" target="_blank" rel="noopener" style="color:var(--mid);text-decoration:none;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--mid)'">Sitemap</a></p>
+    <div class="socials">
+      <a class="social-btn" href="https://x.com/RenterFinderIn" target="_blank" rel="noopener" title="Follow us on X" aria-label="Follow RenterFinder on X (Twitter)" style="border-color:rgba(4,4,41,0.15);color:var(--dark);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.836L2.25 2.25h6.919l4.257 5.625zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+      <a class="social-btn" href="https://www.instagram.com/renterfinder?igsh=NXVpemJjZ2VqbThl" target="_blank" rel="noopener" title="Follow us on Instagram" aria-label="Follow RenterFinder on Instagram" style="border-color:rgba(4,4,41,0.15);color:var(--dark);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      </a>
+      <a class="social-btn" href="https://youtube.com/@renterfinder?si=c_pFfNqNpFqLK-Ou" target="_blank" rel="noopener" title="Watch us on YouTube" aria-label="Watch RenterFinder on YouTube" style="border-color:rgba(4,4,41,0.15);color:var(--dark);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+      </a>
+      <a class="social-btn" href="https://www.facebook.com/share/1AwvyYavAo/" target="_blank" rel="noopener" title="Follow us on Facebook" aria-label="Follow RenterFinder on Facebook" style="border-color:rgba(4,4,41,0.15);color:var(--dark);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+      </a>
+    </div>
+  </div>
+</template>
+
+<script src="script.js" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  renderFooters();
+  initReveal();
+  
+});
+</script>
+  <script src="./chatbot.js" defer></script>
+</body>
+</html>

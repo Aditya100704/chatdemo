@@ -1,0 +1,1413 @@
+<!--
+╔══════════════════════════════════════════════════════════════════════╗
+║       RENTERFINDER.COM — SINGLE FILE SOURCE  vRF173 SEO V27         ║
+║                                                                      ║
+║  HOW TO NAVIGATE THIS FILE (use Ctrl+F / Cmd+F to jump):            ║
+║                                                                      ║
+║  ── GLOBAL STYLES & SHARED COMPONENTS ──────────────── [SECTION:CSS]║
+║  ── MAIN NAVIGATION ───────────────────────────── [SECTION:nav]     ║
+║  ── PAGE 1  · Home (SEO-OPTIMIZED) ────────────── [PAGE:home]      ║
+║  ── PAGE 2  · About Us (SEO-OPTIMIZED) ───────── [PAGE:about]      ║
+║  ── PAGE 3  · Services (SEO-OPTIMIZED) ───────── [PAGE:services]   ║
+║  ── PAGE 4  · Fees (SEO-OPTIMIZED) ────────────── [PAGE:fees]      ║
+║  ── PAGE 5  · Rental Properties (SEO-OPTIMIZED) ── [PAGE:properties]║
+║  ── PAGE 6  · Renter's List (SEO-OPTIMIZED) ──── [PAGE:renters-list]║
+║  ── PAGE 7  · Login / Sign Up (SEO-OPTIMIZED) ──── [PAGE:login]     ║
+║  ── PAGE 8  · FAQ (SEO-OPTIMIZED) ─────────────── [PAGE:faq]       ║
+║  ── PAGE 9  · Terms & Conditions (SEO-OPTIMIZED) ── [PAGE:terms]   ║
+║  ── PAGE 10 · Disclaimer (SEO-OPTIMIZED) ──────── [PAGE:disclaimer]║
+║  ── PAGE 11 · Privacy Policy (SEO-OPTIMIZED) ──── [PAGE:privacy]   ║
+║  ── PAGE 12 · Match Terms Agreement (SEO-OPT) ──── [PAGE:mta]      ║
+║  ── PAGE 13 · Refer & Earn (SEO-OPTIMIZED) ─────── [PAGE:refer]     ║
+║  ── PAGE 14 · Internship (SEO-OPTIMIZED) ──────── [PAGE:internship]║
+║  ── PAGE 15 · Rent Agreement Helper (SEO-OPT) ──── [PAGE:rent-agreement]║
+║  ── PAGE 16 · Feedback (SEO-OPTIMIZED) ─────────── [PAGE:feedback]  ║
+║  ── PAGE 17 · User Dashboard (SEO-OPT) ─────────── [PAGE:dashboard] ║
+║  ── PAGE 18 · Blog & Articles (SEO-OPTIMIZED) ───── [PAGE:blog]     ║
+║  ── SHARED FOOTER ──────────────────────────────── [SECTION:footer] ║
+║  ── JAVASCRIPT ─────────────────────────────────── [SECTION:js]     ║
+║                                                                      ║
+║  ── FILE SPLIT INSTRUCTIONS (for when breaking into individual pages)║
+║  When splitting this SPA into individual HTML files, PAGE 18        ║
+║  (Blog & Articles, id="page-blog") must be extracted as its own     ║
+║  standalone file: blog.html (or /blog/index.html).                  ║
+║  It contains: blog listing index, full Article (id="blog-post-1"),  ║
+║  Article JSON-LD schema, BreadcrumbList schema, and SEO aside.      ║
+║  Each subsequent blog post should also be its own file:             ║
+║  /blog/post-slug.html — never merged back into the SPA shell.       ║
+║                                                                      ║
+║  SEO CHANGES (vRF173 SEO V2):                                        ║
+║  • Meta description, keywords, robots, theme-color added             ║
+║  • Open Graph + Twitter Card meta tags                               ║
+║  • JSON-LD: Organization, WebSite, RealEstateAgent, FAQ, Breadcrumb ║
+║  • Canonical URL                                                     ║
+║  • Semantic HTML: <main>, <header>, <section>, <aside>, <footer>    ║
+║  • ARIA roles/labels on nav, sections, buttons                       ║
+║  • H1 kept original ("Let's Find a Good Renter for Your Home")      ║
+║  • H2s enriched with geo + service keywords                          ║
+║  • Hidden semantic content block for crawlers                        ║
+║  • Preconnect + dns-prefetch for Google Fonts                        ║
+║  • <noscript> fallback                                               ║
+║  • geo.region and content-language meta tags                         ║
+║  • "Verified" removed from all user-facing text (kept in meta only) ║
+║                                                                      ║
+║  SEO CHANGES (vRF173 SEO V3):                                        ║
+║  • font-display: swap added to Google Fonts for performance          ║
+║  • ABOUT PAGE: + aria-label on page wrapper              ║
+║  • ABOUT PAGE: All sections enriched with keyword aria-labels        ║
+║  • ABOUT PAGE: H2s enriched with geo/service keywords                ║
+║  • ABOUT PAGE: Hidden semantic <aside> for crawlers                  ║
+║  • ABOUT PAGE: CTA buttons keyword-optimized                        ║
+║  • ABOUT PAGE: Hero subtitle expanded with city names                ║
+║  • SERVICES PAGE: + aria-label on page wrapper           ║
+║  • SERVICES PAGE: All sections enriched with keyword aria-labels     ║
+║  • SERVICES PAGE: H2s enriched with rental/India keywords            ║
+║  • SERVICES PAGE: Hidden semantic <aside> for crawlers               ║
+║  • SERVICES PAGE: CTA buttons keyword-optimized                     ║
+║  • SERVICES PAGE: Hero subtitle expanded with city names             ║
+║  • JSON-LD: Two new Service schemas (Renter Search + Property Search)║
+║  • FEES PAGE: + aria-label on page wrapper              ║
+║  • FEES PAGE: Hero subtitle expanded with city names                ║
+║  • FEES PAGE: Intro H2 enriched with transparency keywords          ║
+║  • FEES PAGE: Sections enriched with keyword aria-labels            ║
+║  • FEES PAGE: CTA buttons keyword-optimized                        ║
+║  • FEES PAGE: Hidden semantic <aside> for crawlers                  ║
+║  • FAQ PAGE: + aria-label on page wrapper               ║
+║  • FAQ PAGE: Hero subtitle expanded with rental topics + India      ║
+║  • FAQ PAGE: Section enriched with keyword aria-label               ║
+║  • FAQ PAGE: Hidden semantic <aside> for crawlers                   ║
+║  • FAQ PAGE: JSON-LD FAQPage expanded from 4 to 10 questions        ║
+║  • PROPERTIES PAGE: + keyword aria-label on wrapper     ║
+║  • PROPERTIES PAGE: Hero subtitle added with property types + cities║
+║  • PROPERTIES PAGE: Search bar aria-labels on all form elements     ║
+║  • PROPERTIES PAGE: Search button keyword-optimized                 ║
+║  • PROPERTIES PAGE: Hidden semantic <aside> for crawlers            ║
+║  • RENTERS LIST PAGE: + keyword aria-label on wrapper   ║
+║  • RENTERS LIST PAGE: Hero subtitle — "find a renter first time"   ║
+║  • RENTERS LIST PAGE: Intro H2 + body enriched with USP keywords   ║
+║  • RENTERS LIST PAGE: CTA buttons keyword-optimized                 ║
+║  • RENTERS LIST PAGE: Filters + grid aria-labels added              ║
+║  • RENTERS LIST PAGE: Hidden semantic <aside> for crawlers          ║
+║  • USP KEYWORDS added across ALL pages: "find a renter (first time  ║
+║    ever)" + "transparent fees / no hidden charges"                   ║
+║  • Meta description + OG + Twitter updated with USP keywords        ║
+║  • Meta keywords expanded with USP-specific terms                   ║
+║  • All 7 hidden <aside> blocks enriched with USP keyword phrases    ║
+║                                                                      ║
+║  BUG FIXES (vRF173 SEO V5):                                         ║
+║  • Home CTA "Ready to find your perfect rental match?" now           ║
+║    responsive: CSS Grid 1fr 1fr (50-50) on desktop, single-column   ║
+║    stack on mobile (≤768px)                                          ║
+║                                                                      ║
+║  SEO + UI CHANGES (vRF173 SEO V6):                                   ║
+║  • HOME: Meta description rewritten to user's exact copy             ║
+║  • HOME: twitter:site + twitter:creator @RenterFinderIn added        ║
+║  • HOME: Reviews expanded from 6 → 15 genuine human-sounding cards  ║
+║  • HOME: Mix of 5★ and 4★ ratings for authenticity                  ║
+║  • HOME: JSON-LD AggregateRating updated (15 reviews, 4.8 rating)   ║
+║  • HOME: All 15 reviews matched in JSON-LD structured data          ║
+║  • ABOUT: aria-label + role="img" on animated India arc canvas      ║
+║  • ABOUT: AboutPage JSON-LD schema added (foundingDate, sameAs)     ║
+║  • ABOUT: Organization sameAs populated (LI, IG, FB, X, YouTube)    ║
+║  • ABOUT: Visible breadcrumb navigation added (Home › About Us)     ║
+║  • ABOUT: Breadcrumb CSS component added (.page-breadcrumb)         ║
+║                                                                      ║
+║  SEO CHANGES (vRF173 SEO V7):                                        ║
+║  • TERMS: + keyword aria-label on page wrapper           ║
+║  • TERMS: Visible breadcrumb added (Home › Terms of Use)            ║
+║  • TERMS: aria-label on legal-body content section                   ║
+║  • TERMS: Hidden semantic <aside> for crawlers                      ║
+║  • TERMS: SEO-OPTIMIZED comment block added                         ║
+║  • DISCLAIMER: + keyword aria-label on page wrapper     ║
+║  • DISCLAIMER: Visible breadcrumb added (Home › Disclaimer)         ║
+║  • DISCLAIMER: aria-label on legal-body content section              ║
+║  • DISCLAIMER: Hidden semantic <aside> for crawlers                 ║
+║  • DISCLAIMER: SEO-OPTIMIZED comment block added                    ║
+║  • PRIVACY: + keyword aria-label on page wrapper        ║
+║  • PRIVACY: Visible breadcrumb added (Home › Privacy Policy)        ║
+║  • PRIVACY: aria-label on legal-body content section                 ║
+║  • PRIVACY: Hidden semantic <aside> for crawlers                    ║
+║  • PRIVACY: SEO-OPTIMIZED comment block added                       ║
+║  • All 3 legal pages: zero changes to legal content text            ║
+║                                                                      ║
+║  SEO CHANGES (vRF173 SEO V8):                                        ║
+║  • LOGIN: + keyword aria-label on page wrapper           ║
+║  • LOGIN: Hidden semantic <aside> for crawlers                      ║
+║  • LOGIN: SEO-OPTIMIZED comment block added                         ║
+║  • REFER: + keyword aria-label on page wrapper          ║
+║  • REFER: Visible breadcrumb added (Home › Refer & Earn)            ║
+║  • REFER: Hero subtitle expanded with earnings details              ║
+║  • REFER: aria-label on refer-section                                ║
+║  • REFER: Hidden semantic <aside> for crawlers                      ║
+║  • INTERNSHIP: + keyword aria-label on page wrapper     ║
+║  • INTERNSHIP: Visible breadcrumb added (Home › Internship)         ║
+║  • INTERNSHIP: Hero subtitle expanded with online/offline + India   ║
+║  • INTERNSHIP: aria-label on internship-section                      ║
+║  • INTERNSHIP: Hidden semantic <aside> for crawlers                 ║
+║  • FEEDBACK: + keyword aria-label on page wrapper       ║
+║  • FEEDBACK: Visible breadcrumb added (Home › Feedback)             ║
+║  • FEEDBACK: Hero subtitle expanded with service context            ║
+║  • FEEDBACK: aria-label on form section                              ║
+║  • FEEDBACK: Hidden semantic <aside> for crawlers                   ║
+║                                                                      ║
+║  SEO CHANGES (vRF173 SEO V9) — FINAL 3 PAGES:                       ║
+║  • MTA: + keyword aria-label on page wrapper            ║
+║  • MTA: Visible breadcrumb (Home › Model Tenancy Act, 2021)        ║
+║  • MTA: Hero subtitle expanded with chapter topics                  ║
+║  • MTA: aria-label on legal-body section                            ║
+║  • MTA: Hidden semantic <aside> for crawlers                        ║
+║  • RENT AGREEMENT: + keyword aria-label on wrapper      ║
+║  • RENT AGREEMENT: Visible breadcrumb (Home › Rent Agreement)       ║
+║  • RENT AGREEMENT: Hero subtitle expanded with context              ║
+║  • RENT AGREEMENT: Hidden semantic <aside> for crawlers             ║
+║  • DASHBOARD: + keyword aria-label on wrapper           ║
+║  • DASHBOARD: Hidden semantic <aside> for crawlers                  ║
+║  ═══ ALL 17 PAGES NOW SEO-OPTIMIZED ═══                             ║
+║                                                                      ║
+║  CRITICAL FIXES (vRF173 SEO V14):                                    ║
+║  • DUPLICATE SCRIPT: Removed second Cloudflare email-decode.min.js  ║
+║  • CSS PARSE ERROR: Orphaned margin-top/max-width/line-height props  ║
+║    merged into .page-hero p; stray closing brace removed             ║
+║  • FOUNDING DATE: Normalised to "2025" across all schemas            ║
+║    (head Organization, head AboutPage, JS-injected About schema)     ║
+║  • SAMEAS CONSISTENCY: JS-injected About schema now includes full    ║
+║    social sameAs array (was only ["https://www.renterfinder.com"])   ║
+║  • TWITTER/X URL: Normalised twitter.com → x.com/RenterFinderIn     ║
+║    in all sameAs arrays and footer social link                       ║
+║  • SEARCHACTION REMOVED: WebSite schema potentialAction removed      ║
+║    (target /search?q= URL does not exist in this SPA)               ║
+║                                                                      ║
+║  SEO CHANGES (vRF173 SEO V10):                                       ║
+║  • SERVICES: Visible breadcrumb added (Home › Services)             ║
+║  • SERVICES: Service JSON-LD schemas moved from global <head> to    ║
+║    page-specific JS injection (only active on Services page)         ║
+║  • SERVICES: Enriched schemas with serviceOutput + full provider    ║
+║  • FEES: Page-specific FAQPage schema injected via JS (4 fee Q&As)  ║
+║  • FEES: PriceSpecification schema injected via JS on Fees page     ║
+║  • FEES: Free offer expiry date now checked programmatically (JS)   ║
+║  • FEES: data-offer-text attributes added for dynamic text swap     ║
+║  • FAQ: First 3 FAQ answers auto-open on page load                  ║
+║  • FAQ: Category titles changed from <h3> to <h2> (semantic SEO)   ║
+║  • FAQ: Client-side search/filter added (filterFaqItems function)   ║
+║  • FAQ: Search input with "No results" feedback added to FAQ page   ║
+║  SEO CHANGES (vRF173 SEO V13) — ALL AUDIT PRIORITY FIXES:            ║
+║  • ALL PAGES: document.title updated dynamically in showPage()       ║
+║  • ALL PAGES: <link rel="canonical" href="https://www.renterfinder.com/dashboard">
+
+
+ updated dynamically             ║
+║  • ALL PAGES: og:title, og:description, og:url updated on nav        ║
+║  • FEES: Visible breadcrumb added (Home › Fees)                     ║
+║  • FEES: 2nd section aria-label added to fees-breakdown section     ║
+║  • PROPERTIES: Visible breadcrumb added (Home › Rental Properties)  ║
+║  • PROPERTIES: 2nd H2 added — "Search by City, BHK Type & Budget"  ║
+║  • PROPERTIES: properties-body section gets aria-label on wrapper   ║
+║  • PROPERTIES: ItemList JSON-LD schema injected via JS              ║
+║  • RENTERS-LIST: Visible breadcrumb added (Home › Prospective       ║
+║    Renters' List)                                                    ║
+║  • RENTERS-LIST: rl-filters gets explicit section aria-label        ║
+║  • RENTERS-LIST: Service JSON-LD schema injected via JS             ║
+║  • FAQ: Visible breadcrumb added (Home › FAQ)                       ║
+║  • FAQ: faq-search area gets explicit section aria-label            ║
+║                                                                      ║
+║  SEO + SECURITY CHANGES (vRF173 SEO V12):                             ║
+║  • DASHBOARD: noindex,nofollow confirmed via _noindexPages array     ║
+║  • DASHBOARD: Session-based auth guard added to navigate()           ║
+║    — navigating to #dashboard without rf_auth_token redirects to    ║
+║    login. getActiveSession() checks sessionStorage for rf_auth_token ║
+║  • DASHBOARD: robots.txt + sitemap notes added (see comments)        ║
+║  • _noindexPages expanded: login, register-renter, register-landlord,║
+║    feedback, disclaimer, dashboard all confirmed noindex             ║
+║                                                                      ║
+║  SEO CHANGES (vRF173 SEO V11):                                       ║
+║  • LOGIN: Dynamic noindex/nofollow robots meta added via            ║
+║    updateRobotsMeta() — active for login, register-renter,          ║
+║    register-landlord, feedback, disclaimer, dashboard               ║
+║  • LOGIN: H1 added to login panel (visually hidden, semantic)       ║
+║  • LOGIN: Breadcrumb nav added (Home › Login / Sign Up)             ║
+║  • RENTER FORM: autocomplete attributes added to all 16 inputs      ║
+║  • LANDLORD FORM: autocomplete attributes added to all 16 inputs    ║
+║  SEO CHANGES (vRF173 SEO V18) — CRITICAL SCHEMA, LEGAL & GEO FIXES:  ║
+║  SCHEMA FIXES:                                                        ║
+║  • Global <head> FAQPage removed — was firing on ALL 17 pages         ║
+║    simultaneously (incl. noindex). Now injected per-page only:        ║
+║    injectHomeFaqSchema() on Home, injectFaqPageSchema() on FAQ.       ║
+║  • Global <head> BreadcrumbList (wrong type) replaced with            ║
+║    ItemList of SiteNavigationElement.                                 ║
+║  • HowTo schema on Services removed (deprecated Sept 2023).           ║
+║    Replaced with Article schema.                                      ║
+║  • Internship JobPosting: added jobLocationType:TELECOMMUTE,          ║
+║    applicantLocationRequirements, datePosted, validThrough.           ║
+║    Now eligible for Google Jobs rich results.                         ║
+║  LEGAL FIXES:                                                         ║
+║  • Privacy Policy: DPDP Act 2023 named as primary legislation.        ║
+║    RenterFinder.com = Data Fiduciary. Users = Data Principals.        ║
+║    Updated in intro, Section 6.1, aside, JS schema, _pageMeta.       ║
+║  • Both registration forms: visible DPDP Act 2023 consent notice.    ║
+║  GEO / TECHNICAL FIXES:                                               ║
+║  • llms.txt created — RSL 1.0, AI search allowed, AI training         ║
+║    disallowed, 7 citation-optimised facts, all 13 indexable pages,    ║
+║    excluded pages flagged.                                            ║
+║  • robots.txt created — GPTBot/ClaudeBot/PerplexityBot/               ║
+║    OAI-SearchBot allowed. CCBot/anthropic-ai/cohere-ai blocked.       ║
+║    Private pages disallowed. Sitemap referenced.                      ║
+║  • sitemap.xml created — 13 indexable pages, no priority/             ║
+║    changefreq, only loc + lastmod. Noindex pages excluded.            ║
+║  • <link rel="sitemap"> + <meta name="llms-txt"> added to head.       ║
+║  • IndexNow deployment instructions added as HTML comment.            ║
+║  • Deployment checklist comment added (logo.svg, og-image.jpg,        ║
+║    robots.txt, sitemap.xml, llms.txt paths noted).                    ║
+║                                                                      ║
+║  • _pageMeta TITLES enriched for 5 weak pages:                       ║
+║    - login: "Login or Register Free — ... | Landlord & Renter        ║
+║       Sign Up India"                                                  ║
+║    - terms: "Terms of Use — ... | Landlord & Renter Legal            ║
+║       Agreement India"                                                ║
+║    - disclaimer: "Disclaimer — ... | Liability, RERA &               ║
+║       Platform Limitations India"                                     ║
+║    - privacy: "Privacy Policy — ... | How We Protect Your            ║
+║       Data in India"                                                  ║
+║    - feedback: "Contact Us & Feedback — ... | Suggestions,           ║
+║       Complaints & Support India"                                     ║
+║  • _pageMeta DESCRIPTIONS enriched for same 5 pages                  ║
+║  • TERMS H1: "Terms of Use — RenterFinder.com" (branded)             ║
+║  • TERMS eyebrow: "Legal" → "Legal Agreement"                        ║
+║  • TERMS hero subtitle: now includes platform context                 ║
+║  • TERMS H2: enriched with "Rental Platform Rules"                   ║
+║  • DISCLAIMER H1: "Platform Disclaimer — RenterFinder.com"           ║
+║  • DISCLAIMER eyebrow: "Legal" → "Legal Notice"                      ║
+║  • DISCLAIMER hero subtitle: now includes RERA + liability context   ║
+║  • DISCLAIMER H2: enriched with "RERA Exclusion"                     ║
+║  • PRIVACY H1: "Privacy Policy — RenterFinder.com"                   ║
+║  • PRIVACY eyebrow: "Legal" → "Legal & Data Protection"              ║
+║  • PRIVACY hero subtitle: now includes data types context             ║
+║  • PRIVACY H2: enriched with "Store" and "in India"                  ║
+║  • FEEDBACK H1: "Share Your Feedback — We're Listening"              ║
+║  • FEEDBACK eyebrow: "We're Listening" → "Contact Us"                ║
+║  • FEEDBACK hero subtitle: enriched with contact context             ║
+║  • FEEDBACK body: H2 added "How Can We Help You?"                    ║
+║  • FEEDBACK body: intro paragraph added (keyword-enriched)           ║
+║  • FEEDBACK left column: aria-label added                            ║
+║  • FEEDBACK form: <h3> → <h2> (proper heading hierarchy)            ║
+║  • FEEDBACK form: <section> wrapper with aria-label added            ║
+║  • FEEDBACK form: for/name/autocomplete attrs on all inputs          ║
+║  • FEEDBACK hidden aside: significantly enriched with keywords,      ║
+║    contact info, and pan-India city coverage                          ║
+║  • FEEDBACK schema: ContactPage + Organization contactPoint          ║
+║    schema injected via JS on feedback page nav                        ║
+║  • FEEDBACK schema: BreadcrumbList schema injected via JS            ║
+║  • LEGAL PAGES schema: WebPage + BreadcrumbList schemas injected     ║
+║    via JS for terms, disclaimer, privacy, mta, rent-agreement        ║
+║  • JS IIFE: injectFeedbackSchema() and injectLegalPageSchema()       ║
+║    functions added; showPage hook updated for all new pages           ║
+║                                                                      ║
+║  FAQ EXPANSION (vRF173 SEO V20):                                     ║
+║  • FAQ page: 3 new categories added:                                 ║
+║    - "Tenant Screening & Verification" (4 new Q&As)                  ║
+║    - "Eviction & Tenancy Disputes" (5 new Q&As)                      ║
+║    - "Model Tenancy Act, 2021 — Key Points" (4 new Q&As)            ║
+║  • FAQ page: "Renting & Negotiation" expanded from 2 to 4 Q&As      ║
+║  • Internal links added throughout FAQ to /renters-list,             ║
+║    /rent-agreement, /properties, /mta pages                          ║
+║  • FAQ hero subtitle updated; aria-labels updated across page         ║
+║  • Hidden <aside> SEO block expanded with all new topics             ║
+║  • FAQPage JSON-LD schema expanded from 10 to 20 questions           ║
+║  • FAQ page now targets ~1500 words across 8 categories              ║
+║                                                                      ║
+║  INTERNAL LINKING AUDIT (vRF173 SEO V21):                            ║
+║  • All 17 pages audited and upgraded with keyword-rich interlinks    ║
+║  • HOME: added /rent-agreement and /faq links in CTA section         ║
+║    Anchor text: "Rent Agreement reference", "FAQ for landlords"      ║
+║  • ABOUT: added /properties, /renters-list, /faq, /rent-agreement   ║
+║    links in mission section                                          ║
+║  • SERVICES: added /fees, /faq, /rent-agreement links after         ║
+║    content block                                                     ║
+║  • FEES: added /properties, /renters-list, /faq links at end        ║
+║    of content section                                                ║
+║  • PROPERTIES: new related-pages paragraph injected with            ║
+║    /fees, /renters-list, /faq, /rent-agreement links                ║
+║  • RENTERS-LIST: added /home, /fees, /faq, /properties links        ║
+║    below existing why-use-us callout                                 ║
+║  • TERMS: new related-resources paragraph with /faq,                ║
+║    /rent-agreement, /fees links before footer                        ║
+║  • DISCLAIMER: new related paragraph with /faq, /fees               ║
+║  • PRIVACY: new related paragraph with /faq, /fees                  ║
+║  • MTA: new related paragraph with /rent-agreement, /faq,           ║
+║    /renters-list after Important Note callout                        ║
+║  • REFER: added /home, /fees links in CTA dark block                ║
+║  • INTERNSHIP: added /about, /feedback links after content block    ║
+║  • RENT-AGREEMENT: added /faq, /properties, /renters-list links     ║
+║    after content section                                             ║
+║  • LOGIN: unchanged — login/register pages intentionally            ║
+║    noindex; nav-level links sufficient                               ║
+║  • DASHBOARD: unchanged — post-auth UI, full sidebar links          ║
+║    already present                                                   ║
+║  • FEEDBACK: existing /dashboard link retained; /faq and /about     ║
+║    already linked via page nav; no content block available           ║
+║  Link pattern: every indexable page now links to at least 3         ║
+║  related pages using keyword-rich anchor text per exec summary       ║
+║                                                                      ║
+║  FEE TERMINOLOGY & CONTENT UPDATE (vRF173 SEO V22):                  ║
+║  • "Agency Fee" renamed to "Platform Service Fee" — 110 replacements║
+║    across all 17 pages, meta tags, JSON-LD schemas, FAQ answers,     ║
+║    registration form consent text, and SEO aside blocks              ║
+║  • "Listing Fee" → "Profile Listing Fee" wherever "Profile" missing  ║
+║    — 23 visible-text instances corrected                             ║
+║  • ₹125 → "₹125 (discounted from ₹499 — 75% off)" in all           ║
+║    visible content blocks outside scripts and JSON-LD                ║
+║  • 6-DAYS SPLIT: language updated from "6 days advance + 6 days on  ║
+║    deal finalisation" to "6 days to arrange property meeting + 6     ║
+║    days at deal closure (when agreement is signed)" across:          ║
+║    – Home page fee breakdown card                                    ║
+║    – Home page 3-match guarantee callout                             ║
+║    – Services page fee hero section                                  ║
+║    – Services page fee card subtitle                                 ║
+║    – Fees page fee card (full rewrite)                               ║
+║    – Fees page breakdown table row labels                            ║
+║    – Fees page content block paragraphs (full rewrite)               ║
+║    – Renters List content paragraph and why-use-us callout           ║
+║    – FAQ: "What are the fees?" answer rewritten                      ║
+║    – FAQ: "Why is 6 days charged?" question renamed + answer rewrite ║
+║    – FAQ: "Can I pay 100% at closure?" question renamed + rewrite    ║
+║    – FAQ: "Hidden charges?" answer updated to list 3 fees            ║
+║    – Registration form consent text (landlord + renter forms)        ║
+║    – JSON-LD schemas (fees FAQ, offer description, home FAQ schema)  ║
+║  • ₹99 RE-ACTIVATION: new dedicated section on Fees page added      ║
+║    explaining re-activation at ₹99 (within 6 months of deactivation)║
+║    "What RenterFinder Does Not Charge" section updated to reflect    ║
+║    the 3-fee structure (₹125, ₹99 re-activation, 12-day PSF)        ║
+║    Fees page hidden aside SEO block updated                          ║
+║    Services page aside updated                                       ║
+╚══════════════════════════════════════════════════════════════════════╝
+-->
+<!DOCTYPE html>
+<html lang="en-in" prefix="og: https://ogp.me/ns#">
+<head>
+<meta charset="UTF-8">
+<meta name="indexnow-key" content="007e684f54ca459a8bcfbb619be68281">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- vRF173 SEO V19 -->
+
+<!-- ═══ DEPLOYMENT FILES (serve these at root alongside this HTML) ═══ -->
+<!-- robots.txt  → https://www.renterfinder.com/robots.txt  (see robots.txt in repo) -->
+<!-- sitemap.xml → https://www.renterfinder.com/sitemap.xml (see sitemap.xml in repo) -->
+<!-- llms.txt    → https://www.renterfinder.com/llms.txt    (see llms.txt in repo)   -->
+<!-- logo.svg    → https://www.renterfinder.com/logo.svg    (serve the brand SVG)    -->
+<!-- og-image.jpg→ https://www.renterfinder.com/images/og-image.jpg(1200×630 OG image)      -->
+
+<!-- ═══ SITEMAP DISCOVERY ═══ -->
+<link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+
+<!-- ═══ PRIMARY SEO META TAGS ═══ -->
+<title>My Dashboard — Manage Your Profile | RenterFinder.com</title>
+<meta name="description" content="Manage your RenterFinder.com profile, view your rental matches, and update listing details from your personal dashboard. Available to all registered users.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="author" content="RenterFinder.com">
+<meta name="theme-color" content="#040429">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RenterFinder">
+<meta name="application-name" content="RenterFinder.com">
+<meta name="format-detection" content="telephone=no">
+
+<!-- ═══ GEO / AI DISCOVERY ═══ -->
+<!-- llms.txt: AI search crawlers can find content permissions at /llms.txt -->
+<meta name="llms-txt" content="/llms.txt">
+
+<!-- ═══ INDEXNOW (per seo-technical: Bing, Yandex, Naver instant indexing) ═══ -->
+<!-- IndexNow key file: deploy /[key].txt at root when submitting URL changes -->
+<!-- Submit via: https://www.bing.com/indexnow?url=https://www.renterfinder.com/&key=[key] -->
+
+<!-- ═══ OPEN GRAPH (Facebook, LinkedIn, WhatsApp) ═══ -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="RenterFinder.com">
+<meta property="og:title" content="My Dashboard — Manage Your Profile | RenterFinder.com">
+<meta property="og:description" content="Manage your RenterFinder.com profile, view your rental matches, and update listing details from your personal dashboard. Available to all registered users.">
+<meta property="og:url" content="https://www.renterfinder.com/dashboard">
+<meta property="og:image" content="https://www.renterfinder.com/images/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="RenterFinder.com — India's rental-only property matching platform for landlords and tenants">
+<meta property="og:locale" content="en_IN">
+
+<!-- ═══ TWITTER CARD ═══ -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@RenterFinderIn">
+<meta name="twitter:creator" content="@RenterFinderIn">
+<meta name="twitter:title" content="My Dashboard — Manage Your Profile | RenterFinder.com">
+<meta name="twitter:description" content="Manage your RenterFinder.com profile, view your rental matches, and update listing details from your personal dashboard. Available to all registered users.">
+<meta name="twitter:image" content="https://www.renterfinder.com/images/og-image.jpg">
+<meta name="twitter:image:alt" content="RenterFinder.com — India's rental-only property matching platform">
+
+<!-- ═══ GEO & LANGUAGE TARGETING ═══ -->
+<meta name="geo.region" content="IN">
+<meta name="geo.placename" content="India">
+<meta name="language" content="English">
+<meta http-equiv="content-language" content="en-in">
+
+<!-- ═══ STRUCTURED DATA — Organization ═══ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "RenterFinder.com",
+  "alternateName": "RenterFinder",
+  "url": "https://www.renterfinder.com",
+  "logo": "https://www.renterfinder.com/logo.svg",
+  "description": "India's first and only rental-exclusive property platform that connects landlords with genuine prospective renters across all Indian cities and towns.",
+  "foundingDate": "2025",
+  "areaServed": {
+    "@type": "Country",
+    "name": "India"
+  },
+  "serviceType": [
+    "Property Rental Matching",
+    "Tenant Finding Service",
+    "Rental Listing Platform"
+  ],
+  "sameAs": [
+    "https://www.linkedin.com/company/renterfinder",
+    "https://www.instagram.com/renterfinder.in",
+    "https://www.facebook.com/renterfinder",
+    "https://x.com/RenterFinderIn",
+    "https://www.youtube.com/@RenterFinder",
+    "https://www.crunchbase.com/organization/renterfinder"
+  ],
+  "founder": {
+    "@type": "Person",
+    "name": "Aditya Shankar",
+    "email": "renterfinder1@gmail.com",
+    "jobTitle": "Founder"
+  }
+}
+</script>
+
+<!-- ═══ STRUCTURED DATA — AboutPage (Google Knowledge Graph) ═══ -->
+
+
+<!-- ═══ STRUCTURED DATA — WebSite (enables Google sitelinks search) ═══ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "RenterFinder.com",
+  "url": "https://www.renterfinder.com",
+  "description": "India's only rental-exclusive property platform — no buying, no selling, only renting.",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://www.renterfinder.com/properties?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+
+<!-- ═══ STRUCTURED DATA — RealEstateAgent service ═══ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "RenterFinder.com",
+  "url": "https://www.renterfinder.com",
+  "description": "India's first rental-only property matching service. We connect landlords with genuine prospective renters — pan-India, all cities and towns. Platform service fee: only 12 days' rent.",
+  "areaServed": {
+    "@type": "Country",
+    "name": "India"
+  },
+  "priceRange": "₹125 profile listing fee, 12 days' rent platform service fee",
+  "serviceType": "Online Rental Property Matching",
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Rental Services",
+    "itemListElement": [
+      {
+        "@type": "Offer",
+        "name": "Profile Listing Fee",
+        "description": "List your renter or landlord profile on RenterFinder.com for 3 months",
+        "price": "125",
+        "priceCurrency": "INR",
+        "availability": "https://schema.org/InStock"
+      },
+      {
+        "@type": "Offer",
+        "name": "Platform Service Fee",
+        "description": "12 days' rent — 6 days' rent advance to arrange the property meeting (non-refundable) and 6 days' rent at deal closure when the rental agreement is signed",
+        "priceCurrency": "INR"
+      }
+    ]
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "RenterFinder.com",
+    "url": "https://www.renterfinder.com"
+  }
+}
+</script>
+
+<!-- ═══ STRUCTURED DATA — FAQ (injected per-page via JS — see injectHomeFaqSchema() in [SECTION:js]) ═══ -->
+<!-- NOTE vRF173 SEO V18: FAQPage removed from global <head> — it was firing on ALL 17 pages
+     simultaneously (including noindex pages like dashboard/login/feedback), causing
+     conflicting schema signals. FAQPage is now injected only on Home via
+     injectHomeFaqSchema() and on the FAQ page via injectFaqPageSchema(), both called
+     from the showPage() hook. -->
+
+<!-- ═══ STRUCTURED DATA — SiteNavigationElement (global nav links) ═══ -->
+<!-- NOTE vRF173 SEO V18: The previous global BreadcrumbList was incorrect — a BreadcrumbList
+     represents a single page's trail (e.g. Home › Services), not the full site nav.
+     Replaced with ItemList of SiteNavigationElement to correctly describe global navigation. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "RenterFinder.com Main Navigation",
+  "itemListElement": [
+    { "@type": "SiteNavigationElement", "position": 1, "name": "Home", "url": "https://www.renterfinder.com/" },
+    { "@type": "SiteNavigationElement", "position": 2, "name": "About Us", "url": "https://www.renterfinder.com/about" },
+    { "@type": "SiteNavigationElement", "position": 3, "name": "Services", "url": "https://www.renterfinder.com/services" },
+    { "@type": "SiteNavigationElement", "position": 4, "name": "Fees", "url": "https://www.renterfinder.com/fees" },
+    { "@type": "SiteNavigationElement", "position": 5, "name": "Rental Properties", "url": "https://www.renterfinder.com/properties" },
+    { "@type": "SiteNavigationElement", "position": 6, "name": "Renters List", "url": "https://www.renterfinder.com/renters-list" },
+    { "@type": "SiteNavigationElement", "position": 7, "name": "FAQ", "url": "https://www.renterfinder.com/faq" }
+  ]
+}
+</script>
+
+<!-- ═══ STRUCTURED DATA — AggregateRating (for star ratings in SERPs) ═══ -->
+
+
+<!-- Service schemas moved to page-specific JS injection (see showPage function) -->
+
+<!-- ═══ PERFORMANCE: Preconnect to external origins ═══ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+<!-- ═══ FAVICON ═══ -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NiAxMDQiIHdpZHRoPSI5NiIgaGVpZ2h0PSIxMDQiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iUmVudGVyRmluZGVyIGxvZ28iPgogIDwhLS0gSG91c2Ugc2hhcGUgZmlsbGVkIHdpdGggYnJhbmQgbmF2eSwgZ29sZCBib3JkZXIsIHRyYW5zcGFyZW50IG91dHNpZGUgLS0+CiAgPHBhdGggZD0iTTQ4IDQgTDkyIDM2IEw5MiAxMDAgTDQgMTAwIEw0IDM2IFoiIGZpbGw9IiMwNDA0MjkiIHN0cm9rZT0iI2M5YTY2YiIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CiAgPHRleHQgeD0iNDgiIHk9Ijg0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iR2VvcmdpYSwgc2VyaWYiIGZvbnQtc2l6ZT0iNDYiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiNjOWE2NmIiIGxldHRlci1zcGFjaW5nPSItMiI+UkY8L3RleHQ+Cjwvc3ZnPgo=">
+
+<!-- ═══ GOOGLE FONTS ═══ -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600;700&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link rel="preload" href="styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="styles.css"></noscript>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "My Dashboard — Manage Your Profile | RenterFinder.com",
+  "description": "Manage your RenterFinder.com profile, view your rental matches, and update listing details.",
+  "url": "https://www.renterfinder.com/dashboard",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "RenterFinder.com",
+    "url": "https://www.renterfinder.com"
+  }
+}
+</script>
+<style>
+body{opacity:0;transition:opacity 0.18s ease;}
+body.rf-ready{opacity:1;}
+@media(min-width:1441px){ body { zoom: 1.2; } }
+@media(min-width:1800px){ body { zoom: 1.35; } }
+@media(min-width:2100px){ body { zoom: 1.55; } }
+@media(min-width:2560px){ body { zoom: 1.85; } }
+@media(min-width:3200px){ body { zoom: 2.2; } }
+
+  /* ══════════════════════════════════════════════════════
+     USER DASHBOARD — RESPONSIVE / MOBILE
+  ══════════════════════════════════════════════════════ */
+  @media (max-width: 768px) {
+    /* Hero strip */
+    .db-hero-strip { padding: 20px 16px 0 !important; }
+
+    /* Quick stats strip: allow horizontal scroll */
+    .db-stats-strip {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      gap: 0;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+    .db-stats-strip::-webkit-scrollbar { display: none; }
+    .db-stats-strip > div {
+      padding: 12px 18px 12px 0 !important;
+      margin-right: 18px !important;
+      flex-shrink: 0;
+    }
+
+    /* Tab button row: full width, equal split, wrap if needed */
+    .db-tab-row { flex-wrap: wrap; gap: 4px !important; margin-top: 12px !important; }
+    .db-tab-row button {
+      flex: 1 1 auto;
+      padding: 10px 10px !important;
+      font-size: 11px !important;
+      border-radius: 6px 6px 0 0 !important;
+      margin-right: 0 !important;
+      white-space: nowrap;
+    }
+
+    /* Main content area */
+    .db-content-area { padding: 20px 14px 40px !important; }
+
+    /* Profile card header: stack avatar and name on tiny screens */
+    .db-card-header { padding: 18px 18px !important; gap: 14px !important; }
+    #db-avatar { width: 52px !important; height: 52px !important; font-size: 20px !important; }
+    #db-profile-name-display { font-size: 17px !important; }
+    #db-profile-mobile-display { font-size: 12px !important; }
+
+    /* Profile fields body */
+    .db-fields-body { padding: 20px 16px !important; }
+
+    /* Field grids: 1 column on mobile */
+    .db-field-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
+
+    /* Fields that span full row: keep spanning */
+    .db-field-grid [style*="grid-column:1/-1"] { grid-column: 1 / -1 !important; }
+
+    /* Profile placeholder */
+    .db-placeholder { padding: 32px 16px !important; }
+
+    /* How-it-works section */
+    .db-how-section { padding: 28px 16px 32px !important; }
+    .db-how-section > div > div { flex-direction: column; align-items: flex-start; gap: 8px; }
+
+    /* Section headings and button rows */
+    #db-panel-profile > div:first-child,
+    #db-panel-list > div:first-child,
+    #db-panel-chats > div:first-child {
+      flex-direction: column;
+      align-items: flex-start !important;
+    }
+
+    /* Heading sizes */
+    #db-panel-profile h2,
+    #db-panel-list h2,
+    #db-panel-chats h2 { font-size: 20px !important; }
+
+    /* Edit/Save buttons */
+    #db-edit-btn, #db-save-btn { font-size: 12px !important; padding: 8px 14px !important; }
+
+    /* Renters/properties grid */
+    #renters-grid,
+    #db-properties-grid { grid-template-columns: 1fr !important; }
+
+    /* Welcome name */
+    #db-welcome-name { font-size: clamp(22px, 6vw, 32px) !important; }
+
+    /* Status badge row */
+    #db-status-badge { padding: 5px 12px !important; }
+    #db-status-badge span:last-child { font-size: 11px !important; }
+
+    /* Chat list rows */
+    #db-chat-list > div,
+    .db-chat-row { flex-wrap: wrap; }
+  }
+
+  @media (max-width: 480px) {
+    .db-hero-strip { padding: 16px 12px 0 !important; }
+    .db-content-area { padding: 14px 10px 32px !important; }
+    .db-card-header { padding: 14px 12px !important; gap: 10px !important; }
+    .db-fields-body { padding: 14px 12px !important; }
+    .db-field-grid { gap: 8px !important; }
+    .db-tab-row button { font-size: 10px !important; padding: 9px 6px !important; }
+    #db-avatar { width: 44px !important; height: 44px !important; font-size: 17px !important; }
+    #db-welcome-name { font-size: clamp(18px, 5vw, 26px) !important; }
+
+    /* Stats strip items: smaller text */
+    .db-stats-strip > div > div:first-child { font-size: 9px !important; letter-spacing: 1px !important; }
+    .db-stats-strip > div > div:last-child { font-size: 13px !important; }
+
+    /* Inline search filter pill */
+    #db-panel-list > div:first-child > div:last-child { font-size: 11px !important; padding: 6px 10px !important; }
+  }
+
+</style>
+<script>
+(function(){
+  var s=document.createElement('link');
+  s.rel='stylesheet';
+  // will be swapped in by preload onload — this just ensures body shows if preload fires before DOMContentLoaded
+})();
+document.addEventListener('DOMContentLoaded',function(){
+  document.body.classList.add('rf-ready');
+});
+window.addEventListener('pageshow',function(){
+  document.body.classList.add('rf-ready');
+  var ov=document.getElementById('rf-page-transition');
+  if(ov){ov.style.opacity='0';ov.style.pointerEvents='none';}
+});
+</script>
+</head>
+<body>
+<div id="rf-page-transition" style="position:fixed;inset:0;background:#040429;z-index:99999;opacity:0;pointer-events:none;transition:opacity 0.22s ease;display:flex;align-items:center;justify-content:center;" aria-hidden="true">
+  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="24" cy="24" r="20" stroke="rgba(201,166,104,0.2)" stroke-width="3"/>
+    <path d="M24 4 a20 20 0 0 1 20 20" stroke="#c9a668" stroke-width="3" stroke-linecap="round">
+      <animateTransform attributeName="transform" type="rotate" from="0 24 24" to="360 24 24" dur="0.7s" repeatCount="indefinite"/>
+    </path>
+  </svg>
+</div>
+
+<!-- ═══ NOSCRIPT FALLBACK ═══ -->
+<!-- noscript body removed V57: page content renders via CSS without JS; misleading JS-required message deleted -->
+
+<!-- ═══════════════════ NAV ═══════════════════ -->
+<!-- [SECTION:nav] — MAIN NAVIGATION -->
+<header>
+<nav id="main-nav" role="navigation" aria-label="Main navigation">
+  <a href="./index.html" class="logo" onclick="navigate('home')" aria-label="RenterFinder.com — Go to homepage" role="link" tabindex="0">
+    <svg class="logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 82" role="img" aria-label="RenterFinder.com logo — India's rental-only property platform">
+      <rect x="3" y="3" width="354" height="76" fill="none" stroke="#c9a66b" stroke-width="3.5"/>
+      <text y="55" text-anchor="middle" x="180" font-family="Georgia, serif">
+        <tspan font-size="40" font-weight="700" fill="#c9a66b" letter-spacing="-0.5">Renter</tspan><tspan font-size="40" font-weight="700" fill="#040429" letter-spacing="-0.5">Finder</tspan><tspan font-size="22" font-weight="400" fill="#040429">.com</tspan>
+      </text>
+    </svg>
+  </a>
+  <ul class="nav-links" id="nav-links" role="menubar">
+    <li role="none"><a href="./index.html" onclick="navigate('home')" data-page="home" role="menuitem" tabindex="0">Home</a></li>
+    <li role="none"><a href="./about.html" onclick="navigate('about')" data-page="about" role="menuitem" tabindex="0">About Us</a></li>
+    <li role="none"><a href="./services.html" onclick="navigate('services')" data-page="services" role="menuitem" tabindex="0">Services</a></li>
+    <li role="none"><a href="./fees.html" onclick="navigate('fees')" data-page="fees" role="menuitem" tabindex="0">Fees</a></li>
+    <li role="none"><a href="./faq.html" onclick="navigate('faq')" data-page="faq" role="menuitem" tabindex="0">FAQ</a></li>
+    <li role="none"><a href="./properties.html" onclick="navigate('properties')" data-page="properties" role="menuitem" tabindex="0">Rental Properties</a></li>
+    <li role="none"><a href="./renters-list.html" onclick="navigate('renters-list')" data-page="renters-list" role="menuitem" tabindex="0">Renter's List</a></li>
+    <li role="none"><a href="./login.html" onclick="navigate('login')" data-page="login" class="nav-login" role="menuitem" tabindex="0">Login / Sign Up</a></li>
+  </ul>
+  <div class="nav-hamburger" id="hamburger" onclick="toggleMenu()" role="button" aria-label="Toggle mobile menu" aria-expanded="false" tabindex="0">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+</header>
+<div class="page active" id="page-dashboard" aria-label="User dashboard — manage your rental profile, property listings, and matches on RenterFinder.com">
+  <div style="min-height:100vh;padding-top:72px;background:var(--offwhite);">
+
+    <!-- ── DASHBOARD HERO STRIP ── -->
+    <div class="db-hero-strip" style="background:var(--dark);padding:32px 60px 0;border-bottom:1px solid rgba(201,166,104,0.2);">
+      <div style="max-width:1100px;margin:0 auto;">
+
+        <!-- Top bar: welcome + status badge -->
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:24px;">
+          <div>
+            <div style="font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;display:flex;align-items:center;gap:10px;">
+              <span style="display:inline-block;width:28px;height:1.5px;background:var(--gold);"></span>
+              My Dashboard
+            </div>
+            <h1 id="db-welcome-name" style="font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,42px);font-weight:700;color:var(--white);letter-spacing:-1px;margin:0;">Welcome back, <em style="color:var(--gold);font-style:italic;">User</em></h1>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div id="db-status-badge" style="display:inline-flex;align-items:center;gap:7px;padding:7px 16px;background:rgba(45,122,79,0.2);border:1px solid rgba(45,122,79,0.5);border-radius:20px;">
+              <span style="width:7px;height:7px;border-radius:50%;background:#4caf7d;display:inline-block;"></span>
+              <span style="font-size:12px;font-weight:700;color:#4caf7d;letter-spacing:0.5px;">Active</span>
+            </div>
+            <button onclick="navigate('home')" style="padding:8px 18px;background:transparent;color:rgba(255,255,255,0.45);border:1px solid rgba(255,255,255,0.15);border-radius:6px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='rgba(255,255,255,0.45)'">← Back to Site</button>
+          </div>
+        </div>
+
+        <!-- Quick stats strip -->
+        <div class="db-stats-strip" style="display:flex;gap:0;border-top:1px solid rgba(201,166,104,0.15);">
+          <div style="padding:16px 32px 16px 0;border-right:1px solid rgba(201,166,104,0.15);margin-right:32px;">
+            <div style="font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:4px;">Member ID</div>
+            <div id="db-member-id" style="font-size:14px;font-weight:700;color:var(--gold);font-family:monospace;letter-spacing:1px;">RF-2025-—</div>
+          </div>
+          <div style="padding:16px 32px 16px 0;border-right:1px solid rgba(201,166,104,0.15);margin-right:32px;">
+            <div style="font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:4px;">Account Type</div>
+            <div id="db-user-type-label" style="font-size:14px;font-weight:700;color:var(--white);">—</div>
+          </div>
+          <div style="padding:16px 0;">
+            <div style="font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:4px;">Member Since</div>
+            <div id="db-joined-date" style="font-size:14px;font-weight:700;color:var(--white);">—</div>
+          </div>
+        </div>
+
+        <!-- Tab switcher (anchored to bottom of hero) -->
+        <div class="db-tab-row" style="display:flex;gap:0;margin-top:8px;">
+          <button id="db-tab-profile" onclick="dbSwitchTab('profile')" style="padding:14px 28px;background:var(--gold);color:var(--dark);border:none;border-radius:0;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:0.3px;transition:all 0.2s;border-top-left-radius:6px;border-top-right-radius:6px;margin-right:4px;">
+            👤 My Profile
+          </button>
+          <button id="db-tab-list" onclick="dbSwitchTab('list')" style="padding:14px 28px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.55);border:none;border-radius:0;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:0.3px;transition:all 0.2s;border-top-left-radius:6px;border-top-right-radius:6px;margin-right:4px;">
+            <span id="db-tab-list-label">🏠 Properties List</span>
+          </button>
+          <button id="db-tab-chats" onclick="dbSwitchTab('chats')" style="padding:14px 28px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.55);border:none;border-radius:0;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:0.3px;transition:all 0.2s;border-top-left-radius:6px;border-top-right-radius:6px;position:relative;">
+            💬 My Chats <span id="db-chat-badge" style="display:none;position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:#ef4444;"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB CONTENT AREA ── -->
+    <div class="db-content-area" style="max-width:1100px;margin:0 auto;padding:40px 60px 80px;">
+
+      <!-- ════════════════════════════════
+           TAB 1: MY PROFILE
+           [BACKEND: populate fields from user record by memberId]
+      ════════════════════════════════ -->
+      <div id="db-panel-profile">
+
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:28px;">
+          <h2 style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--dark);letter-spacing:-0.5px;margin:0;">My Profile</h2>
+          <div style="display:flex;gap:10px;">
+            <!-- [BACKEND: wire up edit/save toggle] -->
+            <button id="db-edit-btn" onclick="dbToggleEdit()" style="padding:9px 22px;background:var(--dark);color:var(--gold);border:1.5px solid var(--dark);border-radius:6px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;">✏️ Edit Profile</button>
+            <button id="db-save-btn" onclick="dbSaveProfile()" style="display:none;padding:9px 22px;background:#2d7a4f;color:#fff;border:none;border-radius:6px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;">✓ Save Changes</button>
+          </div>
+        </div>
+
+        <!-- Profile card -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);">
+
+          <!-- Card header with avatar -->
+          <div class="db-card-header" style="background:var(--dark);padding:28px 36px;display:flex;align-items:center;gap:24px;">
+            <div id="db-avatar" style="width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dk));display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--dark);flex-shrink:0;border:3px solid rgba(201,166,104,0.4);">U</div>
+            <div>
+              <div id="db-profile-name-display" style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--white);">—</div>
+              <div id="db-profile-mobile-display" style="font-size:13px;color:rgba(255,255,255,0.45);margin-top:3px;">Mobile: —</div>
+            </div>
+          </div>
+
+          <!-- ── RENTER PROFILE FIELDS ── -->
+          <!-- [BACKEND: show/hide renter vs landlord sections based on user.type] -->
+          <div id="db-renter-fields" class="db-fields-body" style="padding:32px 36px;display:none;">
+            <div style="font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--border);">Personal Details</div>
+            <div class="db-field-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;">
+              <div class="db-field-group"><label class="db-field-label">Full Name</label><input class="db-field-input" id="db-rn-name" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Father / Spouse Name</label><input class="db-field-input" id="db-rn-father" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Gender</label><input class="db-field-input" id="db-rn-gender" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Spouse Working?</label><input class="db-field-input" id="db-rn-spouse" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Mobile (WhatsApp)</label><input class="db-field-input" id="db-rn-mobile" type="tel" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Email</label><input class="db-field-input" id="db-rn-email" type="email" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Aadhaar No.</label><input class="db-field-input" id="db-rn-aadhar" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Occupation</label><input class="db-field-input" id="db-rn-occupation" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Monthly Income</label><input class="db-field-input" id="db-rn-income" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Family Size</label><input class="db-field-input" id="db-rn-family-size" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Religion</label><input class="db-field-input" id="db-rn-religion" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Caste</label><input class="db-field-input" id="db-rn-caste" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group" style="grid-column:1/-1"><label class="db-field-label">Present Address</label><input class="db-field-input" id="db-rn-address" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Native State</label><input class="db-field-input" id="db-rn-native-state" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Present State</label><input class="db-field-input" id="db-rn-present-state" type="text" placeholder="—" disabled></div>
+            </div>
+            <div style="font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--border);">Rental Requirements</div>
+            <div class="db-field-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+              <div class="db-field-group"><label class="db-field-label">BHK Requirement</label><input class="db-field-input" id="db-rn-bhk" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Preferred Size</label><input class="db-field-input" id="db-rn-size" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Rent Range</label><input class="db-field-input" id="db-rn-rent-range" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Preferred Floor</label><input class="db-field-input" id="db-rn-pref-floor" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Preferred State</label><input class="db-field-input" id="db-rn-pref-state" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Preferred Sub-district</label><input class="db-field-input" id="db-rn-pref-subdistrict" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group" style="grid-column:1/-1"><label class="db-field-label">Preferred Locality</label><input class="db-field-input" id="db-rn-pref-locality" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group" style="grid-column:1/-1"><label class="db-field-label">Other Details / Requirements</label><textarea class="db-field-input" id="db-rn-other-details" rows="3" placeholder="—" disabled style="resize:vertical;"></textarea></div>
+            </div>
+          </div>
+
+          <!-- ── LANDLORD PROFILE FIELDS ── -->
+          <!-- [BACKEND: show/hide renter vs landlord sections based on user.type] -->
+          <div id="db-landlord-fields" class="db-fields-body" style="padding:32px 36px;display:none;">
+            <div style="font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--border);">Personal Details</div>
+            <div class="db-field-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;">
+              <div class="db-field-group"><label class="db-field-label">Full Name</label><input class="db-field-input" id="db-ll-name" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Father / Spouse Name</label><input class="db-field-input" id="db-ll-father" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Gender</label><input class="db-field-input" id="db-ll-gender" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Mobile (WhatsApp)</label><input class="db-field-input" id="db-ll-mobile" type="tel" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Email</label><input class="db-field-input" id="db-ll-email" type="email" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Aadhaar No.</label><input class="db-field-input" id="db-ll-aadhar" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group" style="grid-column:1/-1"><label class="db-field-label">Personal Address</label><input class="db-field-input" id="db-ll-address" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Personal State</label><input class="db-field-input" id="db-ll-personal-state" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Personal District</label><input class="db-field-input" id="db-ll-personal-district" type="text" placeholder="—" disabled></div>
+            </div>
+            <div style="font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--border);">Property Details</div>
+            <div class="db-field-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+              <div class="db-field-group"><label class="db-field-label">Property Type</label><input class="db-field-input" id="db-ll-prop-type" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Available For</label><input class="db-field-input" id="db-ll-available-for" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Monthly Rent (₹)</label><input class="db-field-input" id="db-ll-rent" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Security Deposit (₹)</label><input class="db-field-input" id="db-ll-deposit" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Carpet Area (sqft)</label><input class="db-field-input" id="db-ll-carpet-area" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Floor</label><input class="db-field-input" id="db-ll-floor" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Total Floors</label><input class="db-field-input" id="db-ll-total-floors" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Lift Available?</label><input class="db-field-input" id="db-ll-lift" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Furnishing</label><input class="db-field-input" id="db-ll-furnishing" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Maintenance (₹)</label><input class="db-field-input" id="db-ll-maintenance" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Availability</label><input class="db-field-input" id="db-ll-availability" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group" style="grid-column:1/-1"><label class="db-field-label">Property Address</label><input class="db-field-input" id="db-ll-prop-address" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Property State</label><input class="db-field-input" id="db-ll-prop-state" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Property District</label><input class="db-field-input" id="db-ll-prop-district" type="text" placeholder="—" disabled></div>
+              <div class="db-field-group"><label class="db-field-label">Sub-district</label><input class="db-field-input" id="db-ll-prop-subdistrict" type="text" placeholder="—" disabled></div>
+            </div>
+          </div>
+
+          <!-- Placeholder shown before user data is loaded -->
+          <div id="db-profile-placeholder" class="db-placeholder" style="padding:60px 36px;text-align:center;">
+            <div style="font-size:40px;margin-bottom:16px;opacity:0.3;">👤</div>
+            <div style="font-size:14px;color:var(--mid);">
+              <!-- [BACKEND: remove this placeholder once user data is loaded] -->
+              Profile data will load here after authentication.<br>
+              <span style="font-size:12px;opacity:0.6;">Set <code>window._dashboardUser</code> and call <code>navigate('dashboard')</code>.</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════
+           TAB 2: RENTERS LIST / PROPERTIES LIST
+           [BACKEND: for renters → show properties list
+                     for landlords → show renters list
+                     Pull live data from API and render cards here]
+      ════════════════════════════════ -->
+      <div id="db-panel-list" style="display:none;">
+
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:28px;">
+          <h2 id="db-list-heading" style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--dark);letter-spacing:-0.5px;margin:0;">—</h2>
+          <!-- [BACKEND: add filters/search bar here] -->
+          <div style="font-size:12px;color:var(--mid);background:#fff;border:1px solid var(--border);border-radius:6px;padding:8px 16px;">
+            🔍 Search &amp; filter coming soon
+          </div>
+        </div>
+
+        <!-- ── Renter cards (shown to landlords) ── -->
+        <!-- [BACKEND: render from API — replace static cards below] -->
+        <div id="db-renters-panel" style="display:none;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;" id="renters-grid">
+          </div>
+          <p style="text-align:center;font-size:13px;color:var(--mid);margin-top:32px;padding:20px;background:#fff;border:1px dashed var(--border);border-radius:8px;">
+            🔌 <strong>Backend Integration Point:</strong> Replace sample cards with live renter profiles from your database.
+          </p>
+        </div>
+
+        <!-- ── Property cards (shown to renters) ── -->
+        <!-- [BACKEND: render from API — replace static cards below] -->
+        <div id="db-properties-panel" style="display:none;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;" id="properties-grid">
+          </div>
+          <p style="text-align:center;font-size:13px;color:var(--mid);margin-top:32px;padding:20px;background:#fff;border:1px dashed var(--border);border-radius:8px;">
+            🔌 <strong>Backend Integration Point:</strong> Replace sample cards with live property listings from your database.
+          </p>
+        </div>
+
+        <script>
+        // ── SAMPLE DATA ──────────────────────────────────────────
+        var SAMPLE_RENTERS = [
+          { id:'renter-001', name:'Rahul Sharma', initials:'RS', occupation:'Software Engineer', city:'Bengaluru', budget:'₹18,000–22,000/mo', bhk:'2 BHK', area:'Koramangala / Indiranagar', family:'3 (couple + 1 child)', moveIn:'Immediate' },
+          { id:'renter-002', name:'Priya Nair', initials:'PN', occupation:'Teacher', city:'Pune', budget:'₹10,000–14,000/mo', bhk:'1 BHK', area:'Kothrud / Baner', family:'2 (couple)', moveIn:'15 Apr 2025' },
+          { id:'renter-003', name:'Arjun Mehta', initials:'AM', occupation:'Business Owner', city:'Mumbai', budget:'₹30,000–40,000/mo', bhk:'3 BHK', area:'Andheri West / Juhu', family:'5 (joint family)', moveIn:'Immediate' },
+          { id:'renter-004', name:'Sunita Rao', initials:'SR', occupation:'Doctor', city:'Hyderabad', budget:'₹20,000–28,000/mo', bhk:'2 BHK', area:'Banjara Hills / Jubilee Hills', family:'2 (couple)', moveIn:'1 May 2025' },
+          { id:'renter-005', name:'Vikram Patel', initials:'VP', occupation:'Bank Manager', city:'Ahmedabad', budget:'₹12,000–16,000/mo', bhk:'2 BHK', area:'Satellite / Vastrapur', family:'4 (family)', moveIn:'Immediate' },
+          { id:'renter-006', name:'Deepika Joshi', initials:'DJ', occupation:'Graphic Designer', city:'Delhi', budget:'₹15,000–20,000/mo', bhk:'1 BHK', area:'Lajpat Nagar / Saket', family:'1 (single)', moveIn:'Immediate' }
+        ];
+
+        var SAMPLE_PROPERTIES = [
+          { id:'prop-001', landlordId:'landlord-001', landlordName:'Anita Singh', title:'Spacious 2BHK — Semi Furnished', bhk:'2 BHK', bath:'2', sqft:'980', rent:'18,500', deposit:'55,500', area:'Koramangala 5th Block', city:'Bengaluru', furnishing:'Semi Furnished', available:'Immediate', badge:'New' },
+          { id:'prop-002', landlordId:'landlord-002', landlordName:'Ramesh Gupta', title:'Modern 3BHK — Fully Furnished', bhk:'3 BHK', bath:'3', sqft:'1400', rent:'38,000', deposit:'1,14,000', area:'Andheri West', city:'Mumbai', furnishing:'Fully Furnished', available:'Immediate', badge:'Featured' },
+          { id:'prop-003', landlordId:'landlord-003', landlordName:'Kavya Reddy', title:'Cosy 1BHK — Near IT Park', bhk:'1 BHK', bath:'1', sqft:'550', rent:'11,000', deposit:'33,000', area:'Kothrud', city:'Pune', furnishing:'Unfurnished', available:'15 Apr 2025', badge:'New' },
+          { id:'prop-004', landlordId:'landlord-004', landlordName:'Suresh Iyer', title:'Premium 2BHK — Society Flat', bhk:'2 BHK', bath:'2', sqft:'1100', rent:'24,000', deposit:'72,000', area:'Banjara Hills', city:'Hyderabad', furnishing:'Semi Furnished', available:'1 May 2025', badge:'' },
+          { id:'prop-005', landlordId:'landlord-005', landlordName:'Meena Shah', title:'Affordable 2BHK — Ground Floor', bhk:'2 BHK', bath:'1', sqft:'820', rent:'13,500', deposit:'40,500', area:'Satellite', city:'Ahmedabad', furnishing:'Unfurnished', available:'Immediate', badge:'New' },
+          { id:'prop-006', landlordId:'landlord-006', landlordName:'Arun Kumar', title:'Studio Apartment — Metro Nearby', bhk:'1 RK', bath:'1', sqft:'350', rent:'9,500', deposit:'28,500', area:'Lajpat Nagar', city:'Delhi', furnishing:'Furnished', available:'Immediate', badge:'' }
+        ];
+
+        // Current logged-in user (demo — in production set from auth)
+        var CURRENT_USER_ID   = 'user-demo-landlord';
+        var CURRENT_USER_NAME = 'Anita Singh';
+        var CURRENT_USER_ROLE = 'landlord'; // 'landlord' or 'renter'
+
+        // ── CHAT SLOT MANAGEMENT ──────────────────────────────
+        var MAX_CHAT_SLOTS = 3;
+        var USER_CHATS_KEY = 'rf_user_chats_' + CURRENT_USER_ID;
+
+        function loadUserChats() { try { return JSON.parse(localStorage.getItem(USER_CHATS_KEY)) || []; } catch { return []; } }
+        function saveUserChats(c) { localStorage.setItem(USER_CHATS_KEY, JSON.stringify(c)); }
+
+        function navigateToChat(chatId, otherId, otherName, listingLabel) {
+          var url = './chat.html'
+            + '?chatId='    + encodeURIComponent(chatId)
+            + '&userId='    + encodeURIComponent(CURRENT_USER_ID)
+            + '&otherId='   + encodeURIComponent(otherId)
+            + '&otherName=' + encodeURIComponent(otherName)
+            + '&listing='   + encodeURIComponent(listingLabel);
+          window.location.href = url;
+        }
+
+        function escStr(s) { return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+        function escHtml(s) { return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+        function hasDealActive(chatId) {
+          try {
+            var d = JSON.parse(localStorage.getItem('rf_deal_' + chatId));
+            return d && d.stage !== 'Cancelled' && (d.confirmedA || d.confirmedB);
+          } catch { return false; }
+        }
+
+        function openChat(otherId, otherName, listingLabel) {
+          var ids    = [CURRENT_USER_ID, otherId].sort();
+          var chatId = 'chat-' + ids[0] + '--' + ids[1];
+          var chats  = loadUserChats();
+          var active = chats.filter(function(c){ return c.status === 'active'; });
+
+          // Already active — just open
+          if (active.find(function(c){ return c.chatId === chatId; })) {
+            navigateToChat(chatId, otherId, otherName, listingLabel); return;
+          }
+
+          // Slot free — register and open
+          if (active.length < MAX_CHAT_SLOTS) {
+            if (!chats.find(function(c){ return c.chatId === chatId; })) {
+              chats.push({ chatId:chatId, otherId:otherId, otherName:otherName, listing:listingLabel, status:'active', startedTs:Date.now(), lastTs:Date.now() });
+              saveUserChats(chats);
+            }
+            navigateToChat(chatId, otherId, otherName, listingLabel); return;
+          }
+
+          // All 3 full — show prompt
+          showEndFirstPrompt(active, otherId, otherName, listingLabel, chatId);
+        }
+
+        function showEndFirstPrompt(active, newOtherId, newOtherName, newListing, newChatId) {
+          var ex = document.getElementById('slot-prompt-overlay'); if (ex) ex.remove();
+          var rows = active.map(function(c) {
+            var deal = hasDealActive(c.chatId);
+            var msgs = 0; try { msgs = (JSON.parse(localStorage.getItem('rf_chat_' + c.chatId)) || []).length; } catch {}
+            var last = c.lastTs ? new Date(c.lastTs).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
+            var btn = deal
+              ? '<span style="font-size:10px;font-weight:700;color:#059669;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:20px;padding:3px 9px;white-space:nowrap;">🤝 Deal Active</span>'
+              : '<button onclick="endChatSlot(\''+escStr(c.chatId)+'\',\''+escStr(newOtherId)+'\',\''+escStr(newOtherName)+'\',\''+escStr(newListing)+'\',\''+escStr(newChatId)+'\')" style="padding:6px 14px;background:#040429;color:#d4a017;border:none;border-radius:6px;font-size:11px;font-weight:700;font-family:\'Outfit\',sans-serif;cursor:pointer;white-space:nowrap;flex-shrink:0;">End &amp; Free Slot</button>';
+            return '<div style="background:#f8f7f4;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px;">'
+              + '<div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:700;color:#040429;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+escHtml(c.otherName)+'</div>'
+              + '<div style="font-size:11px;color:#6b7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+escHtml(c.listing)+'</div>'
+              + '<div style="font-size:11px;color:#9ca3af;">'+msgs+' messages · '+last+'</div></div>'+btn+'</div>';
+          }).join('');
+          var ov = document.createElement('div');
+          ov.id = 'slot-prompt-overlay';
+          ov.style.cssText = 'position:fixed;inset:0;background:rgba(4,4,41,0.72);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;';
+          ov.innerHTML = '<div style="background:#fff;border-radius:18px;padding:32px 28px 24px;max-width:480px;width:100%;box-shadow:0 24px 60px rgba(4,4,41,0.22);">'
+            + '<div style="font-family:\'Cormorant Garamond\',serif;font-size:24px;font-weight:700;color:#040429;margin-bottom:8px;">All 3 chat slots are full</div>'
+            + '<p style="font-size:13px;color:#6b7280;line-height:1.6;margin-bottom:20px;">To chat with <strong>'+escHtml(newOtherName)+'</strong>, end one existing chat first. Chats with an active deal cannot be ended.</p>'
+            + '<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">'+rows+'</div>'
+            + '<button onclick="document.getElementById(\'slot-prompt-overlay\').remove()" style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;background:transparent;color:#6b7280;font-family:\'Outfit\',sans-serif;font-size:13px;cursor:pointer;">Cancel</button></div>';
+          document.body.appendChild(ov);
+        }
+
+        function endChatSlot(chatIdToEnd, newOtherId, newOtherName, newListing, newChatId) {
+          if (hasDealActive(chatIdToEnd)) { alert('This chat has an active deal and cannot be ended. Contact RenterFinder support if you need help.'); return; }
+          var chats = loadUserChats();
+          var slot  = chats.find(function(c){ return c.chatId === chatIdToEnd; });
+          if (slot) { slot.status = 'archived'; slot.archivedTs = Date.now(); }
+          try {
+            var idx = JSON.parse(localStorage.getItem('rf_chats_index')) || [];
+            var ci  = idx.find(function(c){ return c.chatId === chatIdToEnd; });
+            if (ci) { ci.archived = true; ci.archivedTs = Date.now(); localStorage.setItem('rf_chats_index', JSON.stringify(idx)); }
+          } catch {}
+          if (!chats.find(function(c){ return c.chatId === newChatId; })) {
+            chats.push({ chatId:newChatId, otherId:newOtherId, otherName:newOtherName, listing:newListing, status:'active', startedTs:Date.now(), lastTs:Date.now() });
+          }
+          saveUserChats(chats);
+          var ov = document.getElementById('slot-prompt-overlay'); if (ov) ov.remove();
+          navigateToChat(newChatId, newOtherId, newOtherName, newListing);
+        }
+
+        function endChatFromDashboard(chatId) {
+          if (hasDealActive(chatId)) { alert('⚠️ This chat has an active deal in progress and cannot be ended. Contact RenterFinder support if you need assistance.'); return; }
+          if (!confirm('End this chat? It will be archived and locked for new messages.')) return;
+          var chats = loadUserChats();
+          var slot  = chats.find(function(c){ return c.chatId === chatId; });
+          if (slot) { slot.status = 'archived'; slot.archivedTs = Date.now(); }
+          try {
+            var idx = JSON.parse(localStorage.getItem('rf_chats_index')) || [];
+            var ci  = idx.find(function(c){ return c.chatId === chatId; });
+            if (ci) { ci.archived = true; ci.archivedTs = Date.now(); localStorage.setItem('rf_chats_index', JSON.stringify(idx)); }
+          } catch {}
+          saveUserChats(chats); buildChatSlots();
+        }
+
+        // ── ACTIVE CHATS TAB RENDERER ──────────────────────────
+        function buildChatSlots() {
+          var chats    = loadUserChats();
+          var active   = chats.filter(function(c){ return c.status === 'active'; });
+          var archived = chats.filter(function(c){ return c.status === 'archived'; });
+          var slotsDiv = document.getElementById('db-active-chat-slots');
+          var archDiv  = document.getElementById('db-archived-chat-list');
+          var archSec  = document.getElementById('db-archived-section');
+          var countEl  = document.getElementById('db-chat-slot-count');
+          var badgeEl  = document.getElementById('db-chat-badge');
+          if (!slotsDiv) return;
+
+          if (countEl) countEl.textContent = active.length;
+          if (badgeEl) badgeEl.style.display = active.length > 0 ? 'block' : 'none';
+          slotsDiv.innerHTML = '';
+
+          for (var i = 0; i < MAX_CHAT_SLOTS; i++) {
+            var c = active[i];
+            var card = document.createElement('div');
+            if (c) {
+              var deal = hasDealActive(c.chatId);
+              var msgs = 0; try { msgs = (JSON.parse(localStorage.getItem('rf_chat_' + c.chatId)) || []).length; } catch {}
+              var lastTs = c.lastTs ? new Date(c.lastTs).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : 'Just started';
+              var initials = String(c.otherName||'').split(' ').map(function(w){return w[0]||'';}).join('').slice(0,2).toUpperCase();
+              card.style.cssText = 'background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(4,4,41,0.06);';
+              card.innerHTML = '<div style="background:linear-gradient(135deg,#040429,#0d0d50);padding:16px 18px;display:flex;align-items:center;gap:12px;">'
+                + '<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#b8860b,#d4a017);display:flex;align-items:center;justify-content:center;font-weight:700;color:#040429;font-size:15px;flex-shrink:0;">'+initials+'</div>'
+                + '<div style="flex:1;min-width:0;"><div style="font-size:14px;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+escHtml(c.otherName)+'</div>'
+                + '<div style="font-size:11px;color:rgba(212,160,23,0.75);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+escHtml(c.listing)+'</div></div>'
+                + '<span style="background:rgba(45,122,79,0.25);color:#4caf7d;font-size:10px;font-weight:700;border-radius:20px;padding:2px 8px;white-space:nowrap;">● Active</span></div>'
+                + '<div style="padding:14px 18px;display:flex;flex-direction:column;gap:8px;">'
+                + '<div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:#6b7280;">Messages</span><span style="font-weight:600;color:#040429;">'+msgs+'</span></div>'
+                + '<div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:#6b7280;">Last activity</span><span style="font-weight:600;color:#040429;">'+lastTs+'</span></div>'
+                + (deal ? '<span style="font-size:10px;font-weight:700;color:#059669;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:20px;padding:2px 8px;display:inline-block;margin-top:2px;">🤝 Deal Active</span>' : '')
+                + '</div>'
+                + '<div style="padding:10px 18px;background:#fafafa;border-top:1px solid #e5e7eb;display:flex;gap:8px;">'
+                + '<button onclick="navigateToChat(\''+escStr(c.chatId)+'\',\''+escStr(c.otherId)+'\',\''+escStr(c.otherName)+'\',\''+escStr(c.listing)+'\')" style="flex:1;padding:8px;background:#040429;color:#d4a017;border:none;border-radius:6px;font-family:\'Outfit\',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">Open Chat</button>'
+                + (deal
+                  ? '<button style="padding:8px 12px;background:#f9fafb;color:#9ca3af;border:1px solid #e5e7eb;border-radius:6px;font-family:\'Outfit\',sans-serif;font-size:11px;cursor:not-allowed;" disabled title="Cannot end — deal active">End</button>'
+                  : '<button onclick="endChatFromDashboard(\''+escStr(c.chatId)+'\')" style="padding:8px 12px;background:#fff1f2;color:#ef4444;border:1px solid #fecaca;border-radius:6px;font-family:\'Outfit\',sans-serif;font-size:11px;font-weight:600;cursor:pointer;">End</button>')
+                + '</div>';
+            } else {
+              card.style.cssText = 'background:#f9fafb;border:2px dashed #e5e7eb;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 20px;gap:10px;min-height:200px;';
+              card.innerHTML = '<div style="font-size:32px;opacity:0.3;">💬</div>'
+                + '<div style="font-size:13px;font-weight:600;color:#9ca3af;">Slot '+(i+1)+' — Available</div>'
+                + '<div style="font-size:12px;color:#d1d5db;text-align:center;">Click Express Interest on any listing to start a chat</div>';
+            }
+            slotsDiv.appendChild(card);
+          }
+
+          if (archived.length > 0) {
+            archSec.style.display = 'block';
+            archDiv.innerHTML = '';
+            archived.slice().reverse().forEach(function(c) {
+              var msgs = 0; try { msgs = (JSON.parse(localStorage.getItem('rf_chat_' + c.chatId)) || []).length; } catch {}
+              var archivedTs = c.archivedTs ? new Date(c.archivedTs).toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+              var row = document.createElement('div');
+              row.style.cssText = 'background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px;opacity:0.75;';
+              row.innerHTML = '<div style="flex:1;min-width:0;">'
+                + '<div style="font-size:13px;font-weight:700;color:#040429;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+escHtml(c.otherName)+'</div>'
+                + '<div style="font-size:11px;color:#6b7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+escHtml(c.listing)+'</div>'
+                + '<div style="font-size:11px;color:#9ca3af;">'+msgs+' messages · Ended: '+archivedTs+'</div></div>'
+                + '<span style="font-size:10px;font-weight:700;color:#9ca3af;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:20px;padding:2px 9px;white-space:nowrap;">Archived</span>'
+                + '<button onclick="navigateToChat(\''+escStr(c.chatId)+'\',\''+escStr(c.otherId)+'\',\''+escStr(c.otherName)+'\',\''+escStr(c.listing)+'\')" style="padding:6px 14px;background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;border-radius:6px;font-family:\'Outfit\',sans-serif;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;">View (Read-only)</button>';
+              archDiv.appendChild(row);
+            });
+          } else {
+            archSec.style.display = 'none';
+          }
+        }
+
+        var gradients = [
+          'linear-gradient(135deg,#c9a668,#7a5c2e)',
+          'linear-gradient(135deg,#4a7c9e,#2c4f6a)',
+          'linear-gradient(135deg,#7a9e6a,#4a6a3e)',
+          'linear-gradient(135deg,#9e6a7a,#6a3e4a)',
+          'linear-gradient(135deg,#9e9a6a,#6a663e)',
+          'linear-gradient(135deg,#6a7a9e,#3e4a6a)'
+        ];
+
+        function buildRenterCards() {
+          var grid = document.getElementById('renters-grid');
+          if (!grid) return;
+          grid.innerHTML = '';
+          SAMPLE_RENTERS.forEach(function(r, i) {
+            var grad = gradients[i % gradients.length];
+            var card = document.createElement('div');
+            card.style.cssText = 'background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 2px 12px rgba(4,4,41,0.06);transition:box-shadow 0.2s;';
+            card.onmouseover = function(){ this.style.boxShadow='0 6px 24px rgba(4,4,41,0.12)'; };
+            card.onmouseout  = function(){ this.style.boxShadow='0 2px 12px rgba(4,4,41,0.06)'; };
+            card.innerHTML = '<div style="padding:20px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;">'
+              + '<div style="width:44px;height:44px;border-radius:50%;background:' + grad + ';display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0;">' + r.initials + '</div>'
+              + '<div style="flex:1;min-width:0;"><div style="font-size:14px;font-weight:700;color:var(--dark);">' + r.name + '</div><div style="font-size:12px;color:var(--mid);">' + r.occupation + ' · ' + r.city + '</div></div>'
+              + '<div style="font-size:12px;font-weight:700;color:var(--gold);white-space:nowrap;">' + r.budget + '</div>'
+              + '</div>'
+              + '<div style="padding:16px 22px;display:flex;flex-direction:column;gap:8px;">'
+              + '<div style="display:flex;justify-content:space-between;font-size:12.5px;"><span style="color:var(--mid);">Looking For</span><span style="font-weight:600;color:var(--dark);">' + r.bhk + '</span></div>'
+              + '<div style="display:flex;justify-content:space-between;font-size:12.5px;"><span style="color:var(--mid);">Preferred Area</span><span style="font-weight:600;color:var(--dark);text-align:right;max-width:60%;">' + r.area + '</span></div>'
+              + '<div style="display:flex;justify-content:space-between;font-size:12.5px;"><span style="color:var(--mid);">Family Size</span><span style="font-weight:600;color:var(--dark);">' + r.family + '</span></div>'
+              + '<div style="display:flex;justify-content:space-between;font-size:12.5px;"><span style="color:var(--mid);">Move-in</span><span style="font-weight:600;color:var(--dark);">' + r.moveIn + '</span></div>'
+              + '</div>'
+              + '<div style="padding:12px 22px;background:#fafafa;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">'
+              + '<span style="font-size:11px;color:var(--mid);">ID: ' + r.id + '</span>'
+              + '<button onclick="openChat(\'' + r.id + '\',\'' + r.name + '\',\'' + r.bhk + ' Search — ' + r.city + '\')" style="padding:8px 20px;background:var(--dark);color:var(--gold);border:none;border-radius:5px;font-size:12px;font-weight:700;font-family:\'Outfit\',sans-serif;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background=\'#b8860b\'" onmouseout="this.style.background=\'var(--dark)\'">💬 Express Interest</button>'
+              + '</div>';
+            grid.appendChild(card);
+          });
+        }
+
+        function buildPropertyCards() {
+          var grid = document.getElementById('properties-grid');
+          if (!grid) return;
+          grid.innerHTML = '';
+          SAMPLE_PROPERTIES.forEach(function(p, i) {
+            var grad = gradients[i % gradients.length];
+            var card = document.createElement('div');
+            card.style.cssText = 'background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 2px 12px rgba(4,4,41,0.06);transition:box-shadow 0.2s;';
+            card.onmouseover = function(){ this.style.boxShadow='0 6px 24px rgba(4,4,41,0.12)'; };
+            card.onmouseout  = function(){ this.style.boxShadow='0 2px 12px rgba(4,4,41,0.06)'; };
+            var badgeHtml = p.badge ? '<span style="position:absolute;top:10px;left:10px;background:rgba(201,166,104,0.92);color:var(--dark);font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:0.5px;">' + p.badge + '</span>' : '';
+            card.innerHTML = '<div style="height:110px;background:' + grad + ';position:relative;">' + badgeHtml + '</div>'
+              + '<div style="padding:18px 20px;">'
+              + '<div style="font-size:17px;font-weight:700;color:var(--gold);margin-bottom:2px;">₹' + p.rent + ' <span style="font-size:12px;font-weight:400;color:var(--mid);">/ month</span></div>'
+              + '<div style="font-size:14px;font-weight:600;color:var(--dark);margin-bottom:3px;">' + p.title + '</div>'
+              + '<div style="font-size:12px;color:var(--mid);margin-bottom:10px;">📍 ' + p.area + ', ' + p.city + '</div>'
+              + '<div style="display:flex;gap:8px;flex-wrap:wrap;font-size:11px;">'
+              + '<span style="background:#f3f4f6;padding:3px 10px;border-radius:12px;font-weight:600;color:var(--dark);">' + p.bhk + '</span>'
+              + '<span style="background:#f3f4f6;padding:3px 10px;border-radius:12px;font-weight:600;color:var(--dark);">' + p.bath + ' Bath</span>'
+              + '<span style="background:#f3f4f6;padding:3px 10px;border-radius:12px;font-weight:600;color:var(--dark);">' + p.sqft + ' sqft</span>'
+              + '<span style="background:#f3f4f6;padding:3px 10px;border-radius:12px;font-weight:600;color:var(--dark);">' + p.furnishing + '</span>'
+              + '</div>'
+              + '</div>'
+              + '<div style="padding:11px 20px;background:#fafafa;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">'
+              + '<span style="font-size:11px;color:var(--mid);">Dep: ₹' + p.deposit + ' · Avail: ' + p.available + '</span>'
+              + '<button onclick="openChat(\'' + p.landlordId + '\',\'' + p.landlordName + '\',\'' + p.title + ' — ' + p.city + '\')" style="padding:8px 20px;background:var(--dark);color:var(--gold);border:none;border-radius:5px;font-size:12px;font-weight:700;font-family:\'Outfit\',sans-serif;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background=\'#b8860b\'" onmouseout="this.style.background=\'var(--dark)\'">💬 Express Interest</button>'
+              + '</div>';
+            grid.appendChild(card);
+          });
+        }
+
+        // Build cards on page load
+        document.addEventListener('DOMContentLoaded', function() {
+          buildRenterCards();
+          buildPropertyCards();
+          buildChatSlots();
+        });
+        // Also trigger immediately in case DOM is already ready
+        if (document.readyState !== 'loading') {
+          buildRenterCards();
+          buildPropertyCards();
+          buildChatSlots();
+        }
+        </script>
+
+      </div>
+    </div>
+
+      <!-- ════════════════════════════════
+           TAB 3: MY CHATS
+      ════════════════════════════════ -->
+      <div id="db-panel-chats" class="db-content-area" style="display:none;padding:40px 60px 80px;max-width:1100px;margin:0 auto;">
+
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:8px;">
+          <h2 style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--dark);letter-spacing:-0.5px;margin:0;">My Active Chats</h2>
+          <div style="font-size:12px;color:var(--mid);background:#fff;border:1px solid var(--border);border-radius:20px;padding:5px 14px;">
+            <span id="db-chat-slot-count">0</span> / 3 slots used
+          </div>
+        </div>
+        <p style="font-size:13px;color:var(--mid);margin-bottom:28px;line-height:1.6;">You can have up to <strong>3 active chats</strong> at once. To start a new one when all slots are full, you must end an existing chat first. Ended chats are archived and remain visible below.</p>
+
+        <!-- Active chat slots -->
+        <div id="db-active-chat-slots" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;margin-bottom:40px;"></div>
+
+        <!-- Archived chats -->
+        <div id="db-archived-section" style="display:none;">
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--dark);margin-bottom:16px;padding-top:24px;border-top:1px solid var(--border);">Archived Chats</h3>
+          <div id="db-archived-chat-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+        </div>
+      </div>
+
+  </div><!-- close TAB CONTENT AREA -->
+
+  <!-- SEO content block — how the dashboard works -->
+  <section class="db-how-section" style="padding:40px 60px 48px;" aria-label="How your RenterFinder dashboard works">
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(22px,3vw,30px);font-weight:700;color:var(--dark);margin-bottom:16px;">How Your Dashboard Works</h2>
+    <p style="font-size:15px;color:var(--mid);line-height:1.8;margin-bottom:14px;">Your RenterFinder.com dashboard is your personal control centre for managing your rental profile or property listing. Once you log in, all your information — profile details, active listings, match notifications, and account settings — are available in one place.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:24px;">
+      <div style="background:#f8f7f4;border:1px solid var(--border);border-radius:10px;padding:20px;">
+        <div style="font-size:22px;margin-bottom:8px;">👤</div>
+        <strong style="font-size:14px;color:var(--dark);display:block;margin-bottom:6px;">Manage Your Profile</strong>
+        <p style="font-size:13px;color:var(--mid);line-height:1.65;margin:0;">Update your requirements, budget, preferred area, move-in date, and contact preferences. Keep your profile current so landlords can reach you.</p>
+      </div>
+      <div style="background:#f8f7f4;border:1px solid var(--border);border-radius:10px;padding:20px;">
+        <div style="font-size:22px;margin-bottom:8px;">🏠</div>
+        <strong style="font-size:14px;color:var(--dark);display:block;margin-bottom:6px;">Your Property Listings</strong>
+        <p style="font-size:13px;color:var(--mid);line-height:1.65;margin:0;">If you are a landlord, view and manage all your active rental property listings. Edit rent, description, availability, and amenities at any time.</p>
+      </div>
+      <div style="background:#f8f7f4;border:1px solid var(--border);border-radius:10px;padding:20px;">
+        <div style="font-size:22px;margin-bottom:8px;">🔔</div>
+        <strong style="font-size:14px;color:var(--dark);display:block;margin-bottom:6px;">Match Notifications</strong>
+        <p style="font-size:13px;color:var(--mid);line-height:1.65;margin:0;">Get notified when a landlord or renter expresses interest in your listing or profile. Respond quickly to increase your chances of a successful match.</p>
+      </div>
+    </div>
+    <p style="font-size:13px;color:var(--mid);margin-top:20px;line-height:1.7;">Need help? Visit our <a href="./faq.html" onclick="navigate('faq')" style="color:var(--gold);font-weight:600;cursor:pointer;">FAQ page</a> for answers to common questions, or <a href="./feedback.html" onclick="navigate('feedback')" style="color:var(--gold);font-weight:600;cursor:pointer;">contact us</a> for support.</p>
+  </section>
+  <div id="dashboard-footer"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     [SECTION:footer] — SHARED FOOTER TEMPLATE
+     Search [SECTION:footer] to jump here
+═══════════════════════════════════════════════════════════════ -->
+
+<template id="footer-template">
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <h4 style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin:0 0 16px;">Contact</h4>
+        <p class="footer-brand-desc" style="margin:0;line-height:1.9;">
+          <strong style="color:rgba(255,255,255,0.92);font-weight:700;">VAMY Properties Pvt Ltd</strong><br>
+          Phone: +91 73031 04550<br>
+          <span style="font-size:11.5px;color:var(--mid);">(WhatsApp only)</span><br>
+          Email: <a href="mailto:renterfinder1@gmail.com" style="color:var(--gold-dk);text-decoration:none;">renterfinder1@gmail.com</a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <h4>For Renters</h4>
+        <ul>
+          <li><a href="./login.html" onclick="navigate('login')">List Your Profile</a></li>
+          <li><a href="./properties.html" onclick="navigate('properties')">Browse Properties</a></li>
+          <li><a href="./services.html" onclick="navigate('services')">How It Works</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>For Landlords</h4>
+        <ul>
+          <li><a href="./login.html" onclick="navigate('login')">List a Property</a></li>
+          <li><a href="./renters-list.html" onclick="navigate('renters-list')">Renter's List</a></li>
+          <li><a href="./fees.html" onclick="navigate('fees')">Closing Fees</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="./blog.html" onclick="navigate('blog')">Blog &amp; Articles</a></li>
+          <li><a href="./refer.html" onclick="navigate('refer')">Refer &amp; Earn</a></li>
+          <li><a href="./internship.html" onclick="navigate('internship')">Internship</a></li>
+          <li><a href="./feedback.html" onclick="navigate('feedback')">Share Feedback</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="./privacy.html" onclick="navigate('privacy')">Privacy Policy</a></li>
+          <li><a href="./terms.html" onclick="navigate('terms')">Terms of Use</a></li>
+          <li><a href="./disclaimer.html" onclick="navigate('disclaimer')">Disclaimer</a></li>
+          <li><a href="./mta.html" onclick="navigate('mta')">Model Tenancy Act</a></li>
+          <li><a href="./rent-agreement.html" onclick="navigate('rent-agreement')">Rent Agreement (Sample)</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+  <div style="background:var(--offwhite);padding:16px 60px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);">
+    <p style="font-size:12px;color:var(--mid);margin:0;">© 2026 RenterFinder.com · No Buying. No Selling. Only Renting. · India &nbsp;·&nbsp; <a href="/sitemap.xml" target="_blank" rel="noopener" style="color:var(--mid);text-decoration:none;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--mid)'">Sitemap</a></p>
+    <div class="socials">
+      <a class="social-btn" href="https://x.com/RenterFinderIn" target="_blank" rel="noopener" title="Follow us on X" aria-label="Follow RenterFinder on X (Twitter)" style="border-color:rgba(4,4,41,0.15);color:var(--dark);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.836L2.25 2.25h6.919l4.257 5.625zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+      <a class="social-btn" href="https://www.instagram.com/renterfinder?igsh=NXVpemJjZ2VqbThl" target="_blank" rel="noopener" title="Follow us on Instagram" aria-label="Follow RenterFinder on Instagram" style="border-color:rgba(4,4,41,0.15);color:var(--dark);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      </a>
+      <a class="social-btn" href="https://youtube.com/@renterfinder?si=c_pFfNqNpFqLK-Ou" target="_blank" rel="noopener" title="Watch us on YouTube" aria-label="Watch RenterFinder on YouTube" style="border-color:rgba(4,4,41,0.15);color:var(--dark);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+      </a>
+      <a class="social-btn" href="https://www.facebook.com/share/1AwvyYavAo/" target="_blank" rel="noopener" title="Follow us on Facebook" aria-label="Follow RenterFinder on Facebook" style="border-color:rgba(4,4,41,0.15);color:var(--dark);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+      </a>
+    </div>
+  </div>
+</template>
+
+<script src="script.js" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  renderFooters();
+  initReveal();
+  setTimeout(initDashboard, 50);
+});
+</script>
+  <script src="./chatbot.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "name": "renterfinder-functions",
+  "engines": { "node": "22" },
+  "main": "index.js",
+  "dependencies": { "firebase-functions": "^6.0.0" },
+  "private": true
+}

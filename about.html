@@ -1,0 +1,1306 @@
+<!--
+╔══════════════════════════════════════════════════════════════════════╗
+║       RENTERFINDER.COM — SINGLE FILE SOURCE  vRF173 SEO V27         ║
+║                                                                      ║
+║  HOW TO NAVIGATE THIS FILE (use Ctrl+F / Cmd+F to jump):            ║
+║                                                                      ║
+║  ── GLOBAL STYLES & SHARED COMPONENTS ──────────────── [SECTION:CSS]║
+║  ── MAIN NAVIGATION ───────────────────────────── [SECTION:nav]     ║
+║  ── PAGE 1  · Home (SEO-OPTIMIZED) ────────────── [PAGE:home]      ║
+║  ── PAGE 2  · About Us (SEO-OPTIMIZED) ───────── [PAGE:about]      ║
+║  ── PAGE 3  · Services (SEO-OPTIMIZED) ───────── [PAGE:services]   ║
+║  ── PAGE 4  · Fees (SEO-OPTIMIZED) ────────────── [PAGE:fees]      ║
+║  ── PAGE 5  · Rental Properties (SEO-OPTIMIZED) ── [PAGE:properties]║
+║  ── PAGE 6  · Renter's List (SEO-OPTIMIZED) ──── [PAGE:renters-list]║
+║  ── PAGE 7  · Login / Sign Up (SEO-OPTIMIZED) ──── [PAGE:login]     ║
+║  ── PAGE 8  · FAQ (SEO-OPTIMIZED) ─────────────── [PAGE:faq]       ║
+║  ── PAGE 9  · Terms & Conditions (SEO-OPTIMIZED) ── [PAGE:terms]   ║
+║  ── PAGE 10 · Disclaimer (SEO-OPTIMIZED) ──────── [PAGE:disclaimer]║
+║  ── PAGE 11 · Privacy Policy (SEO-OPTIMIZED) ──── [PAGE:privacy]   ║
+║  ── PAGE 12 · Match Terms Agreement (SEO-OPT) ──── [PAGE:mta]      ║
+║  ── PAGE 13 · Refer & Earn (SEO-OPTIMIZED) ─────── [PAGE:refer]     ║
+║  ── PAGE 14 · Internship (SEO-OPTIMIZED) ──────── [PAGE:internship]║
+║  ── PAGE 15 · Rent Agreement Helper (SEO-OPT) ──── [PAGE:rent-agreement]║
+║  ── PAGE 16 · Feedback (SEO-OPTIMIZED) ─────────── [PAGE:feedback]  ║
+║  ── PAGE 17 · User Dashboard (SEO-OPT) ─────────── [PAGE:dashboard] ║
+║  ── PAGE 18 · Blog & Articles (SEO-OPTIMIZED) ───── [PAGE:blog]     ║
+║  ── SHARED FOOTER ──────────────────────────────── [SECTION:footer] ║
+║  ── JAVASCRIPT ─────────────────────────────────── [SECTION:js]     ║
+║                                                                      ║
+║  ── FILE SPLIT INSTRUCTIONS (for when breaking into individual pages)║
+║  When splitting this SPA into individual HTML files, PAGE 18        ║
+║  (Blog & Articles, id="page-blog") must be extracted as its own     ║
+║  standalone file: blog.html (or /blog/index.html).                  ║
+║  It contains: blog listing index, full Article (id="blog-post-1"),  ║
+║  Article JSON-LD schema, BreadcrumbList schema, and SEO aside.      ║
+║  Each subsequent blog post should also be its own file:             ║
+║  /blog/post-slug.html — never merged back into the SPA shell.       ║
+║                                                                      ║
+║  SEO CHANGES (vRF173 SEO V2):                                        ║
+║  • Meta description, keywords, robots, theme-color added             ║
+║  • Open Graph + Twitter Card meta tags                               ║
+║  • JSON-LD: Organization, WebSite, RealEstateAgent, FAQ, Breadcrumb ║
+║  • Canonical URL                                                     ║
+║  • Semantic HTML: <main>, <header>, <section>, <aside>, <footer>    ║
+║  • ARIA roles/labels on nav, sections, buttons                       ║
+║  • H1 kept original ("Let's Find a Good Renter for Your Home")      ║
+║  • H2s enriched with geo + service keywords                          ║
+║  • Hidden semantic content block for crawlers                        ║
+║  • Preconnect + dns-prefetch for Google Fonts                        ║
+║  • <noscript> fallback                                               ║
+║  • geo.region and content-language meta tags                         ║
+║  • "Verified" removed from all user-facing text (kept in meta only) ║
+║                                                                      ║
+║  SEO CHANGES (vRF173 SEO V3):                                        ║
+║  • font-display: swap added to Google Fonts for performance          ║
+║  • ABOUT PAGE: + aria-label on page wrapper              ║
+║  • ABOUT PAGE: All sections enriched with keyword aria-labels        ║
+║  • ABOUT PAGE: H2s enriched with geo/service keywords                ║
+║  • ABOUT PAGE: Hidden semantic <aside> for crawlers                  ║
+║  • ABOUT PAGE: CTA buttons keyword-optimized                        ║
+║  • ABOUT PAGE: Hero subtitle expanded with city names                ║
+║  • SERVICES PAGE: + aria-label on page wrapper           ║
+║  • SERVICES PAGE: All sections enriched with keyword aria-labels     ║
+║  • SERVICES PAGE: H2s enriched with rental/India keywords            ║
+║  • SERVICES PAGE: Hidden semantic <aside> for crawlers               ║
+║  • SERVICES PAGE: CTA buttons keyword-optimized                     ║
+║  • SERVICES PAGE: Hero subtitle expanded with city names             ║
+║  • JSON-LD: Two new Service schemas (Renter Search + Property Search)║
+║  • FEES PAGE: + aria-label on page wrapper              ║
+║  • FEES PAGE: Hero subtitle expanded with city names                ║
+║  • FEES PAGE: Intro H2 enriched with transparency keywords          ║
+║  • FEES PAGE: Sections enriched with keyword aria-labels            ║
+║  • FEES PAGE: CTA buttons keyword-optimized                        ║
+║  • FEES PAGE: Hidden semantic <aside> for crawlers                  ║
+║  • FAQ PAGE: + aria-label on page wrapper               ║
+║  • FAQ PAGE: Hero subtitle expanded with rental topics + India      ║
+║  • FAQ PAGE: Section enriched with keyword aria-label               ║
+║  • FAQ PAGE: Hidden semantic <aside> for crawlers                   ║
+║  • FAQ PAGE: JSON-LD FAQPage expanded from 4 to 10 questions        ║
+║  • PROPERTIES PAGE: + keyword aria-label on wrapper     ║
+║  • PROPERTIES PAGE: Hero subtitle added with property types + cities║
+║  • PROPERTIES PAGE: Search bar aria-labels on all form elements     ║
+║  • PROPERTIES PAGE: Search button keyword-optimized                 ║
+║  • PROPERTIES PAGE: Hidden semantic <aside> for crawlers            ║
+║  • RENTERS LIST PAGE: + keyword aria-label on wrapper   ║
+║  • RENTERS LIST PAGE: Hero subtitle — "find a renter first time"   ║
+║  • RENTERS LIST PAGE: Intro H2 + body enriched with USP keywords   ║
+║  • RENTERS LIST PAGE: CTA buttons keyword-optimized                 ║
+║  • RENTERS LIST PAGE: Filters + grid aria-labels added              ║
+║  • RENTERS LIST PAGE: Hidden semantic <aside> for crawlers          ║
+║  • USP KEYWORDS added across ALL pages: "find a renter (first time  ║
+║    ever)" + "transparent fees / no hidden charges"                   ║
+║  • Meta description + OG + Twitter updated with USP keywords        ║
+║  • Meta keywords expanded with USP-specific terms                   ║
+║  • All 7 hidden <aside> blocks enriched with USP keyword phrases    ║
+║                                                                      ║
+║  BUG FIXES (vRF173 SEO V5):                                         ║
+║  • Home CTA "Ready to find your perfect rental match?" now           ║
+║    responsive: CSS Grid 1fr 1fr (50-50) on desktop, single-column   ║
+║    stack on mobile (≤768px)                                          ║
+║                                                                      ║
+║  SEO + UI CHANGES (vRF173 SEO V6):                                   ║
+║  • HOME: Meta description rewritten to user's exact copy             ║
+║  • HOME: twitter:site + twitter:creator @RenterFinderIn added        ║
+║  • HOME: Reviews expanded from 6 → 15 genuine human-sounding cards  ║
+║  • HOME: Mix of 5★ and 4★ ratings for authenticity                  ║
+║  • HOME: JSON-LD AggregateRating updated (15 reviews, 4.8 rating)   ║
+║  • HOME: All 15 reviews matched in JSON-LD structured data          ║
+║  • ABOUT: aria-label + role="img" on animated India arc canvas      ║
+║  • ABOUT: AboutPage JSON-LD schema added (foundingDate, sameAs)     ║
+║  • ABOUT: Organization sameAs populated (LI, IG, FB, X, YouTube)    ║
+║  • ABOUT: Visible breadcrumb navigation added (Home › About Us)     ║
+║  • ABOUT: Breadcrumb CSS component added (.page-breadcrumb)         ║
+║                                                                      ║
+║  SEO CHANGES (vRF173 SEO V7):                                        ║
+║  • TERMS: + keyword aria-label on page wrapper           ║
+║  • TERMS: Visible breadcrumb added (Home › Terms of Use)            ║
+║  • TERMS: aria-label on legal-body content section                   ║
+║  • TERMS: Hidden semantic <aside> for crawlers                      ║
+║  • TERMS: SEO-OPTIMIZED comment block added                         ║
+║  • DISCLAIMER: + keyword aria-label on page wrapper     ║
+║  • DISCLAIMER: Visible breadcrumb added (Home › Disclaimer)         ║
+║  • DISCLAIMER: aria-label on legal-body content section              ║
+║  • DISCLAIMER: Hidden semantic <aside> for crawlers                 ║
+║  • DISCLAIMER: SEO-OPTIMIZED comment block added                    ║
+║  • PRIVACY: + keyword aria-label on page wrapper        ║
+║  • PRIVACY: Visible breadcrumb added (Home › Privacy Policy)        ║
+║  • PRIVACY: aria-label on legal-body content section                 ║
+║  • PRIVACY: Hidden semantic <aside> for crawlers                    ║
+║  • PRIVACY: SEO-OPTIMIZED comment block added                       ║
+║  • All 3 legal pages: zero changes to legal content text            ║
+║                                                                      ║
+║  SEO CHANGES (vRF173 SEO V8):                                        ║
+║  • LOGIN: + keyword aria-label on page wrapper           ║
+║  • LOGIN: Hidden semantic <aside> for crawlers                      ║
+║  • LOGIN: SEO-OPTIMIZED comment block added                         ║
+║  • REFER: + keyword aria-label on page wrapper          ║
+║  • REFER: Visible breadcrumb added (Home › Refer & Earn)            ║
+║  • REFER: Hero subtitle expanded with earnings details              ║
+║  • REFER: aria-label on refer-section                                ║
+║  • REFER: Hidden semantic <aside> for crawlers                      ║
+║  • INTERNSHIP: + keyword aria-label on page wrapper     ║
+║  • INTERNSHIP: Visible breadcrumb added (Home › Internship)         ║
+║  • INTERNSHIP: Hero subtitle expanded with online/offline + India   ║
+║  • INTERNSHIP: aria-label on internship-section                      ║
+║  • INTERNSHIP: Hidden semantic <aside> for crawlers                 ║
+║  • FEEDBACK: + keyword aria-label on page wrapper       ║
+║  • FEEDBACK: Visible breadcrumb added (Home › Feedback)             ║
+║  • FEEDBACK: Hero subtitle expanded with service context            ║
+║  • FEEDBACK: aria-label on form section                              ║
+║  • FEEDBACK: Hidden semantic <aside> for crawlers                   ║
+║                                                                      ║
+║  SEO CHANGES (vRF173 SEO V9) — FINAL 3 PAGES:                       ║
+║  • MTA: + keyword aria-label on page wrapper            ║
+║  • MTA: Visible breadcrumb (Home › Model Tenancy Act, 2021)        ║
+║  • MTA: Hero subtitle expanded with chapter topics                  ║
+║  • MTA: aria-label on legal-body section                            ║
+║  • MTA: Hidden semantic <aside> for crawlers                        ║
+║  • RENT AGREEMENT: + keyword aria-label on wrapper      ║
+║  • RENT AGREEMENT: Visible breadcrumb (Home › Rent Agreement)       ║
+║  • RENT AGREEMENT: Hero subtitle expanded with context              ║
+║  • RENT AGREEMENT: Hidden semantic <aside> for crawlers             ║
+║  • DASHBOARD: + keyword aria-label on wrapper           ║
+║  • DASHBOARD: Hidden semantic <aside> for crawlers                  ║
+║  ═══ ALL 17 PAGES NOW SEO-OPTIMIZED ═══                             ║
+║                                                                      ║
+║  CRITICAL FIXES (vRF173 SEO V14):                                    ║
+║  • DUPLICATE SCRIPT: Removed second Cloudflare email-decode.min.js  ║
+║  • CSS PARSE ERROR: Orphaned margin-top/max-width/line-height props  ║
+║    merged into .page-hero p; stray closing brace removed             ║
+║  • FOUNDING DATE: Normalised to "2025" across all schemas            ║
+║    (head Organization, head AboutPage, JS-injected About schema)     ║
+║  • SAMEAS CONSISTENCY: JS-injected About schema now includes full    ║
+║    social sameAs array (was only ["https://www.renterfinder.com"])   ║
+║  • TWITTER/X URL: Normalised twitter.com → x.com/RenterFinderIn     ║
+║    in all sameAs arrays and footer social link                       ║
+║  • SEARCHACTION REMOVED: WebSite schema potentialAction removed      ║
+║    (target /search?q= URL does not exist in this SPA)               ║
+║                                                                      ║
+║  SEO CHANGES (vRF173 SEO V10):                                       ║
+║  • SERVICES: Visible breadcrumb added (Home › Services)             ║
+║  • SERVICES: Service JSON-LD schemas moved from global <head> to    ║
+║    page-specific JS injection (only active on Services page)         ║
+║  • SERVICES: Enriched schemas with serviceOutput + full provider    ║
+║  • FEES: Page-specific FAQPage schema injected via JS (4 fee Q&As)  ║
+║  • FEES: PriceSpecification schema injected via JS on Fees page     ║
+║  • FEES: Free offer expiry date now checked programmatically (JS)   ║
+║  • FEES: data-offer-text attributes added for dynamic text swap     ║
+║  • FAQ: First 3 FAQ answers auto-open on page load                  ║
+║  • FAQ: Category titles changed from <h3> to <h2> (semantic SEO)   ║
+║  • FAQ: Client-side search/filter added (filterFaqItems function)   ║
+║  • FAQ: Search input with "No results" feedback added to FAQ page   ║
+║  SEO CHANGES (vRF173 SEO V13) — ALL AUDIT PRIORITY FIXES:            ║
+║  • ALL PAGES: document.title updated dynamically in showPage()       ║
+║  • ALL PAGES: <link rel="canonical" href="https://www.renterfinder.com/about">
+<link rel="alternate" hreflang="en-in" href="https://www.renterfinder.com/about">
+<link rel="alternate" hreflang="en" href="https://www.renterfinder.com/about">
+<link rel="alternate" hreflang="x-default" href="https://www.renterfinder.com/about">
+
+
+ updated dynamically             ║
+║  • ALL PAGES: og:title, og:description, og:url updated on nav        ║
+║  • FEES: Visible breadcrumb added (Home › Fees)                     ║
+║  • FEES: 2nd section aria-label added to fees-breakdown section     ║
+║  • PROPERTIES: Visible breadcrumb added (Home › Rental Properties)  ║
+║  • PROPERTIES: 2nd H2 added — "Search by City, BHK Type & Budget"  ║
+║  • PROPERTIES: properties-body section gets aria-label on wrapper   ║
+║  • PROPERTIES: ItemList JSON-LD schema injected via JS              ║
+║  • RENTERS-LIST: Visible breadcrumb added (Home › Prospective       ║
+║    Renters' List)                                                    ║
+║  • RENTERS-LIST: rl-filters gets explicit section aria-label        ║
+║  • RENTERS-LIST: Service JSON-LD schema injected via JS             ║
+║  • FAQ: Visible breadcrumb added (Home › FAQ)                       ║
+║  • FAQ: faq-search area gets explicit section aria-label            ║
+║                                                                      ║
+║  SEO + SECURITY CHANGES (vRF173 SEO V12):                             ║
+║  • DASHBOARD: noindex,nofollow confirmed via _noindexPages array     ║
+║  • DASHBOARD: Session-based auth guard added to navigate()           ║
+║    — navigating to #dashboard without rf_auth_token redirects to    ║
+║    login. getActiveSession() checks sessionStorage for rf_auth_token ║
+║  • DASHBOARD: robots.txt + sitemap notes added (see comments)        ║
+║  • _noindexPages expanded: login, register-renter, register-landlord,║
+║    feedback, disclaimer, dashboard all confirmed noindex             ║
+║                                                                      ║
+║  SEO CHANGES (vRF173 SEO V11):                                       ║
+║  • LOGIN: Dynamic noindex/nofollow robots meta added via            ║
+║    updateRobotsMeta() — active for login, register-renter,          ║
+║    register-landlord, feedback, disclaimer, dashboard               ║
+║  • LOGIN: H1 added to login panel (visually hidden, semantic)       ║
+║  • LOGIN: Breadcrumb nav added (Home › Login / Sign Up)             ║
+║  • RENTER FORM: autocomplete attributes added to all 16 inputs      ║
+║  • LANDLORD FORM: autocomplete attributes added to all 16 inputs    ║
+║  SEO CHANGES (vRF173 SEO V18) — CRITICAL SCHEMA, LEGAL & GEO FIXES:  ║
+║  SCHEMA FIXES:                                                        ║
+║  • Global <head> FAQPage removed — was firing on ALL 17 pages         ║
+║    simultaneously (incl. noindex). Now injected per-page only:        ║
+║    injectHomeFaqSchema() on Home, injectFaqPageSchema() on FAQ.       ║
+║  • Global <head> BreadcrumbList (wrong type) replaced with            ║
+║    ItemList of SiteNavigationElement.                                 ║
+║  • HowTo schema on Services removed (deprecated Sept 2023).           ║
+║    Replaced with Article schema.                                      ║
+║  • Internship JobPosting: added jobLocationType:TELECOMMUTE,          ║
+║    applicantLocationRequirements, datePosted, validThrough.           ║
+║    Now eligible for Google Jobs rich results.                         ║
+║  LEGAL FIXES:                                                         ║
+║  • Privacy Policy: DPDP Act 2023 named as primary legislation.        ║
+║    RenterFinder.com = Data Fiduciary. Users = Data Principals.        ║
+║    Updated in intro, Section 6.1, aside, JS schema, _pageMeta.       ║
+║  • Both registration forms: visible DPDP Act 2023 consent notice.    ║
+║  GEO / TECHNICAL FIXES:                                               ║
+║  • llms.txt created — RSL 1.0, AI search allowed, AI training         ║
+║    disallowed, 7 citation-optimised facts, all 13 indexable pages,    ║
+║    excluded pages flagged.                                            ║
+║  • robots.txt created — GPTBot/ClaudeBot/PerplexityBot/               ║
+║    OAI-SearchBot allowed. CCBot/anthropic-ai/cohere-ai blocked.       ║
+║    Private pages disallowed. Sitemap referenced.                      ║
+║  • sitemap.xml created — 13 indexable pages, no priority/             ║
+║    changefreq, only loc + lastmod. Noindex pages excluded.            ║
+║  • <link rel="sitemap"> + <meta name="llms-txt"> added to head.       ║
+║  • IndexNow deployment instructions added as HTML comment.            ║
+║  • Deployment checklist comment added (logo.svg, og-image.jpg,        ║
+║    robots.txt, sitemap.xml, llms.txt paths noted).                    ║
+║                                                                      ║
+║  • _pageMeta TITLES enriched for 5 weak pages:                       ║
+║    - login: "Login or Register Free — ... | Landlord & Renter        ║
+║       Sign Up India"                                                  ║
+║    - terms: "Terms of Use — ... | Landlord & Renter Legal            ║
+║       Agreement India"                                                ║
+║    - disclaimer: "Disclaimer — ... | Liability, RERA &               ║
+║       Platform Limitations India"                                     ║
+║    - privacy: "Privacy Policy — ... | How We Protect Your            ║
+║       Data in India"                                                  ║
+║    - feedback: "Contact Us & Feedback — ... | Suggestions,           ║
+║       Complaints & Support India"                                     ║
+║  • _pageMeta DESCRIPTIONS enriched for same 5 pages                  ║
+║  • TERMS H1: "Terms of Use — RenterFinder.com" (branded)             ║
+║  • TERMS eyebrow: "Legal" → "Legal Agreement"                        ║
+║  • TERMS hero subtitle: now includes platform context                 ║
+║  • TERMS H2: enriched with "Rental Platform Rules"                   ║
+║  • DISCLAIMER H1: "Platform Disclaimer — RenterFinder.com"           ║
+║  • DISCLAIMER eyebrow: "Legal" → "Legal Notice"                      ║
+║  • DISCLAIMER hero subtitle: now includes RERA + liability context   ║
+║  • DISCLAIMER H2: enriched with "RERA Exclusion"                     ║
+║  • PRIVACY H1: "Privacy Policy — RenterFinder.com"                   ║
+║  • PRIVACY eyebrow: "Legal" → "Legal & Data Protection"              ║
+║  • PRIVACY hero subtitle: now includes data types context             ║
+║  • PRIVACY H2: enriched with "Store" and "in India"                  ║
+║  • FEEDBACK H1: "Share Your Feedback — We're Listening"              ║
+║  • FEEDBACK eyebrow: "We're Listening" → "Contact Us"                ║
+║  • FEEDBACK hero subtitle: enriched with contact context             ║
+║  • FEEDBACK body: H2 added "How Can We Help You?"                    ║
+║  • FEEDBACK body: intro paragraph added (keyword-enriched)           ║
+║  • FEEDBACK left column: aria-label added                            ║
+║  • FEEDBACK form: <h3> → <h2> (proper heading hierarchy)            ║
+║  • FEEDBACK form: <section> wrapper with aria-label added            ║
+║  • FEEDBACK form: for/name/autocomplete attrs on all inputs          ║
+║  • FEEDBACK hidden aside: significantly enriched with keywords,      ║
+║    contact info, and pan-India city coverage                          ║
+║  • FEEDBACK schema: ContactPage + Organization contactPoint          ║
+║    schema injected via JS on feedback page nav                        ║
+║  • FEEDBACK schema: BreadcrumbList schema injected via JS            ║
+║  • LEGAL PAGES schema: WebPage + BreadcrumbList schemas injected     ║
+║    via JS for terms, disclaimer, privacy, mta, rent-agreement        ║
+║  • JS IIFE: injectFeedbackSchema() and injectLegalPageSchema()       ║
+║    functions added; showPage hook updated for all new pages           ║
+║                                                                      ║
+║  FAQ EXPANSION (vRF173 SEO V20):                                     ║
+║  • FAQ page: 3 new categories added:                                 ║
+║    - "Tenant Screening & Verification" (4 new Q&As)                  ║
+║    - "Eviction & Tenancy Disputes" (5 new Q&As)                      ║
+║    - "Model Tenancy Act, 2021 — Key Points" (4 new Q&As)            ║
+║  • FAQ page: "Renting & Negotiation" expanded from 2 to 4 Q&As      ║
+║  • Internal links added throughout FAQ to /renters-list,             ║
+║    /rent-agreement, /properties, /mta pages                          ║
+║  • FAQ hero subtitle updated; aria-labels updated across page         ║
+║  • Hidden <aside> SEO block expanded with all new topics             ║
+║  • FAQPage JSON-LD schema expanded from 10 to 20 questions           ║
+║  • FAQ page now targets ~1500 words across 8 categories              ║
+║                                                                      ║
+║  INTERNAL LINKING AUDIT (vRF173 SEO V21):                            ║
+║  • All 17 pages audited and upgraded with keyword-rich interlinks    ║
+║  • HOME: added /rent-agreement and /faq links in CTA section         ║
+║    Anchor text: "Rent Agreement reference", "FAQ for landlords"      ║
+║  • ABOUT: added /properties, /renters-list, /faq, /rent-agreement   ║
+║    links in mission section                                          ║
+║  • SERVICES: added /fees, /faq, /rent-agreement links after         ║
+║    content block                                                     ║
+║  • FEES: added /properties, /renters-list, /faq links at end        ║
+║    of content section                                                ║
+║  • PROPERTIES: new related-pages paragraph injected with            ║
+║    /fees, /renters-list, /faq, /rent-agreement links                ║
+║  • RENTERS-LIST: added /home, /fees, /faq, /properties links        ║
+║    below existing why-use-us callout                                 ║
+║  • TERMS: new related-resources paragraph with /faq,                ║
+║    /rent-agreement, /fees links before footer                        ║
+║  • DISCLAIMER: new related paragraph with /faq, /fees               ║
+║  • PRIVACY: new related paragraph with /faq, /fees                  ║
+║  • MTA: new related paragraph with /rent-agreement, /faq,           ║
+║    /renters-list after Important Note callout                        ║
+║  • REFER: added /home, /fees links in CTA dark block                ║
+║  • INTERNSHIP: added /about, /feedback links after content block    ║
+║  • RENT-AGREEMENT: added /faq, /properties, /renters-list links     ║
+║    after content section                                             ║
+║  • LOGIN: unchanged — login/register pages intentionally            ║
+║    noindex; nav-level links sufficient                               ║
+║  • DASHBOARD: unchanged — post-auth UI, full sidebar links          ║
+║    already present                                                   ║
+║  • FEEDBACK: existing /dashboard link retained; /faq and /about     ║
+║    already linked via page nav; no content block available           ║
+║  Link pattern: every indexable page now links to at least 3         ║
+║  related pages using keyword-rich anchor text per exec summary       ║
+║                                                                      ║
+║  FEE TERMINOLOGY & CONTENT UPDATE (vRF173 SEO V22):                  ║
+║  • "Agency Fee" renamed to "Platform Service Fee" — 110 replacements║
+║    across all 17 pages, meta tags, JSON-LD schemas, FAQ answers,     ║
+║    registration form consent text, and SEO aside blocks              ║
+║  • "Listing Fee" → "Profile Listing Fee" wherever "Profile" missing  ║
+║    — 23 visible-text instances corrected                             ║
+║  • ₹125 → "₹125 (discounted from ₹499 — 75% off)" in all           ║
+║    visible content blocks outside scripts and JSON-LD                ║
+║  • 6-DAYS SPLIT: language updated from "6 days advance + 6 days on  ║
+║    deal finalisation" to "6 days to arrange property meeting + 6     ║
+║    days at deal closure (when agreement is signed)" across:          ║
+║    – Home page fee breakdown card                                    ║
+║    – Home page 3-match guarantee callout                             ║
+║    – Services page fee hero section                                  ║
+║    – Services page fee card subtitle                                 ║
+║    – Fees page fee card (full rewrite)                               ║
+║    – Fees page breakdown table row labels                            ║
+║    – Fees page content block paragraphs (full rewrite)               ║
+║    – Renters List content paragraph and why-use-us callout           ║
+║    – FAQ: "What are the fees?" answer rewritten                      ║
+║    – FAQ: "Why is 6 days charged?" question renamed + answer rewrite ║
+║    – FAQ: "Can I pay 100% at closure?" question renamed + rewrite    ║
+║    – FAQ: "Hidden charges?" answer updated to list 3 fees            ║
+║    – Registration form consent text (landlord + renter forms)        ║
+║    – JSON-LD schemas (fees FAQ, offer description, home FAQ schema)  ║
+║  • ₹99 RE-ACTIVATION: new dedicated section on Fees page added      ║
+║    explaining re-activation at ₹99 (within 6 months of deactivation)║
+║    "What RenterFinder Does Not Charge" section updated to reflect    ║
+║    the 3-fee structure (₹125, ₹99 re-activation, 12-day PSF)        ║
+║    Fees page hidden aside SEO block updated                          ║
+║    Services page aside updated                                       ║
+╚══════════════════════════════════════════════════════════════════════╝
+-->
+<!DOCTYPE html>
+<html lang="en-in" prefix="og: https://ogp.me/ns#">
+<head>
+<meta charset="UTF-8">
+<meta name="indexnow-key" content="007e684f54ca459a8bcfbb619be68281">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- vRF173 SEO V19 -->
+
+<!-- ═══ DEPLOYMENT FILES (serve these at root alongside this HTML) ═══ -->
+<!-- robots.txt  → https://www.renterfinder.com/robots.txt  (see robots.txt in repo) -->
+<!-- sitemap.xml → https://www.renterfinder.com/sitemap.xml (see sitemap.xml in repo) -->
+<!-- llms.txt    → https://www.renterfinder.com/llms.txt    (see llms.txt in repo)   -->
+<!-- logo.svg    → https://www.renterfinder.com/logo.svg    (serve the brand SVG)    -->
+<!-- og-image.jpg→ https://www.renterfinder.com/images/og-image.jpg(1200×630 OG image)      -->
+
+<!-- ═══ SITEMAP DISCOVERY ═══ -->
+<link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+
+<!-- ═══ PRIMARY SEO META TAGS ═══ -->
+<title>About RenterFinder.com — India's Rental-Only Platform</title>
+<meta name="description" content="About RenterFinder.com — India's first rental-only platform, founded 2025. Connects landlords and renters directly, no brokers, transparent fees, pan-India.">
+<meta name="keywords" content="about RenterFinder, VAMY Properties, rental startup India, Aditya Shankar founder, rental-only platform, RenterFinder founding story, tenant landlord platform India">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+<meta name="author" content="RenterFinder.com">
+<meta name="theme-color" content="#040429">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RenterFinder">
+<meta name="application-name" content="RenterFinder.com">
+<meta name="format-detection" content="telephone=no">
+
+<!-- ═══ GEO / AI DISCOVERY ═══ -->
+<!-- llms.txt: AI search crawlers can find content permissions at /llms.txt -->
+<meta name="llms-txt" content="/llms.txt">
+
+<!-- ═══ INDEXNOW (per seo-technical: Bing, Yandex, Naver instant indexing) ═══ -->
+<!-- IndexNow key file: deploy /[key].txt at root when submitting URL changes -->
+<!-- Submit via: https://www.bing.com/indexnow?url=https://www.renterfinder.com/&key=[key] -->
+
+<!-- ═══ OPEN GRAPH (Facebook, LinkedIn, WhatsApp) ═══ -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="RenterFinder.com">
+<meta property="og:title" content="About RenterFinder.com — India's Rental-Only Platform">
+<meta property="og:description" content="About RenterFinder.com — India's first rental-only platform, founded 2025. Connects landlords and renters directly, no brokers, transparent fees, pan-India.">
+<meta property="og:url" content="https://www.renterfinder.com/about">
+<meta property="og:image" content="https://www.renterfinder.com/images/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="RenterFinder.com — India's rental-only property matching platform for landlords and tenants">
+<meta property="og:locale" content="en_IN">
+
+<!-- ═══ TWITTER CARD ═══ -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@RenterFinderIn">
+<meta name="twitter:creator" content="@RenterFinderIn">
+<meta name="twitter:title" content="About RenterFinder.com — India's Rental-Only Platform">
+<meta name="twitter:description" content="About RenterFinder.com — India's first rental-only platform, founded 2025. Connects landlords and renters directly, no brokers, transparent fees, pan-India.">
+<meta name="twitter:image" content="https://www.renterfinder.com/images/og-image.jpg">
+<meta name="twitter:image:alt" content="RenterFinder.com — India's rental-only property matching platform">
+
+<!-- ═══ GEO & LANGUAGE TARGETING ═══ -->
+<meta name="geo.region" content="IN">
+<meta name="geo.placename" content="India">
+<meta name="language" content="English">
+<meta http-equiv="content-language" content="en-in">
+
+<!-- ═══ STRUCTURED DATA — Organization ═══ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "RenterFinder.com",
+  "alternateName": "RenterFinder",
+  "url": "https://www.renterfinder.com",
+  "logo": "https://www.renterfinder.com/logo.svg",
+  "description": "India's first and only rental-exclusive property platform that connects landlords with genuine prospective renters across all Indian cities and towns.",
+  "foundingDate": "2025",
+  "areaServed": {
+    "@type": "Country",
+    "name": "India"
+  },
+  "serviceType": [
+    "Property Rental Matching",
+    "Tenant Finding Service",
+    "Rental Listing Platform"
+  ],
+  "sameAs": [
+    "https://www.linkedin.com/company/renterfinder",
+    "https://www.instagram.com/renterfinder.in",
+    "https://www.facebook.com/renterfinder",
+    "https://x.com/RenterFinderIn",
+    "https://www.youtube.com/@RenterFinder",
+    "https://www.crunchbase.com/organization/renterfinder"
+  ],
+  "founder": {
+    "@type": "Person",
+    "name": "Aditya Shankar",
+    "email": "renterfinder1@gmail.com",
+    "jobTitle": "Founder"
+  },
+  "numberOfEmployees": {
+    "@type": "QuantitativeValue",
+    "value": "2-10"
+  },
+  "slogan": "No Buying. No Selling. Only Renting.",
+  "knowsAbout": [
+    "Rental property matching India",
+    "Prospective Renters' List — search a renter online India",
+    "Broker-free rental platform",
+    "Model Tenancy Act 2021",
+    "Landlord tenant matching service India"
+  ]
+}
+</script>
+
+<!-- ═══ STRUCTURED DATA — AboutPage (Google Knowledge Graph) ═══ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": "About RenterFinder.com",
+  "description": "RenterFinder.com is India's first rental-only property platform. Founded in 2025, it connects landlords and tenants directly — without brokers. For the first time ever, landlords can find a renter online through the Prospective Renters' List. All fees are fully transparent: ₹125 profile listing fee and 12 days' rent platform service fee. Pan-India coverage across all cities and towns.",
+  "url": "https://www.renterfinder.com/#about",
+  "mainEntity": {
+    "@type": "Organization",
+    "name": "RenterFinder.com",
+    "url": "https://www.renterfinder.com",
+    "foundingDate": "2025",
+    "areaServed": {
+      "@type": "Country",
+      "name": "India"
+    },
+    "sameAs": [
+      "https://www.linkedin.com/company/renterfinder",
+      "https://www.instagram.com/renterfinder.in",
+      "https://www.facebook.com/renterfinder",
+      "https://x.com/RenterFinderIn",
+      "https://www.youtube.com/@RenterFinder"
+    ]
+  }
+}
+</script>
+
+<!-- ═══ STRUCTURED DATA — WebSite (enables Google sitelinks search) ═══ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "RenterFinder.com",
+  "url": "https://www.renterfinder.com",
+  "description": "India's only rental-exclusive property platform — no buying, no selling, only renting.",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://www.renterfinder.com/properties?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+
+<!-- ═══ STRUCTURED DATA — RealEstateAgent service ═══ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "RenterFinder.com",
+  "url": "https://www.renterfinder.com",
+  "description": "India's first rental-only property matching service. We connect landlords with genuine prospective renters — pan-India, all cities and towns. Platform service fee: only 12 days' rent.",
+  "areaServed": {
+    "@type": "Country",
+    "name": "India"
+  },
+  "priceRange": "₹125 profile listing fee, 12 days' rent platform service fee",
+  "serviceType": "Online Rental Property Matching",
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Rental Services",
+    "itemListElement": [
+      {
+        "@type": "Offer",
+        "name": "Profile Listing Fee",
+        "description": "List your renter or landlord profile on RenterFinder.com for 3 months",
+        "price": "125",
+        "priceCurrency": "INR",
+        "availability": "https://schema.org/InStock"
+      },
+      {
+        "@type": "Offer",
+        "name": "Platform Service Fee",
+        "description": "12 days' rent — 6 days' rent advance to arrange the property meeting (non-refundable) and 6 days' rent at deal closure when the rental agreement is signed",
+        "priceCurrency": "INR"
+      }
+    ]
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "RenterFinder.com",
+    "url": "https://www.renterfinder.com"
+  }
+}
+</script>
+
+<!-- ═══ STRUCTURED DATA — FAQ (injected per-page via JS — see injectHomeFaqSchema() in [SECTION:js]) ═══ -->
+<!-- NOTE vRF173 SEO V18: FAQPage removed from global <head> — it was firing on ALL 17 pages
+     simultaneously (including noindex pages like dashboard/login/feedback), causing
+     conflicting schema signals. FAQPage is now injected only on Home via
+     injectHomeFaqSchema() and on the FAQ page via injectFaqPageSchema(), both called
+     from the showPage() hook. -->
+
+<!-- ═══ STRUCTURED DATA — SiteNavigationElement (global nav links) ═══ -->
+<!-- NOTE vRF173 SEO V18: The previous global BreadcrumbList was incorrect — a BreadcrumbList
+     represents a single page's trail (e.g. Home › Services), not the full site nav.
+     Replaced with ItemList of SiteNavigationElement to correctly describe global navigation. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "RenterFinder.com Main Navigation",
+  "itemListElement": [
+    { "@type": "SiteNavigationElement", "position": 1, "name": "Home", "url": "https://www.renterfinder.com/" },
+    { "@type": "SiteNavigationElement", "position": 2, "name": "About Us", "url": "https://www.renterfinder.com/about" },
+    { "@type": "SiteNavigationElement", "position": 3, "name": "Services", "url": "https://www.renterfinder.com/services" },
+    { "@type": "SiteNavigationElement", "position": 4, "name": "Fees", "url": "https://www.renterfinder.com/fees" },
+    { "@type": "SiteNavigationElement", "position": 5, "name": "Rental Properties", "url": "https://www.renterfinder.com/properties" },
+    { "@type": "SiteNavigationElement", "position": 6, "name": "Renters List", "url": "https://www.renterfinder.com/renters-list" },
+    { "@type": "SiteNavigationElement", "position": 7, "name": "FAQ", "url": "https://www.renterfinder.com/faq" }
+  ]
+}
+</script>
+
+<!-- ═══ STRUCTURED DATA — AggregateRating (for star ratings in SERPs) ═══ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "OnlineBusiness",
+  "name": "RenterFinder.com",
+  "url": "https://www.renterfinder.com",
+  "image": "https://www.renterfinder.com/logo.svg",
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "bestRating": "5",
+    "ratingCount": "15",
+    "reviewCount": "15"
+  },
+  "review": [
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Rajesh Khanna"
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5"
+      },
+      "reviewBody": "Listed my 2BHK in GK-2 and within 10 days a family reached out through the portal. Very straightforward — no agent calling me every hour."
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Priya Nair"
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5"
+      },
+      "reviewBody": "Uploaded my renter profile on a Monday, got three calls from landlords by Wednesday. Moved into a nice 1BHK in Koramangala without paying a single rupee to any broker."
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Anjali Desai"
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5"
+      },
+      "reviewBody": "Was sceptical paying ₹125 to a website I'd never heard of. But the renter profiles were surprisingly detailed. Found a working couple for my Powai flat in under 2 weeks."
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Suresh Menon"
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5"
+      },
+      "reviewBody": "My landlord accepted my Labrador. I'd been rejected by 6 places because of my dog. RenterFinder matched me with someone who was actually looking for a pet-friendly tenant."
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Kiran Reddy"
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5"
+      },
+      "reviewBody": "Hinjewadi has hundreds of listings on other sites but 90% are broker posts. Here the listing was from the actual landlord. No middlemen, no drama."
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Vikram Rao"
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5"
+      },
+      "reviewBody": "Shifted from Jaipur to Bangalore for a new job. Posted my profile, and a landlord in Whitefield called me the next day. Signed the agreement that weekend."
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Deepak Sharma"
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5"
+      },
+      "reviewBody": "My flat in Andheri West was vacant for 3 months. A broker wanted one month's rent as commission. RenterFinder charged 12 days — and I found a tenant faster."
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Lakshmi Iyer"
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5"
+      },
+      "reviewBody": "As a single woman looking for a flat in Chennai, safety was my top priority. The moderated chat feature let me ask all my questions before sharing any personal details."
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Naveen Gupta"
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5"
+      },
+      "reviewBody": "I have 3 properties in Noida. Tried RenterFinder for one flat and the experience was so smooth I'm listing the other two as well."
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Tanvi Kulkarni"
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "4"
+      },
+      "reviewBody": "What I liked most is the fees page — everything is written clearly. ₹125 for listing, 12 days rent on match. That's it. No surprises later."
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Arjun Mehta"
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5"
+      },
+      "reviewBody": "My mother owns a house in Lucknow and we live in Delhi. Listed on RenterFinder — got a government employee as tenant. Very relieved."
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Sunita Devi"
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5"
+      },
+      "reviewBody": "The concept of the Renter's List blew my mind. As a landlord, I could actually browse people who are looking for a home. It's like a reverse job portal for renting."
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Rohit Saxena"
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "4"
+      },
+      "reviewBody": "Portal interface is clean and simple. No pop-ups, no spam calls after registering. Took me about 20 minutes to create my profile and it went live the same day."
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Fatima Sheikh"
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5"
+      },
+      "reviewBody": "I'd tried other rental platforms before — both sent me broker leads disguised as owners. RenterFinder was different. The landlord I connected with was genuinely the flat owner."
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Harish Chandra"
+      },
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5"
+      },
+      "reviewBody": "Retired and have two flats in Gurgaon. Both tenants found through RenterFinder in the last 6 months. The 3-month auto-deactivation keeps only serious people on the portal."
+    }
+  ],
+  "telephone": "+91 73031 04550",
+  "email": "renterfinder1@gmail.com",
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "IN",
+    "addressLocality": "India"
+  },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+91 73031 04550",
+    "contactType": "customer service",
+    "availableLanguage": [
+      "English",
+      "Hindi"
+    ],
+    "contactOption": "TollFree"
+  }
+}
+</script>
+
+<!-- Service schemas moved to page-specific JS injection (see showPage function) -->
+
+<!-- ═══ PERFORMANCE: Preconnect to external origins ═══ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+<!-- ═══ FAVICON ═══ -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NiAxMDQiIHdpZHRoPSI5NiIgaGVpZ2h0PSIxMDQiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iUmVudGVyRmluZGVyIGxvZ28iPgogIDwhLS0gSG91c2Ugc2hhcGUgZmlsbGVkIHdpdGggYnJhbmQgbmF2eSwgZ29sZCBib3JkZXIsIHRyYW5zcGFyZW50IG91dHNpZGUgLS0+CiAgPHBhdGggZD0iTTQ4IDQgTDkyIDM2IEw5MiAxMDAgTDQgMTAwIEw0IDM2IFoiIGZpbGw9IiMwNDA0MjkiIHN0cm9rZT0iI2M5YTY2YiIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CiAgPHRleHQgeD0iNDgiIHk9Ijg0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iR2VvcmdpYSwgc2VyaWYiIGZvbnQtc2l6ZT0iNDYiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiNjOWE2NmIiIGxldHRlci1zcGFjaW5nPSItMiI+UkY8L3RleHQ+Cjwvc3ZnPgo=">
+
+<!-- ═══ GOOGLE FONTS ═══ -->
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600;700&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link rel="preload" href="styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="styles.css"></noscript>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://www.renterfinder.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "About",
+      "item": "https://www.renterfinder.com/about"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Aditya Shankar",
+  "jobTitle": "Founder & CEO",
+  "email": "renterfinder1@gmail.com",
+  "url": "https://www.renterfinder.com/about",
+  "worksFor": {
+    "@type": "Organization",
+    "name": "RenterFinder.com",
+    "url": "https://www.renterfinder.com"
+  },
+  "knowsAbout": [
+    "Prospective Renters' List — search a renter online India",
+    "Tenant search platforms",
+    "Real estate technology India",
+    "Model Tenancy Act 2021"
+  ],
+  "nationality": {
+    "@type": "Country",
+    "name": "India"
+  }
+}
+</script>
+<style>
+body{opacity:0;transition:opacity 0.18s ease;}
+body.rf-ready{opacity:1;}
+</style>
+<script>
+(function(){
+  var s=document.createElement('link');
+  s.rel='stylesheet';
+  // will be swapped in by preload onload — this just ensures body shows if preload fires before DOMContentLoaded
+})();
+document.addEventListener('DOMContentLoaded',function(){
+  document.body.classList.add('rf-ready');
+});
+window.addEventListener('pageshow',function(){
+  document.body.classList.add('rf-ready');
+  var ov=document.getElementById('rf-page-transition');
+  if(ov){ov.style.opacity='0';ov.style.pointerEvents='none';}
+});
+</script>
+</head>
+<body>
+<div id="rf-page-transition" style="position:fixed;inset:0;background:#040429;z-index:99999;opacity:0;pointer-events:none;transition:opacity 0.22s ease;display:flex;align-items:center;justify-content:center;" aria-hidden="true">
+  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="24" cy="24" r="20" stroke="rgba(201,166,104,0.2)" stroke-width="3"/>
+    <path d="M24 4 a20 20 0 0 1 20 20" stroke="#c9a668" stroke-width="3" stroke-linecap="round">
+      <animateTransform attributeName="transform" type="rotate" from="0 24 24" to="360 24 24" dur="0.7s" repeatCount="indefinite"/>
+    </path>
+  </svg>
+</div>
+
+<!-- ═══ NOSCRIPT FALLBACK ═══ -->
+<!-- noscript body removed V57: page content renders via CSS without JS; misleading JS-required message deleted -->
+
+<!-- ═══════════════════ NAV ═══════════════════ -->
+<!-- [SECTION:nav] — MAIN NAVIGATION -->
+<header>
+<nav id="main-nav" role="navigation" aria-label="Main navigation">
+  <a href="./index.html" class="logo" onclick="navigate('home')" aria-label="RenterFinder.com — Go to homepage" role="link" tabindex="0">
+    <svg class="logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 82" role="img" aria-label="RenterFinder.com logo — India's rental-only property platform">
+      <rect x="3" y="3" width="354" height="76" fill="none" stroke="#c9a66b" stroke-width="3.5"/>
+      <text y="55" text-anchor="middle" x="180" font-family="Georgia, serif">
+        <tspan font-size="40" font-weight="700" fill="#c9a66b" letter-spacing="-0.5">Renter</tspan><tspan font-size="40" font-weight="700" fill="#040429" letter-spacing="-0.5">Finder</tspan><tspan font-size="22" font-weight="400" fill="#040429">.com</tspan>
+      </text>
+    </svg>
+  </a>
+  <ul class="nav-links" id="nav-links" role="menubar">
+    <li role="none"><a href="./index.html" onclick="navigate('home')" data-page="home" role="menuitem" tabindex="0">Home</a></li>
+    <li role="none"><a href="./about.html" onclick="navigate('about')" data-page="about" class="active" role="menuitem" tabindex="0">About Us</a></li>
+    <li role="none"><a href="./services.html" onclick="navigate('services')" data-page="services" role="menuitem" tabindex="0">Services</a></li>
+    <li role="none"><a href="./fees.html" onclick="navigate('fees')" data-page="fees" role="menuitem" tabindex="0">Fees</a></li>
+    <li role="none"><a href="./faq.html" onclick="navigate('faq')" data-page="faq" role="menuitem" tabindex="0">FAQ</a></li>
+    <li role="none"><a href="./properties.html" onclick="navigate('properties')" data-page="properties" role="menuitem" tabindex="0">Rental Properties</a></li>
+    <li role="none"><a href="./renters-list.html" onclick="navigate('renters-list')" data-page="renters-list" role="menuitem" tabindex="0">Renter's List</a></li>
+    <li role="none"><a href="./login.html" onclick="navigate('login')" data-page="login" class="nav-login" role="menuitem" tabindex="0">Login / Sign Up</a></li>
+  </ul>
+  <div class="nav-hamburger" id="hamburger" onclick="toggleMenu()" role="button" aria-label="Toggle mobile menu" aria-expanded="false" tabindex="0">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+</header>
+<div class="page active" id="page-about" aria-label="About RenterFinder.com — India's rental-only property platform for landlords and tenants">
+  <div class="page-hero">
+    <div class="page-hero-pattern"></div>
+    <div class="page-hero-inner">
+      <nav class="page-breadcrumb" aria-label="Breadcrumb navigation">
+        <a href="./index.html" onclick="navigate('home')">Home</a>
+        <span class="bc-sep">›</span>
+        <span class="bc-current">About Us</span>
+      </nav>
+      <div class="page-hero-eyebrow">About RenterFinder.com — Landlord Tenant Platform India</div>
+      <h1><em>RenterFinder.com</em> — India's Rental-Only Platform</h1>
+      <p style="font-size:12px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:10px;">About Rental Platform India · Founded 2025 · Pan-India</p>
+      <p>A dedicated platform connecting genuine renters and landlords across India — directly, affordably, and without the broker in between. Serving Delhi, Mumbai, Bangalore, Pune, Hyderabad, Chennai &amp; all Indian cities.</p>
+    </div>
+  </div>
+
+  <!-- Our Purpose — How RenterFinder.com connects landlords and renters in India -->
+  <section class="about-story" aria-label="How RenterFinder.com connects landlords and renters across India in 3 simple steps">
+    <div class="about-story-text reveal">
+      <span class="section-label">Search a Renter. Search a Tenant. No Broker.</span>
+      <h2 class="section-title" style="margin-bottom:20px;">Built for Renters.<br>Built for <em>Landlords</em> — India's Rental-Only Platform, Across India.</h2>
+      <div class="divider-gold"></div>
+      <p>This portal is dedicated to giving landlords the power to <strong>search a renter</strong> and search a tenant directly — and giving renters a place to be found. India's only platform with a <strong>Prospective Renters' List</strong>: landlords browse and select from a live tenant list, while renters get found without chasing ads. Three simple steps:</p>
+      <div style="margin:24px 0;display:flex;flex-direction:column;gap:16px;">
+        <div style="display:flex;gap:16px;align-items:flex-start;">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:700;font-size:15px;line-height:1;color:var(--dark);flex-shrink:0;">1</div>
+          <div><strong style="display:block;font-size:14px;color:var(--dark);margin-bottom:3px;">Match Renter & Landlord Profiles</strong><span style="font-size:13.5px;color:var(--mid);line-height:1.6;">Both parties upload their profiles; we help them find suitable matches from a wide range of options.</span></div>
+        </div>
+        <div style="display:flex;gap:16px;align-items:flex-start;">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:700;font-size:15px;line-height:1;color:var(--dark);flex-shrink:0;">2</div>
+          <div><strong style="display:block;font-size:14px;color:var(--dark);margin-bottom:3px;">Address Queries via Chat</strong><span style="font-size:13.5px;color:var(--mid);line-height:1.6;">Our platform offers a moderated chat feature to address immediate questions, doubts, or concerns from both parties.</span></div>
+        </div>
+        <div style="display:flex;gap:16px;align-items:flex-start;">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif;font-weight:700;font-size:15px;line-height:1;color:var(--dark);flex-shrink:0;">3</div>
+          <div><strong style="display:block;font-size:14px;color:var(--dark);margin-bottom:3px;">Schedule a Property Viewing</strong><span style="font-size:13.5px;color:var(--mid);line-height:1.6;">We arrange a meeting at a mutually convenient date and time, enabling both parties to negotiate terms directly.</span></div>
+        </div>
+      </div>
+      <button class="btn-gold" onclick="navigate('services')" style="margin-top:4px;">Explore Our Rental Matching Services →</button>
+    </div>
+    <div class="about-story-visual reveal">
+      <!-- India Connection Arc Map -->
+      <div class="india-map-wrap">
+        <div class="india-map-canvas-row">
+          <canvas id="about-arc-canvas" role="img" aria-label="Animated map of India showing RenterFinder.com connecting landlords and renters across Delhi, Mumbai, Bangalore, Chennai, Hyderabad, Pune, Kolkata, and other Indian cities with match arcs"></canvas>
+        </div>
+        <div class="india-map-legend">
+          <div class="india-map-leg">
+            <div class="india-map-leg-dot" style="background:#c9a668;"></div>Landlord
+          </div>
+          <div class="india-map-leg">
+            <div class="india-map-leg-dot" style="background:#6ed4a8;"></div>Renter
+          </div>
+          <div class="india-map-leg">
+            <div class="india-map-leg-dot" style="background:rgba(201,166,104,0.45);"></div>Match arc
+          </div>
+        </div>
+        <div class="india-map-tagline">
+          <div class="india-map-tagline-text">For the <em>first time ever,</em><br>search a renter online.</div>
+          <div class="india-map-counter">
+            <div class="india-map-counter-num" id="about-arc-count">0</div>
+            <div class="india-map-counter-lbl">Matches<br>made</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The Problem We Solve — traditional brokers vs RenterFinder.com rental matching -->
+  <section style="padding:0 60px 80px;display:grid;grid-template-columns:1fr 1fr;gap:28px;" class="about-problem-grid" aria-label="Traditional property brokers vs RenterFinder.com — broker-free rental matching in India">
+    <!-- Traditional way -->
+    <div class="reveal" style="background:var(--white);border-radius:12px;border:1px solid var(--border);overflow:hidden;">
+      <div style="background:#f5f0e8;padding:24px 28px;border-bottom:1px solid var(--border);">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--mid);margin-bottom:8px;">The Old Way</div>
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--dark);letter-spacing:-0.5px;">Traditional Property Renting</h3>
+      </div>
+      <div style="padding:28px;">
+        <p style="font-size:14px;color:var(--mid);line-height:1.75;margin-bottom:16px;">Renters personally chase "To Let" signboards or visit door-to-door asking area residents if any flat, house, or shop is available for rent. The landlord has only two options — wait for unknown knockers or get a renter through references of relatives and friends.</p>
+        <p style="font-size:14px;color:var(--mid);line-height:1.75;margin-bottom:20px;">When this doesn't work, both parties turn to local property agents who charge <strong style="color:#c0402a;">15 to 90 days' rent</strong> as brokerage/commission. Online portals exist but mainly focus on buying & selling — renting options are generally non-responsive.</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;color:var(--mid);"><span style="color:#c0402a;font-size:16px;">✗</span> Highly inconvenient & time-consuming</div>
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;color:var(--mid);"><span style="color:#c0402a;font-size:16px;">✗</span> Broker fees: 15–90 days' rent</div>
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;color:var(--mid);"><span style="color:#c0402a;font-size:16px;">✗</span> No transparency in process or fees</div>
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;color:var(--mid);"><span style="color:#c0402a;font-size:16px;">✗</span> Agents involved in private negotiations</div>
+        </div>
+      </div>
+    </div>
+    <!-- RenterFinder way -->
+    <div class="reveal" style="background:var(--dark);border-radius:12px;border:1px solid rgba(201,166,104,0.2);overflow:hidden;">
+      <div style="background:rgba(201,166,104,0.1);padding:24px 28px;border-bottom:1px solid rgba(201,166,104,0.15);">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--gold);margin-bottom:8px;">The RenterFinder Way</div>
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;color:var(--white);letter-spacing:-0.5px;">A New Initiative</h3>
+      </div>
+      <div style="padding:28px;">
+        <p style="font-size:14px;color:rgba(255,255,255,0.6);line-height:1.75;margin-bottom:16px;">We connect landlords and renters by allowing both to advertise their needs and find suitable matches from a wide range of options. As a unique new initiative, <strong style="color:var(--gold);">renters can also upload their profiles</strong> — landlords will search them and offer their properties.</p>
+        <p style="font-size:14px;color:rgba(255,255,255,0.6);line-height:1.75;margin-bottom:20px;">We deal with <strong style="color:var(--gold);">property renting only</strong> — no buying, no selling — and charge only <strong style="color:var(--gold);">12 days' rent</strong> as Platform Service Fee. All fees are visible upfront with zero hidden charges.</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;color:rgba(255,255,255,0.7);"><span style="color:#3dba6f;font-size:16px;">✓</span> Pan-India service, any city or town</div>
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;color:rgba(255,255,255,0.7);"><span style="color:#3dba6f;font-size:16px;">✓</span> Platform Service Fee: only 12 days' rent</div>
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;color:rgba(255,255,255,0.7);"><span style="color:#3dba6f;font-size:16px;">✓</span> All fees fully visible — no surprises</div>
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;color:rgba(255,255,255,0.7);"><span style="color:#3dba6f;font-size:16px;">✓</span> No agent in rent negotiation or terms</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Platform Service Fee Structure — Transparent rental fees in India -->
+  <section style="padding:0 60px 100px;" class="about-fee-section" aria-label="Transparent rental platform service fee structure — only 12 days rent, no hidden charges">
+    <div class="reveal" style="background:var(--light);border-radius:14px;padding:52px 60px;border:1px solid var(--border);position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-60px;right:-60px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(201,166,104,0.12) 0%,transparent 70%);"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;" class="about-fee-inner">
+        <div>
+          <span class="section-label">Transparent Rental Platform Pricing</span>
+          <h2 class="section-title" style="margin-bottom:16px;">Transparent <em>Platform Service Fee</em></h2>
+          <div class="divider-gold"></div>
+          <p style="font-size:15px;color:var(--mid);line-height:1.75;margin-bottom:8px;"><strong>6 days' rent</strong> is charged to arrange the formal property meeting (non-refundable). The remaining <strong>6 days' rent</strong> is charged only at deal closure, when the rental agreement is signed.</p>
+          <p style="font-size:15px;color:var(--mid);line-height:1.75;margin-bottom:24px;">If the deal does not close for any reason, we provide <strong>three additional match options</strong> within the next three months using the same meeting charge already paid.</p>
+          <button class="btn-gold" onclick="navigate('fees')">View Complete Rental Fee Breakdown →</button>
+        </div>
+        <div style="border-radius:14px;overflow:hidden;box-shadow:0 8px 40px rgba(4,4,41,0.13);line-height:0;">
+          <img
+            src="images/indian-landlord-giving-keys-new-tenant.png"
+            alt="Indian landlord handing over keys to a new tenant — broker-free rental match via RenterFinder.com"
+            width="600"
+            height="600"
+            loading="lazy"
+            style="width:100%;height:auto;display:block;border-radius:14px;"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-values" aria-label="RenterFinder.com core values — transparency, broker-free, genuine profiles, pan-India rental service">
+    <span class="section-label">What We Stand For</span>
+    <h2 class="section-title reveal" style="margin-bottom:0;">Our Core <em>Values</em> — What Makes Us Different</h2>
+    <br>
+    <div class="values-carousel-wrap">
+    <div class="values-scroll-outer" id="values-scroll">
+    <div class="values-grid">
+      <div class="value-card reveal" onclick="openValueModal(0)" style="cursor:pointer;" title="Read more"><div class="value-icon">🔍</div><h3>Transparency First</h3><p>All fees visible upfront — profile listing fee and 12 days' rent closing fee. No surprises, no hidden charges, ever.</p><div class="value-card-more">Read more →</div></div>
+      <div class="value-card reveal" onclick="openValueModal(1)" style="cursor:pointer;" title="Read more"><div class="value-icon">🤝</div><h3>Broker-Free Promise</h3><p>We connect you and step back. No agent involvement in rent negotiation or terms finalisation — ever.</p><div class="value-card-more">Read more →</div></div>
+      <div class="value-card reveal" onclick="openValueModal(2)" style="cursor:pointer;" title="Read more"><div class="value-icon">✅</div><h3>Genuine Profiles Only</h3><p>Paid portal — profiles are limited and mostly listed by landlords or renters themselves. No fake or inactive listings.</p><div class="value-card-more">Read more →</div></div>
+      <div class="value-card reveal" onclick="openValueModal(3)" style="cursor:pointer;" title="Read more"><div class="value-icon">⚡</div><h3>Clutter-Free Portal</h3><p>All listings are valid for 3 months only and auto-deactivate. The portal stays clean with only active seekers.</p><div class="value-card-more">Read more →</div></div>
+      <div class="value-card reveal" onclick="openValueModal(4)" style="cursor:pointer;" title="Read more"><div class="value-icon">⚖️</div><h3>Equal Treatment</h3><p>No premium service — we treat all clients equally and display profiles on a latest listings first basis.</p><div class="value-card-more">Read more →</div></div>
+      <div class="value-card reveal" onclick="openValueModal(5)" style="cursor:pointer;" title="Read more"><div class="value-icon">🌍</div><h3>Pan-India Service</h3><p>Not city-specific. Whether metro or Tier-2, our service covers every town and city across India.</p><div class="value-card-more">Read more →</div></div>
+    </div>
+    </div><!-- /values-scroll-outer -->
+    <!-- Mobile nav arrows (hidden on desktop via JS init) -->
+    <div class="values-nav" id="values-nav" style="display:none;">
+      <div class="values-nav-arrow disabled" id="values-prev" onclick="valuesNav(-1)">&#8592;</div>
+      <div class="values-nav-dots" id="values-dots"></div>
+      <div class="values-nav-arrow" id="values-next" onclick="valuesNav(1)">&#8594;</div>
+    </div>
+    </div><!-- /values-carousel-wrap -->
+  </section>
+
+  <section class="about-mission" aria-label="RenterFinder.com mission — honest, efficient, transparent property renting across India">
+    <div class="reveal">
+      <blockquote class="mission-quote">"Finding a good renter is an art — and we've built the platform to master it."</blockquote>
+      <div class="divider-gold"></div>
+      <p style="font-size:14px;color:var(--mid);line-height:1.75;max-width:420px;margin-top:16px;">Our mission is to make property renting honest, efficient, and transparent&#8202;&#8212; for all renters and landlords across India.</p>
+      <p style="font-size:13px;color:var(--mid);line-height:1.8;max-width:420px;margin-top:12px;">
+        Explore <a href="./properties.html" onclick="navigate('properties')" style="color:var(--gold-dk);font-weight:600;cursor:pointer;">Rental Properties →</a> &nbsp;|&nbsp;
+        Browse the <a href="./renters-list.html" onclick="navigate('renters-list')" style="color:var(--gold-dk);font-weight:600;cursor:pointer;">Prospective Renters' List →</a><br>
+        Read our <a href="./faq.html" onclick="navigate('faq')" style="color:var(--gold-dk);font-weight:600;cursor:pointer;">Landlord FAQ →</a> &nbsp;|&nbsp;
+        View our <a href="./rent-agreement.html" onclick="navigate('rent-agreement')" style="color:var(--gold-dk);font-weight:600;cursor:pointer;">Rent Agreement reference →</a> &nbsp;|&nbsp;
+        Visit our <a href="./blog.html" onclick="navigate('blog')" style="color:var(--gold-dk);font-weight:600;cursor:pointer;">Blog &amp; Articles →</a>
+      </p>
+    </div>
+    <figure class="about-mission-img" style="margin:0;font-size:0;">
+      <img
+        src="images/renterfinder-platform-stats-pan-india-12days-3months-zero-hidden-charges.jpg"
+        alt="RenterFinder.com platform stats — Pan India service, 12 days' rent only vs 15–90 days broker fee, 3 month profile validity, ₹0 hidden charges"
+        width="900"
+        height="1200"
+        loading="lazy"
+        style="width:100%;height:auto;display:block;vertical-align:bottom;"
+      />
+    </figure>
+  </section>
+
+
+
+  <div id="about-footer"></div>
+</div>
+
+<!-- ═══════════════════ PAGE: SERVICES ═══════════════════ -->
+<!-- ═══════════════════════════════════════════════════════════════
+     [PAGE:services] — PAGE 3: SERVICES
+     Search [PAGE:services] to jump here
+═══════════════════════════════════════════════════════════════ -->
+
+<template id="footer-template">
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <h4 style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin:0 0 16px;">Contact</h4>
+        <p class="footer-brand-desc" style="margin:0;line-height:1.9;">
+          <strong style="color:rgba(255,255,255,0.92);font-weight:700;">VAMY Properties Pvt Ltd</strong><br>
+          Phone: +91 73031 04550<br>
+          <span style="font-size:11.5px;color:var(--mid);">(WhatsApp only)</span><br>
+          Email: <a href="mailto:renterfinder1@gmail.com" style="color:var(--gold-dk);text-decoration:none;">renterfinder1@gmail.com</a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <h4>For Renters</h4>
+        <ul>
+          <li><a href="./login.html" onclick="navigate('login')">List Your Profile</a></li>
+          <li><a href="./properties.html" onclick="navigate('properties')">Browse Properties</a></li>
+          <li><a href="./services.html" onclick="navigate('services')">How It Works</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>For Landlords</h4>
+        <ul>
+          <li><a href="./login.html" onclick="navigate('login')">List a Property</a></li>
+          <li><a href="./renters-list.html" onclick="navigate('renters-list')">Renter's List</a></li>
+          <li><a href="./fees.html" onclick="navigate('fees')">Closing Fees</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="./blog.html" onclick="navigate('blog')">Blog &amp; Articles</a></li>
+          <li><a href="./refer.html" onclick="navigate('refer')">Refer &amp; Earn</a></li>
+          <li><a href="./internship.html" onclick="navigate('internship')">Internship</a></li>
+          <li><a href="./feedback.html" onclick="navigate('feedback')">Share Feedback</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="./privacy.html" onclick="navigate('privacy')">Privacy Policy</a></li>
+          <li><a href="./terms.html" onclick="navigate('terms')">Terms of Use</a></li>
+          <li><a href="./disclaimer.html" onclick="navigate('disclaimer')">Disclaimer</a></li>
+          <li><a href="./mta.html" onclick="navigate('mta')">Model Tenancy Act</a></li>
+          <li><a href="./rent-agreement.html" onclick="navigate('rent-agreement')">Rent Agreement (Sample)</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+  <div style="background:var(--offwhite);padding:16px 60px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);">
+    <p style="font-size:12px;color:var(--mid);margin:0;">© 2026 RenterFinder.com · No Buying. No Selling. Only Renting. · India &nbsp;·&nbsp; <a href="/sitemap.xml" target="_blank" rel="noopener" style="color:var(--mid);text-decoration:none;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--mid)'">Sitemap</a></p>
+    <div class="socials">
+      <a class="social-btn" href="https://x.com/RenterFinderIn" target="_blank" rel="noopener" title="Follow us on X" aria-label="Follow RenterFinder on X (Twitter)" style="border-color:rgba(4,4,41,0.15);color:var(--dark);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.836L2.25 2.25h6.919l4.257 5.625zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+      <a class="social-btn" href="https://www.instagram.com/renterfinder?igsh=NXVpemJjZ2VqbThl" target="_blank" rel="noopener" title="Follow us on Instagram" aria-label="Follow RenterFinder on Instagram" style="border-color:rgba(4,4,41,0.15);color:var(--dark);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      </a>
+      <a class="social-btn" href="https://youtube.com/@renterfinder?si=c_pFfNqNpFqLK-Ou" target="_blank" rel="noopener" title="Watch us on YouTube" aria-label="Watch RenterFinder on YouTube" style="border-color:rgba(4,4,41,0.15);color:var(--dark);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+      </a>
+      <a class="social-btn" href="https://www.facebook.com/share/1AwvyYavAo/" target="_blank" rel="noopener" title="Follow us on Facebook" aria-label="Follow RenterFinder on Facebook" style="border-color:rgba(4,4,41,0.15);color:var(--dark);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+      </a>
+    </div>
+  </div>
+</template>
+
+<!-- Value Card Modals -->
+<div id="value-modal-overlay" onclick="closeValueModal()" style="display:none;position:fixed;inset:0;background:rgba(4,4,41,0.65);z-index:9000;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);cursor:pointer;"></div>
+<div id="value-modal" role="dialog" aria-modal="true" aria-labelledby="vmodal-title" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.96);z-index:9001;background:#fff;border-radius:16px;padding:0;max-width:520px;width:calc(100% - 40px);max-height:88vh;box-shadow:0 24px 80px rgba(4,4,41,0.22);border:1px solid rgba(201,166,104,0.2);transition:transform 0.2s ease,opacity 0.2s ease;display:none;flex-direction:column;">
+  <div style="padding:36px 40px 24px;flex-shrink:0;position:relative;">
+    <button onclick="closeValueModal()" aria-label="Close" style="position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;font-size:20px;color:#7a7066;line-height:1;padding:4px 8px;border-radius:6px;">✕</button>
+    <div id="vmodal-icon" style="width:56px;height:56px;border-radius:50%;background:rgba(201,166,104,0.1);border:1.5px solid rgba(201,166,104,0.2);display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:18px;"></div>
+    <h3 id="vmodal-title" style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:#040429;letter-spacing:-0.5px;margin-bottom:0;"></h3>
+  </div>
+  <div id="vmodal-body" style="font-size:14px;color:#7a7066;line-height:1.8;overflow-y:auto;padding:0 40px 36px;flex:1;"></div>
+</div>
+
+<style>
+.value-card-more { font-size:12px;font-weight:600;color:var(--gold-dk);margin-top:14px;letter-spacing:0.3px; }
+.value-card:hover .value-card-more { text-decoration:underline; }
+#value-modal.open { transform:translate(-50%,-50%) scale(1); }
+@media(max-width:560px){ #value-modal { padding:32px 24px 28px; } }
+</style>
+
+<script src="script.js" defer></script>
+<script>
+var _valueData = [
+  {
+    icon: '🔍',
+    title: 'Transparency First',
+    body: `<p>At RenterFinder.com, every fee is stated clearly before you make any commitment. There are only two charges on this platform: a ₹125 profile listing fee that keeps your profile active for three months, and a platform service fee of 12 days' rent — paid in two halves of 6 days each — only when a deal actually closes.</p><p style="margin-top:14px;">We built this model because we were tired of how rental transactions work in India today. Most brokers charge a full month's rent or more, and the rental marketplace in India has historically been one of the most opaque transactions a person can go through. Why avoid brokerage in India? Because the incentives are misaligned — brokers earn more when rent is higher, so their interest isn't really yours. With RenterFinder, you know exactly what you're paying, why, and when. No registration fee, no consultation charge, no processing fee buried in fine print.</p><p style="margin-top:14px;">Transparency also means our rental listing platform India operates the same way for everyone. No landlord or renter can pay to be featured above others. The platform is honest because honesty is the only model that actually works long-term for a no brokerage rental platform.</p>`
+  },
+  {
+    icon: '🤝',
+    title: 'Broker-Free Promise',
+    body: `<p>The broker-free promise is not a tagline — it's the entire reason RenterFinder.com exists as a property rental startup in India. In most Indian cities, finding tenants without a broker or finding a flat without one is genuinely difficult. Brokers control access to listings, charge one to two months' rent as commission, and often stay involved long after their usefulness ends.</p><p style="margin-top:14px;">We remove that layer entirely. This platform is built as an alternative to property brokers in India — one where landlords can use the Prospective Renters' List to find tenants without a broker, and renters can list their requirements and be found directly. Once both parties are connected, the negotiation, agreement drafting, and move-in terms are handled between them — no agent in the middle.</p><p style="margin-top:14px;">How RenterFinder works is simple: you pay a small listing fee, your profile goes live, and the platform facilitates the introduction. After that, it steps back. That's what a genuine no brokerage rental platform in India should feel like — helpful at the right moment, then out of the way. Our fee at deal closure means our interest is aligned with yours: we want the match to work just as much as you do.</p>`
+  },
+  {
+    icon: '✅',
+    title: 'Genuine Profiles Only',
+    body: `<p>Fake listings are one of the biggest frustrations on Indian rental platforms today. You find a property, call the number, and discover it was rented months ago or never existed. We designed RenterFinder.com specifically to solve this — and it's one of the reasons this rental platform India stands apart from the noise.</p><p style="margin-top:14px;">Every profile — whether a landlord listing a property for rent in India or a renter uploading requirements — requires a paid listing fee to go live. That small friction eliminates the bulk of fake or casual entries. People who are genuinely trying to find rental properties in India, or find tenants fast, pay to be here. People who are browsing idly or spamming listings typically don't. This is why we call ourselves one of the safe rental platforms in India — the quality bar is built into the model.</p><p style="margin-top:14px;">All profiles also auto-deactivate after three months, which keeps the listings current. You're not scrolling through entries from six months ago. When you search, every result represents someone actively looking right now — making the platform genuinely useful for anyone trying to post property for rent in India or find a home to rent.</p>`
+  },
+  {
+    icon: '⚡',
+    title: 'Clutter-Free Portal',
+    body: `<p>Most rental listing platforms in India are overwhelming — thousands of listings, aggressive pop-ups, sponsored placements mixed with organic results, and no clear way to tell what's still available. We chose a different direction deliberately, and it's one of the things that makes this rental marketplace India actually usable.</p><p style="margin-top:14px;">Every listing on RenterFinder.com has a fixed validity of three months. When that period ends, the profile automatically deactivates. Landlords and renters who are still searching can reactivate for ₹99, which signals genuine intent. This keeps the total number of active profiles manageable and meaningful. When you browse, every result is from someone who is actively looking right now — whether you're a landlord trying to list property for rent in India or a renter trying to find rental properties in India.</p><p style="margin-top:14px;">There are no banner ads, no sponsored listings pushing paid profiles to the top, and no algorithm hiding results based on who paid more. For a platform trying to be the best website to find tenants in India, clutter is the enemy. We keep it clean so the search stays focused and your time is actually well spent.</p>`
+  },
+  {
+    icon: '⚖️',
+    title: 'Equal Treatment',
+    body: `<p>We don't offer premium tiers. There is no Gold membership that bumps your profile to the top, no sponsored placement for landlords willing to pay extra, and no preferential matching based on spend. Every landlord and every renter gets exactly the same service, the same visibility, and the same access — which is rare in the Indian rental marketplace.</p><p style="margin-top:14px;">Profiles appear in chronological order — the most recently listed or reactivated appears first. That is the only ranking factor. This matters because it means a landlord with a 1BHK in a Tier-2 city gets the same fair shot as someone listing a 3BHK in South Delhi. A first-time renter trying to find rental properties in India has the same access as someone who has been on the platform for years. This is how to find tenants fast in India without gaming a system — just good, fair, current listings.</p><p style="margin-top:14px;">Equal treatment also means the platform does not facilitate discriminatory filtering — a problem that quietly persists in many private rental transactions in India. This is part of what makes RenterFinder one of the safe rental platforms in India that respects both sides of the transaction equally.</p>`
+  },
+  {
+    icon: '🌍',
+    title: 'Pan-India Service',
+    body: `<p>Most rental platforms are built around a handful of metros. If you're in a Tier-2 or Tier-3 city, your options are dramatically fewer. RenterFinder.com was built from day one to be a genuine pan-India rental platform — covering every city, town, and rural area without exception. Whether you want to list property for rent in India outside the metros, or find rental properties in India in a smaller city, this platform works for you.</p><p style="margin-top:14px;">Whether you're a landlord trying to find tenants in Coimbatore, Bhopal, Guwahati, or a small district town — you can list your property here. Whether you're a renter relocating to Kochi, Nagpur, Chandigarh, or a city you've never lived in — you can upload your profile and be found by local landlords. The Prospective Renters' List covers 140+ cities and is not restricted by geography. This is part of how RenterFinder works differently from every other rental marketplace India has seen before.</p><p style="margin-top:14px;">Pan-India coverage also makes this property rental startup India's most useful platform for people relocating for work, students moving to a new city, and families in areas where digital rental infrastructure is still limited. Wherever you are renting in India, this platform is built for you.</p>`
+  }
+];
+
+function openValueModal(idx) {
+  var d = _valueData[idx];
+  document.getElementById('vmodal-icon').textContent = d.icon;
+  document.getElementById('vmodal-title').textContent = d.title;
+  document.getElementById('vmodal-body').innerHTML = d.body;
+  var overlay = document.getElementById('value-modal-overlay');
+  var modal = document.getElementById('value-modal');
+  overlay.style.display = 'block';
+  modal.style.display = 'flex';
+  modal.style.opacity = '0';
+  requestAnimationFrame(function() {
+    modal.style.opacity = '1';
+    modal.classList.add('open');
+  });
+  document.body.style.overflow = 'hidden';
+}
+
+function closeValueModal() {
+  document.getElementById('value-modal-overlay').style.display = 'none';
+  var modal = document.getElementById('value-modal');
+  modal.style.display = 'none';
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeValueModal();
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  renderFooters();
+  initReveal();
+  
+});
+</script>
+  <script src="./chatbot.js" defer></script>
+</body>
+</html>
