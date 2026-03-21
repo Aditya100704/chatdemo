@@ -505,6 +505,23 @@
   .reassign-check{width:16px;height:16px;border-radius:4px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;}
   .reassign-mod-row.selected .reassign-check{background:#10b981;border-color:#10b981;color:#fff;}
 
+
+  /* Chat row ••• details menu */
+  .chat-details-menu { position:relative; }
+  .chat-details-btn { list-style:none; padding:5px 9px; border-radius:6px; border:1px solid var(--border); background:rgba(255,255,255,0.04); cursor:pointer; font-size:13px; color:var(--muted); user-select:none; font-family:'Outfit',sans-serif; }
+  .chat-details-btn:hover, .chat-details-menu[open] .chat-details-btn { background:rgba(255,255,255,0.1); color:var(--text); }
+  .chat-details-panel { position:absolute; right:0; top:calc(100% + 4px); background:var(--card2,#1a1a2e); border:1px solid var(--border); border-radius:10px; padding:10px 14px; z-index:50; min-width:170px; box-shadow:0 8px 24px rgba(0,0,0,0.5); display:flex; flex-direction:column; gap:6px; }
+  .cdp-row { display:flex; justify-content:space-between; gap:12px; font-size:12px; }
+  .cdp-label { color:var(--muted); }
+  .cdp-row span:last-child { font-weight:600; color:var(--text); }
+
+  /* Reassign modal responsive */
+  @media (max-width: 600px) {
+    #reassign-modal { align-items:flex-start !important; padding:12px !important; overflow-y:auto !important; }
+    #reassign-modal .confirm-inner { max-width:100% !important; margin:auto; }
+    .reassign-mod-list { max-height:160px; }
+  }
+
 </style>
 </head>
 <body>
@@ -1080,41 +1097,39 @@
       ).join('');
       const row = document.createElement('div');
       row.className = `chat-row${hasFlg?' flagged':''}${isSusp?' suspended':''}${c.needsMonitoring?' needs-monitoring':''}`;
+      const slots2      = getJoinSlots(c.chatId);
+      const adminJoined = !!slots2.admin;
+      const modJoined2  = !!slots2.mod;
+      const joinUrl     = getJoinUrl(c.chatId);
       row.innerHTML = `
         <div class="chat-icon">🏠</div>
         <div class="chat-meta">
           <div class="chat-title">${escH(c.userA)} ↔ ${escH(c.userB)}</div>
           <div class="chat-sub">${escH(c.listing)} · ${lastTs}</div>
-        </div>
-        <div class="chat-badges">
-          ${isSusp?'<span class="badge badge-banned">Suspended</span>':hasFlg?'<span class="badge badge-flagged">⚠ Flagged</span>':'<span class="badge badge-active">Active</span>'}
-          ${c.needsMonitoring?'<span class="badge badge-monitor">🔴 Monitor</span>':''}
-          ${modIn?'<span class="badge badge-mod">🛡️ Joined</span>':''}
-          <span class="badge badge-msgs">${msgs.length} msg${msgs.length!==1?'s':''}</span>
-        </div>
-        <div class="chat-actions" style="flex-wrap:wrap;gap:6px;align-items:center;">
-          <div style="display:flex;flex-direction:column;gap:2px;">
-            <div class="assign-label">Assigned to</div>
-            <select class="assign-select" onchange="reassignChat('${c.chatId}',this.value)">
-              <option value="" ${!currentMod?'selected':''}>— Unassigned —</option>
-              ${modOptions}
-            </select>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;">
+            ${isSusp?'<span class="badge badge-banned">Suspended</span>':hasFlg?'<span class="badge badge-flagged">⚠ Flagged</span>':'<span class="badge badge-active">Active</span>'}
+            ${c.needsMonitoring?'<span class="badge badge-monitor">🔴 Monitor</span>':''}
           </div>
+        </div>
+        <div class="chat-actions" style="gap:6px;align-items:center;flex-shrink:0;">
+          <select class="assign-select" onchange="reassignChat('${c.chatId}',this.value)" title="Assigned to">
+            <option value="" ${!currentMod?'selected':''}>— Unassigned —</option>
+            ${modOptions}
+          </select>
           <button class="chat-action-btn btn-view" onclick="viewChat('${c.chatId}','${escH(c.listing)}','${escH(c.userA)}','${escH(c.userB)}')">View</button>
-          ${(()=>{
-            const slots = getJoinSlots(c.chatId);
-            const adminJoined = !!slots.admin;
-            const modJoined   = !!slots.mod;
-            const url = getJoinUrl(c.chatId);
-            if (adminJoined) {
-              return `<a href="${url}" target="_blank" class="chat-action-btn btn-join joined" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px;">✓ You Joined ↗</a>
-                      <button class="chat-action-btn" style="font-size:10px;opacity:0.6;" onclick="leaveChat('${c.chatId}')">Leave</button>`;
-            }
-            const modLabel = modJoined ? `🛡️ ${slots.mod.name} in chat` : '';
-            const canJoin  = !adminJoined;
-            return `<button class="chat-action-btn btn-join" onclick="joinChat('${c.chatId}')" ${canJoin?'':'disabled'}>🛡️ Join as Admin</button>
-                    ${modJoined?`<span style="font-size:10px;color:#6ee7b7;white-space:nowrap;">${escH(modLabel)}</span>`:''}`;
-          })()}
+          ${adminJoined
+            ? `<a href="${joinUrl}" target="_blank" class="chat-action-btn btn-join joined" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px;">✓ Joined ↗</a>
+               <button class="chat-action-btn" style="font-size:10px;opacity:0.6;padding:4px 8px;" onclick="leaveChat('${c.chatId}')">Leave</button>`
+            : `<button class="chat-action-btn btn-join" onclick="joinChat('${c.chatId}')">${modJoined2?`🛡️ ${escH(slots2.mod?.name||'')} active`:'🛡️ Join'}</button>`
+          }
+          <details class="chat-details-menu">
+            <summary class="chat-details-btn" title="More info">•••</summary>
+            <div class="chat-details-panel">
+              <div class="cdp-row"><span class="cdp-label">Messages</span><span>${msgs.length}</span></div>
+              <div class="cdp-row"><span class="cdp-label">Mod active</span><span>${modJoined2 ? escH(slots2.mod?.name||'Mod') : '—'}</span></div>
+              <div class="cdp-row"><span class="cdp-label">Admin joined</span><span>${adminJoined ? 'Yes' : 'No'}</span></div>
+            </div>
+          </details>
         </div>`;
       container.appendChild(row);
     });
@@ -1845,6 +1860,32 @@
         appSection.appendChild(div);
       });
       body.appendChild(appSection);
+    }
+
+    // ── Defaulters section
+    const userDefaulters = getDefaulters().filter(d => d.name === u.name);
+    if (userDefaulters.length) {
+      const defSection = document.createElement('div');
+      defSection.style.marginTop = '16px';
+      defSection.innerHTML = `<div class="upm-section-title" style="color:#f87171;">🚫 Defaulter History (${userDefaulters.length})</div>`;
+      userDefaulters.sort((a,b) => (b.ts||0)-(a.ts||0)).forEach(d => {
+        const row = document.createElement('div');
+        row.className = 'upm-flag-row';
+        row.style.borderColor = 'rgba(239,68,68,0.3)';
+        row.style.background  = 'rgba(239,68,68,0.05)';
+        row.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+            <div style="flex:1;">
+              <div class="upm-flag-type" style="color:#fca5a5;">Defaulted on deal · ${escH(d.role)}</div>
+              <div class="upm-flag-text">${escH(d.listing)}</div>
+              ${d.notes ? `<div class="upm-flag-text" style="color:var(--muted);font-size:11px;">${escH(d.notes)}</div>` : ''}
+              <div class="upm-flag-when">${fmtTs(d.ts)}</div>
+            </div>
+            <button onclick="removeDefaulter('${d.id}');openUserProfile('${uid}');" style="padding:3px 8px;border-radius:5px;font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;cursor:pointer;background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.1);white-space:nowrap;flex-shrink:0;" title="Remove from defaulters list">✕ Remove</button>
+          </div>`;
+        defSection.appendChild(row);
+      });
+      body.appendChild(defSection);
     }
 
     document.getElementById('user-profile-overlay').classList.add('show');
