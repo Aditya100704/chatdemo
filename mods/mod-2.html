@@ -503,6 +503,7 @@
     <div class="dash-tab" data-tab="chats" onclick="switchTab('chats')">💬 All Chats <span class="tab-count green" id="tab-chats-count">0</span></div>
     <div class="dash-tab" data-tab="flagged" onclick="switchTab('flagged')">🚩 Flagged <span class="tab-count" id="tab-flagged-count">0</span></div>
     <div class="dash-tab" data-tab="deals" onclick="switchTab('deals')">🤝 Deal Tracker <span class="tab-count green" id="tab-deals-count">0</span></div>
+    <div class="dash-tab" data-tab="archived" onclick="switchTab('archived')">📁 Archived <span class="tab-count" id="tab-archived-count" style="background:rgba(255,255,255,0.06);color:var(--muted);">0</span></div>
     <div class="dash-tab" data-tab="users" onclick="switchTab('users')">👥 Users</div>
   </div>
 
@@ -595,6 +596,15 @@
       </div>
     </div>
 
+    <!-- ARCHIVED CHATS -->
+    <div class="tab-panel" id="panel-archived">
+      <div class="section-header"><div class="section-title">Archived Chats</div><div class="section-sub">Inactive chats and completed deals</div></div>
+      <div class="tab-search-bar">
+        <div class="tab-search-wrap"><span class="search-icon">🔍</span><input class="tab-search-input" id="search-archived" type="text" placeholder="Search archived chats…" oninput="filterArchived()"></div>
+        <span class="tab-search-count" id="search-archived-count"></span>
+      </div>
+      <div id="archived-list"></div>
+    </div>
 
   </div>
 </div>
@@ -1293,7 +1303,8 @@
             <div class="deal-meta-item"><div class="deal-meta-label">Flags</div><div class="deal-meta-value" style="color:${chatFlags>0?'#fcd34d':'#34d399'};">${chatFlags}</div></div>
             <div class="deal-meta-item"><div class="deal-meta-label">Max Violations</div><div class="deal-meta-value" style="color:${maxV>=3?'#f87171':maxV>=1?'#fcd34d':'#34d399'};">${maxV} / 3</div></div>
           </div>
-          <div style="display:flex;gap:8px;justify-content:flex-end;">
+          <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
+            ${!c.dealComplete?`<button class="deal-stage-btn" style="background:rgba(59,130,246,0.12);color:#93c5fd;border:1px solid rgba(59,130,246,0.3);" onclick="unarchiveChat('${c.chatId}')">↩ Unarchive</button>`:""}
             <button class="chat-action-btn btn-view" onclick="viewChat('${c.chatId}','${escH(c.listing)}','${escH(c.userA)}','${escH(c.userB)}')">View Chat</button>
           </div>`;
         chatSection.appendChild(card);
@@ -1319,12 +1330,12 @@
     if ((vio[entry.senderIdentity] || 0) > 0) { vio[entry.senderIdentity]--; }
     _vioByChat[entry.chatId] = vio;
     RF.saveViolations(entry.chatId, vio).catch(e => console.warn('[RF] approveMessage vio', e));
-    updateLogEntry(logId, { status: 'approved' });
+    updateLogEntry(logId, { status: 'approved', actorName: MOD_NAME, actorTs: Date.now() });
     showToast('✓ Message approved and delivered', 'success');
     loadDashboard();
   }
 
-  function dismissFlag(logId) { updateLogEntry(logId, { status: 'dismissed' }); showToast('Flag dismissed', ''); loadDashboard(); }
+  function dismissFlag(logId) { updateLogEntry(logId, { status: 'dismissed', actorName: MOD_NAME, actorTs: Date.now() }); showToast('Flag dismissed', ''); loadDashboard(); }
 
   // ── JOIN CHAT ────────────────────────────────────────────────
   function joinChat(chatId) {
@@ -1336,6 +1347,7 @@
     }
     slots.mod = { id: 'mod-2', name: 'Mod 2', ts: Date.now() };
     saveJoinSlots(chatId, slots);
+    RF.updateChatMeta(chatId, { lastTs: Date.now() }).catch(()=>{});
     showToast('🛡️ Joined chat as Mod 2', 'info');
     window.open(getJoinUrl(chatId), '_blank');
     setTimeout(loadDashboard, 400);
@@ -1344,6 +1356,7 @@
     const slots = getJoinSlots(chatId);
     slots.mod = null;
     saveJoinSlots(chatId, slots);
+    RF.updateChatMeta(chatId, { lastTs: Date.now() }).catch(()=>{});
     showToast('Left chat', '');
     loadDashboard();
   }
@@ -1672,6 +1685,25 @@
       }
       container.appendChild(card);
     });
+  }
+
+
+  function unarchiveChat(chatId) {
+    const chat = _chatsIndex.find(c => c.chatId === chatId);
+    if (chat) { chat.archived = false; delete chat.archivedTs; delete chat.autoArchived; }
+    RF.updateChatMeta(chatId, { archived: false, archivedTs: null, autoArchived: false }).catch(e => console.warn('[RF] unarchive', e));
+    showToast('↩ Chat restored to active', 'success');
+    loadDashboard();
+  }
+
+  function archiveChatManual(chatId) {
+    const activeDeal = getDeals().find(d => d.chatId === chatId && d.stage !== 'Cancelled' && !d.stage_complete);
+    if (activeDeal) { showToast('Cannot archive a chat with an active deal.', 'error'); return; }
+    const chat = _chatsIndex.find(c => c.chatId === chatId);
+    if (chat) { chat.archived = true; chat.archivedTs = Date.now(); chat.manualArchived = true; }
+    RF.updateChatMeta(chatId, { archived: true, archivedTs: Date.now(), manualArchived: true }).catch(e => console.warn('[RF] archiveManual', e));
+    showToast('📁 Chat archived', 'success');
+    loadDashboard();
   }
 
   function filterHistory() {

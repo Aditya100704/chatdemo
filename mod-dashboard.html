@@ -296,9 +296,9 @@
   .modal-bubble img{max-width:180px;border-radius:8px;display:block;margin-top:4px;}
   .approved-badge-modal{display:inline-block;font-size:9px;font-weight:700;color:#059669;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:10px;padding:1px 7px;margin-top:2px;}
 
-  .confirm-box{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:1000;display:none;align-items:center;justify-content:center;}
+  .confirm-box{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:1000;display:none;align-items:center;justify-content:center;overflow-y:auto;padding:16px;box-sizing:border-box;}
   .confirm-box.show{display:flex;}
-  .confirm-inner{background:var(--card);border:1px solid rgba(239,68,68,0.3);border-radius:16px;padding:28px 32px;max-width:380px;width:100%;text-align:center;display:flex;flex-direction:column;gap:16px;}
+  .confirm-inner{background:var(--card);border:1px solid rgba(239,68,68,0.3);border-radius:16px;padding:28px 32px;max-width:380px;width:100%;text-align:center;display:flex;flex-direction:column;gap:16px;margin:auto;}
   .confirm-inner h3{font-size:18px;color:var(--text);}
   .confirm-inner p{font-size:13px;color:var(--muted);line-height:1.5;}
   .confirm-btns{display:flex;gap:10px;justify-content:center;}
@@ -1031,6 +1031,33 @@
 
   // ── LOAD DASHBOARD ───────────────────────────────────────────
   function loadDashboard() {
+    // ── Auto-archive: chats inactive 7 days (no active deal) ────
+    const _now = Date.now();
+    const SEVEN_DAYS  = 7  * 24 * 60 * 60 * 1000;
+    const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+    const _activeDealsSet = new Set(getDeals().filter(d => d.stage !== 'Cancelled' && !d.stage_complete).map(d => d.chatId));
+    _chatsIndex.forEach(chat => {
+      if (chat.archived || _activeDealsSet.has(chat.chatId)) return;
+      const lastActivity = chat.lastTs || chat.started || 0;
+      if (_now - lastActivity > SEVEN_DAYS) {
+        chat.archived = true; chat.archivedTs = _now; chat.autoArchived = true;
+        RF.updateChatMeta(chat.chatId, { archived: true, archivedTs: _now, autoArchived: true }).catch(()=>{});
+      }
+    });
+    // ── Auto-archive: deals inactive 30 days ────────────────────
+    let _dealAutoArchived = false;
+    getDeals().forEach(deal => {
+      if (deal.stage === 'Cancelled' || deal.stage_complete) return;
+      const lastAct = deal.lastActionTs || deal.initiatedTs || 0;
+      if (_now - lastAct > THIRTY_DAYS) {
+        deal.stage = 'Cancelled'; deal.cancelledTs = _now; deal.lastActionTs = _now;
+        deal.cancelNotes = 'Auto-archived: no activity for 30 days.';
+        postDealSystemMsg(deal.chatId, '🕒 This deal has been auto-archived due to 30 days of inactivity.');
+        _dealAutoArchived = true;
+      }
+    });
+    if (_dealAutoArchived) saveDeals(getDeals());
+
     assignNewChats();
     renderModPanel();
     const modLog  = getModLog();
@@ -1128,6 +1155,8 @@
               <div class="cdp-row"><span class="cdp-label">Messages</span><span>${msgs.length}</span></div>
               <div class="cdp-row"><span class="cdp-label">Mod active</span><span>${modJoined2 ? escH(slots2.mod?.name||'Mod') : '—'}</span></div>
               <div class="cdp-row"><span class="cdp-label">Admin joined</span><span>${adminJoined ? 'Yes' : 'No'}</span></div>
+              <hr style="border:none;border-top:1px solid rgba(255,255,255,0.06);margin:4px 0;">
+              <button onclick="archiveChatManual('${c.chatId}')" style="width:100%;text-align:left;padding:4px 0;background:transparent;border:none;color:var(--muted);font-size:12px;font-family:'Outfit',sans-serif;cursor:pointer;" onmouseover="this.style.color='#fcd34d'" onmouseout="this.style.color=''">📁 Archive Chat</button>
             </div>
           </details>
         </div>`;
@@ -1442,6 +1471,25 @@
     loadDashboard();
   }
 
+
+  function unarchiveChat(chatId) {
+    const chat = _chatsIndex.find(c => c.chatId === chatId);
+    if (chat) { chat.archived = false; delete chat.archivedTs; delete chat.autoArchived; }
+    RF.updateChatMeta(chatId, { archived: false, archivedTs: null, autoArchived: false }).catch(e => console.warn('[RF] unarchive', e));
+    showToast('↩ Chat restored to active', 'success');
+    loadDashboard();
+  }
+
+  function archiveChatManual(chatId) {
+    const activeDeal = getDeals().find(d => d.chatId === chatId && d.stage !== 'Cancelled' && !d.stage_complete);
+    if (activeDeal) { showToast('Cannot archive a chat with an active deal. Use Deal Tracker to cancel or complete first.', 'error'); return; }
+    const chat = _chatsIndex.find(c => c.chatId === chatId);
+    if (chat) { chat.archived = true; chat.archivedTs = Date.now(); chat.manualArchived = true; }
+    RF.updateChatMeta(chatId, { archived: true, archivedTs: Date.now(), manualArchived: true }).catch(e => console.warn('[RF] archiveManual', e));
+    showToast('📁 Chat archived', 'success');
+    loadDashboard();
+  }
+
   function reinstateDeal(chatId) {
     const deals = getDeals();
     const deal  = deals.find(d => d.chatId === chatId);
@@ -1569,7 +1617,8 @@
             <div class="deal-meta-item"><div class="deal-meta-label">Flags</div><div class="deal-meta-value" style="color:${chatFlags>0?'#fcd34d':'#34d399'};">${chatFlags}</div></div>
             <div class="deal-meta-item"><div class="deal-meta-label">Max Violations</div><div class="deal-meta-value" style="color:${maxV>=3?'#f87171':maxV>=1?'#fcd34d':'#34d399'};">${maxV} / 3</div></div>
           </div>
-          <div style="display:flex;gap:8px;justify-content:flex-end;">
+          <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
+            ${!c.dealComplete?`<button class="deal-stage-btn" style="background:rgba(59,130,246,0.12);color:#93c5fd;border:1px solid rgba(59,130,246,0.3);" onclick="unarchiveChat('${c.chatId}')">↩ Unarchive</button>`:""}
             <button class="chat-action-btn btn-view" onclick="viewChat('${c.chatId}','${escH(c.listing)}','${escH(c.userA)}','${escH(c.userB)}')">View Chat</button>
           </div>`;
         chatSection.appendChild(card);
@@ -1655,12 +1704,12 @@
     if ((vio[entry.senderIdentity] || 0) > 0) { vio[entry.senderIdentity]--; }
     _vioByChat[entry.chatId] = vio;
     RF.saveViolations(entry.chatId, vio).catch(e => console.warn('[RF] approveMessage vio', e));
-    updateLogEntry(logId, { status: 'approved' });
+    updateLogEntry(logId, { status: 'approved', actorName: 'Admin', actorTs: Date.now() });
     showToast('✓ Message approved and delivered', 'success');
     loadDashboard();
   }
 
-  function dismissFlag(logId) { updateLogEntry(logId, { status: 'dismissed' }); showToast('Flag dismissed', ''); loadDashboard(); }
+  function dismissFlag(logId) { updateLogEntry(logId, { status: 'dismissed', actorName: 'Admin', actorTs: Date.now() }); showToast('Flag dismissed', ''); loadDashboard(); }
 
   // ── JOIN CHAT ────────────────────────────────────────────────
   function joinChat(chatId) {
@@ -1672,6 +1721,7 @@
     }
     slots.admin = { id: 'admin', name: 'Admin', ts: Date.now() };
     saveJoinSlots(chatId, slots);
+    RF.updateChatMeta(chatId, { lastTs: Date.now() }).catch(()=>{});
     showToast('🛡️ Joined chat as Admin', 'info');
     window.open(getJoinUrl(chatId), '_blank');
     setTimeout(loadDashboard, 400);
@@ -1680,6 +1730,7 @@
     const slots = getJoinSlots(chatId);
     slots.admin = null;
     saveJoinSlots(chatId, slots);
+    RF.updateChatMeta(chatId, { lastTs: Date.now() }).catch(()=>{});
     showToast('Left chat', '');
     loadDashboard();
   }
@@ -2028,7 +2079,7 @@
             <div class="flag-badges"><span class="vt-badge ${vtClass}">${vtLabel}</span>${statusTag}</div>
           </div>
           <div class="flag-msg-box"><div class="flag-msg-label">Blocked Message</div><div class="flag-msg-text">${escH(item.text||'')}</div></div>
-          <div style="text-align:right;margin-top:6px;">${expiryNote}</div>`;
+          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;margin-top:6px;">${expiryNote}${item.actorName?`<span style="font-size:11px;color:var(--muted);">Actioned by <strong style="color:var(--text);">${escH(item.actorName)}</strong>${item.actorTs?" · "+new Date(item.actorTs).toLocaleString("en-IN",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}):""}</span>`:""}</div>`;
       } else {
         const statusTag = item.status==='reinstated'?'<span class="flag-status-tag status-approved">✓ Reinstated</span>':item.status==='denied'?'<span class="flag-status-tag status-dismissed">Denied</span>':'<span class="flag-count" style="background:rgba(124,58,237,0.15);color:#c4b5fd;border-color:rgba(124,58,237,0.3);">Pending</span>';
         card.innerHTML = `
@@ -2041,7 +2092,7 @@
             <div class="flag-badges">${statusTag}</div>
           </div>
           <div class="flag-msg-box"><div class="flag-msg-label" style="color:#a78bfa;">Appeal Text</div><div class="flag-msg-text">${escH(item.text||'')}</div></div>
-          <div style="text-align:right;margin-top:6px;">${expiryNote}</div>`;
+          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;margin-top:6px;">${expiryNote}${item.actorName?`<span style="font-size:11px;color:var(--muted);">Actioned by <strong style="color:var(--text);">${escH(item.actorName)}</strong>${item.actorTs?" · "+new Date(item.actorTs).toLocaleString("en-IN",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}):""}</span>`:""}</div>`;
       }
       container.appendChild(card);
     });
