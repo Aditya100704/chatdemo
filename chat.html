@@ -445,6 +445,11 @@
 
 <div class="mod-joined-banner" id="mod-joined-banner">🛡️ <strong style="margin-right:4px;" id="mod-joined-name">RenterFinder Moderator</strong> has joined this chat.</div>
 <div class="expiry-banner" id="expiry-banner">⏳ <span id="expiry-text"></span></div>
+
+<div id="mod-call-banner" style="background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(99,102,241,0.06));border-bottom:1px solid rgba(99,102,241,0.3);padding:8px 20px;font-size:12px;color:#a5b4fc;display:none;align-items:center;gap:8px;flex-shrink:0;">
+  <span id="mod-call-banner-text">💬 Your message has been sent to the moderator. They will reply here in the chat.</span>
+</div>
+<div class="expiry-banner" id="mod-reply-banner" style="background:#1e1b4b;border-bottom-color:rgba(99,102,241,0.4);display:none;cursor:pointer;" onclick="scrollToModReply()">💬 <span id="mod-reply-banner-text">Your moderator has replied — tap to view</span></div>
 <div class="expiry-banner" id="deal-cancelled-banner" style="background:#fff1f2;border-bottom-color:#fecdd3;display:none;">❌ <span id="deal-cancelled-text">This deal has been cancelled by RenterFinder moderation.</span></div>
 <div class="chat-messages" id="chat-messages"></div>
 
@@ -622,9 +627,17 @@
       <div class="modal-success">
         <div class="check">✅</div>
         <div class="modal-title" style="margin-bottom:8px;">Message Sent</div>
-        <p>Your moderator has been notified and will respond shortly.</p>
+        <p id="contact-mod-sent-sub">Your moderator has been notified. They will reply directly in this chat — look out for a purple message bubble.</p>
       </div>
-      <div class="modal-btns"><button class="modal-submit" onclick="closeContactMod()">Close</button></div>
+      <div id="contact-mod-mod-reply" style="display:none;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.25);border-radius:10px;padding:12px 14px;margin-top:4px;">
+        <div style="font-size:10px;font-weight:700;color:#a5b4fc;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px;">Moderator replied</div>
+        <div id="contact-mod-reply-text" style="font-size:13px;color:#e2e8f0;line-height:1.5;"></div>
+        <div id="contact-mod-reply-name" style="font-size:11px;color:rgba(99,102,241,0.7);margin-top:4px;"></div>
+      </div>
+      <div class="modal-btns" style="margin-top:8px;">
+        <button class="modal-cancel" onclick="scrollToModReply();closeContactMod()">View in Chat</button>
+        <button class="modal-submit" onclick="closeContactMod()">Close</button>
+      </div>
     </div>
   </div>
 </div>
@@ -921,6 +934,7 @@
     const avatarClass = isMod ? 'mod-av' : (isMe ? '' : 'other');
     const bubbleClass = isMod ? 'bubble mod-bubble' : 'bubble';
     const senderClass = isMod ? 'msg-sender mod-sender' : 'msg-sender';
+    const modReplyLabel = m.isModReply ? `<div style="font-size:10px;color:#a5b4fc;font-weight:600;letter-spacing:0.3px;margin-bottom:3px;">💬 Moderator reply to your request</div>` : '';
     const approvedHtml = m.moderatorApproved ? `<div class="approved-tag">✓ Moderator Approved</div>` : '';
 
     // Build bubble content — text or image
@@ -929,7 +943,7 @@
       bubbleContent = `<img src="${m.imageB64}" alt="image" onclick="openLightbox(this.src)">`;
       if (m.text) bubbleContent += `<div style="margin-top:6px;">${escH(m.text)}</div>`;
     } else {
-      bubbleContent = escH(m.text);
+      bubbleContent = (m.isModReply ? modReplyLabel : '') + escH(m.text);
     }
 
     // #6 Read receipt — only show on your own last message
@@ -1266,13 +1280,62 @@ Message: ${JSON.stringify(text)}`;
   }
 
 
+
+  // ── MOD REPLY NOTIFICATIONS ────────────────────────────────
+  function scrollToModReply() {
+    const msgs = document.querySelectorAll('#chat-messages .msg-row');
+    // Find the last mod-reply bubble and scroll to it
+    let lastMod = null;
+    msgs.forEach(el => { if (el.querySelector('.mod-bubble')) lastMod = el; });
+    if (lastMod) {
+      lastMod.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      lastMod.style.transition = 'box-shadow 0.3s';
+      lastMod.style.boxShadow = '0 0 0 2px rgba(99,102,241,0.6)';
+      setTimeout(() => { lastMod.style.boxShadow = ''; }, 2000);
+    }
+    const banner = document.getElementById('mod-reply-banner');
+    if (banner) banner.style.display = 'none';
+  }
+
+  function showModReplyToast() {
+    const toast = document.getElementById('mod-toast');
+    if (!toast) return;
+    toast.style.display = 'flex';
+    setTimeout(() => { toast.style.display = 'none'; }, 4000);
+  }
+
+  function updateContactModModal(msgs) {
+    // Update the contact modal to show the latest mod reply
+    const replies = msgs.filter(m => m.isModReply).sort((a,b) => b.ts - a.ts);
+    const latestReply = replies[0];
+    if (!latestReply) return;
+    const replyEl = document.getElementById('contact-mod-mod-reply');
+    if (replyEl) {
+      replyEl.style.display = '';
+      document.getElementById('contact-mod-reply-text').textContent = latestReply.text;
+      document.getElementById('contact-mod-reply-name').textContent =
+        latestReply.senderName + ' · ' + new Date(latestReply.ts).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+    }
+    // Switch success view text
+    const subEl = document.getElementById('contact-mod-sent-sub');
+    if (subEl) subEl.textContent = 'Your moderator has replied. You can see their message in the chat.';
+  }
+
   // ── CONTACT MOD ──────────────────────────────────────────────
   function openContactMod() {
     document.getElementById('contact-mod-text').value = '';
     document.getElementById('contact-mod-counter').textContent = '0 / 300';
     document.getElementById('contact-mod-text').style.borderColor = '';
-    document.getElementById('contact-mod-form-view').style.display = '';
-    document.getElementById('contact-mod-success-view').style.display = 'none';
+    // Check if there's already a mod reply — show that view instead of the form
+    const existingReplies = _messages.filter(m => m.isModReply);
+    if (existingReplies.length) {
+      document.getElementById('contact-mod-form-view').style.display = 'none';
+      document.getElementById('contact-mod-success-view').style.display = 'block';
+      updateContactModModal(_messages);
+    } else {
+      document.getElementById('contact-mod-form-view').style.display = '';
+      document.getElementById('contact-mod-success-view').style.display = 'none';
+    }
     document.getElementById('contact-mod-modal').classList.add('show');
   }
 
@@ -1304,6 +1367,19 @@ Message: ${JSON.stringify(text)}`;
         status: 'open'
       };
       await RF.saveModCall(call);
+      // Also post a visible message in the chat so both parties see the request
+      const sysMsg = {
+        id: Date.now() + 1,
+        chatId: CHAT_ID,
+        senderIdentity: 'SYS',
+        senderId: 'system',
+        senderName: 'System',
+        text: `💬 ${USERS[currentIdentity].name} (${USERS[currentIdentity].role}) contacted the moderator: "${text}"`,
+        ts: Date.now(),
+        isSystem: true,
+        isModContact: true
+      };
+      RF.saveMessage(CHAT_ID, sysMsg).catch(() => {});
       document.getElementById('contact-mod-form-view').style.display = 'none';
       document.getElementById('contact-mod-success-view').style.display = 'block';
     } catch(e) {
@@ -1321,9 +1397,18 @@ Message: ${JSON.stringify(text)}`;
 
   // 1. Messages — receives new msgs from other party AND mod-approved msgs
   RF.onMessages(CHAT_ID, function(msgs) {
+    const prevCount = _messages.filter(m => m.isModReply).length;
     _messages = msgs;
     renderMessages();
     markRead();
+    // Notify user if a new mod reply arrived
+    const newCount = msgs.filter(m => m.isModReply).length;
+    if (newCount > prevCount && currentIdentity !== 'MOD') {
+      const banner = document.getElementById('mod-reply-banner');
+      if (banner) banner.style.display = 'flex';
+      showModReplyToast();
+      updateContactModModal(msgs);
+    }
   });
 
   // 2. Chat meta — meeting, deal, joinSlots, violations, expiry
@@ -1345,6 +1430,29 @@ Message: ${JSON.stringify(text)}`;
     }
     checkExpiry();
     renderMessages();
+  });
+
+
+  // Mod call status — show banner when mod acknowledges the call
+  RF.onChatModCalls(CHAT_ID, function(calls) {
+    const myCalls = calls.filter(c => c.userId === MY_ID || c.userId === currentIdentity);
+    const banner = document.getElementById('mod-call-banner');
+    const bannerText = document.getElementById('mod-call-banner-text');
+    if (!banner) return;
+    if (!myCalls.length) { banner.style.display = 'none'; return; }
+    const latest = myCalls.sort((a,b) => (b.ts||0)-(a.ts||0))[0];
+    banner.style.display = 'flex';
+    if (latest.status === 'answered') {
+      bannerText.textContent = '✅ Your moderator has seen your message and replied in this chat.';
+      banner.style.background = 'linear-gradient(135deg,rgba(16,185,129,0.12),rgba(16,185,129,0.06))';
+      banner.style.borderBottomColor = 'rgba(16,185,129,0.3)';
+      bannerText.style.color = '#6ee7b7';
+    } else {
+      bannerText.textContent = '💬 Your message has been sent to the moderator. They will reply here in this chat.';
+      banner.style.background = 'linear-gradient(135deg,rgba(99,102,241,0.12),rgba(99,102,241,0.06))';
+      banner.style.borderBottomColor = 'rgba(99,102,241,0.3)';
+      bannerText.style.color = '#a5b4fc';
+    }
   });
 
   // Typing indicator stays localStorage (ephemeral same-device)

@@ -248,6 +248,17 @@ const RF = (function() {
     } catch(e) { console.error('[RF] onModCalls setup', e); return () => {}; }
   }
 
+  function onChatModCalls(chatId, cb) {
+    try {
+      return db.collection('modcalls')
+        .where('chatId', '==', chatId)
+        .onSnapshot(
+          snap => cb(snap.docs.map(d => d.data())),
+          e => console.error('[RF] onChatModCalls', e)
+        );
+    } catch(e) { console.error('[RF] onChatModCalls setup', e); return () => {}; }
+  }
+
   function onAllModCalls(cb) {
     return db.collection('modcalls')
       .onSnapshot(
@@ -267,7 +278,7 @@ const RF = (function() {
     banUser, unbanUser, onBanned,
     onAllChats, onDeals, deleteDeal, saveDefaulter,
     getUserChats, saveUserChats,
-    saveModCall, updateModCall, onModCalls, onAllModCalls,
+    saveModCall, updateModCall, onModCalls, onAllModCalls, onChatModCalls,
     postSystemMsg
   };
 

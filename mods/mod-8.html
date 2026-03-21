@@ -1731,27 +1731,48 @@
         </div>
         <div class="call-msg">${escH(c.message||'')}</div>
         ${answered && c.modReply
-          ? `<div class="call-replied-box"><div class="call-replied-label">Your reply</div><div class="call-replied-text">${escH(c.modReply)}</div></div>`
+          ? `<div class="call-replied-box"><div class="call-replied-label">✓ Your reply (sent in chat)</div><div class="call-replied-text">${escH(c.modReply)}</div></div>`
           : !answered ? `<div class="call-reply-area">
-              <textarea class="call-reply-input" id="call-reply-${c.id}" placeholder="Type your reply…" rows="2"></textarea>
-              <button class="call-reply-btn" onclick="replyAndAnswer(${c.id})">✓ Reply &amp; Answer</button>
-            </div>` : ''
-        }`;
+              <textarea class="call-reply-input" id="call-reply-${c.id}" placeholder="Type reply — it will appear in the user's chat…" rows="2"></textarea>
+              <button class="call-reply-btn" onclick="replyToCall('${c.chatId}', ${c.id})">✉ Send in Chat</button>
+            </div>` : ''}`;
       container.appendChild(card);
     });
   }
 
-  function replyAndAnswer(callId) {
+  function replyToCall(chatId, callId) {
     const input = document.getElementById(`call-reply-${callId}`);
     if (!input) return;
     const reply = input.value.trim();
     if (!reply) { input.style.borderColor = '#ef4444'; return; }
+    // Post reply as a MOD message directly into the chat
+    const msg = {
+      id: Date.now(),
+      senderIdentity: 'MOD',
+      senderId: MOD_ID,
+      senderName: MOD_NAME,
+      text: reply,
+      ts: Date.now(),
+      isMod: true,
+      isModReply: true,
+      chatId
+    };
+    RF.saveMessage(chatId, msg).catch(e => console.warn('[RF] replyToCall msg', e));
+    // Mark the call as answered
     const patch = { status: 'answered', modReply: reply, modReplierName: MOD_NAME, modRepliedTs: Date.now() };
     RF.updateModCall(callId, patch).catch(e => console.warn('[RF] updateModCall', e));
-    // Update in-memory immediately
     const call = _modCalls.find(c => c.id === callId);
     if (call) Object.assign(call, patch);
-    showToast('✓ Reply sent', 'success');
+    showToast('✉ Reply sent in chat', 'success');
+    renderCallsList();
+  }
+
+  function markCallAnswered(callId) {
+    const patch = { status: 'answered', modReplierName: MOD_NAME, modRepliedTs: Date.now() };
+    RF.updateModCall(callId, patch).catch(e => console.warn('[RF] updateModCall', e));
+    const call = _modCalls.find(c => c.id === callId);
+    if (call) Object.assign(call, patch);
+    showToast('✓ Marked as answered', 'success');
     renderCallsList();
   }
 
