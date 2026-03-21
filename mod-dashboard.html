@@ -1880,8 +1880,7 @@
       const approved = m.moderatorApproved ? ' [MOD APPROVED]' : '';
       lines.push(`[${time}] ${m.senderName}${approved}: ${m.text || '[Image]'}`);
     });
-    const blob = new Blob([lines.join('
-')], { type: 'text/plain' });
+    const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = `transcript_${_currentChatExport.chatId}_${Date.now()}.txt`;
