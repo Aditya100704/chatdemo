@@ -1674,7 +1674,7 @@
   // then call loadDashboard() so the existing v38 render functions pick it up.
   // Nothing in v38 mod-dashboard code is changed.
 
-  let _syncStarted = false;
+  var _syncStarted = false;
   function startFirestoreSync() {
     if (_syncStarted) return;
     _syncStarted = true;
