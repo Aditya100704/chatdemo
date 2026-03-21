@@ -627,6 +627,7 @@
   let pendingImageName = '';
   let isSending = false;
   let lastSendTime = 0;
+  const _isLocal = (location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1');
   const SEND_COOLDOWN_MS = 2000;    // #9 rate limit
   const CHAT_EXPIRY_DAYS = 60;      // #11 chat expiry
 
@@ -931,9 +932,19 @@
   // ── AI MODERATION ────────────────────────────────────────────
   async function moderateMessage(text, isImage) {
     if (isImage) {
-      // For images: ask AI to describe and assess
-      const prompt = `A user sent an image in a property rental chat. Assume it has been scanned. For this demo, always ALLOW property-related images. Respond ONLY with valid JSON: {"decision":"ALLOW","reason":"","violationType":""}`;
-      return { decision: 'ALLOW', reason: '', violationType: '' };
+      // Images: check via Cloud Function (looks for embedded text like phone numbers)
+      if (_isLocal) return { decision: 'ALLOW', reason: '', violationType: '' };
+      try {
+        const controller = new AbortController();
+        setTimeout(() => controller.abort(), 8000);
+        const res = await fetch(MODERATE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: '[Image sent by user — scan for embedded contact info or QR codes]', isImage: true }),
+          signal: controller.signal
+        });
+        return await res.json();
+      } catch { return { decision: 'ALLOW', reason: '', violationType: '' }; }
     }
 
     // #10: regex pre-filter first (saves API call for obvious violations)
@@ -964,16 +975,23 @@ Message: ${JSON.stringify(text)}`;
     try {
       // Skip AI moderation locally (CORS), use regex only
       if (_isLocal) return { decision: 'ALLOW', reason: '', violationType: '' };
-      const res = await fetch(MODERATE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text })
-      });
-      return await res.json();
-    } catch(e) {
-      console.error('Moderation error:', e);
-      return { decision:'ALLOW', reason:'', violationType:'' };
-    }
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 8000);
+      try {
+        const res = await fetch(MODERATE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text }),
+          signal: controller.signal
+        });
+        clearTimeout(timer);
+        return await res.json();
+      } catch(e) {
+        clearTimeout(timer);
+        if (e.name === 'AbortError') console.warn('Moderation timed out — falling back to regex-only');
+        else console.error('Moderation error:', e);
+        return { decision:'ALLOW', reason:'', violationType:'' };
+      }
   }
 
   // ── SEND ─────────────────────────────────────────────────────

@@ -580,8 +580,7 @@
     <div class="dash-tab" data-tab="deals" onclick="switchTab('deals')">🤝 Deal Tracker <span class="tab-count green" id="tab-deals-count">0</span></div>
     <div class="dash-tab" data-tab="appeals" onclick="switchTab('appeals')">📝 Appeals <span class="tab-count purple" id="tab-appeals-count">0</span></div>
     <div class="dash-tab" data-tab="users" onclick="switchTab('users')">👥 Users</div>
-    <div class="dash-tab" data-tab="archived-chats" onclick="switchTab('archived-chats')">💬 Archived Chats <span class="tab-count" id="tab-archived-chats-count" style="background:rgba(255,255,255,0.06);color:var(--muted);">0</span></div>
-    <div class="dash-tab" data-tab="archived-deals" onclick="switchTab('archived-deals')">📁 Archived Deals <span class="tab-count" id="tab-archived-deals-count" style="background:rgba(255,255,255,0.06);color:var(--muted);">0</span></div>
+    <div class="dash-tab" data-tab="archived" onclick="switchTab('archived')">📁 Archived <span class="tab-count" id="tab-archived-count" style="background:rgba(255,255,255,0.06);color:var(--muted);">0</span></div>
     <div class="dash-tab" data-tab="history" onclick="switchTab('history')">🕓 History <span class="tab-count" id="tab-history-count" style="background:rgba(255,255,255,0.06);color:var(--muted);">0</span></div>
     <div class="dash-tab" data-tab="defaulters" onclick="switchTab('defaulters')">🚫 Defaulters <span class="tab-count" id="tab-defaulters-count" style="background:rgba(239,68,68,0.18);color:#fca5a5;">0</span></div>
   </div>
@@ -694,22 +693,28 @@
     </div>
 
     <!-- ARCHIVED -->
-    <div class="tab-panel" id="panel-archived-chats">
-      <div class="section-header"><div class="section-title">Archived Chats</div><div class="section-sub">Chats ended or inactive for 7+ days</div></div>
-      <div class="tab-search-bar">
-        <div class="tab-search-wrap"><span class="search-icon">🔍</span><input class="tab-search-input" id="search-archived-chats" type="text" placeholder="Search by user name or listing…" oninput="filterArchivedChats()"></div>
-        <span class="tab-search-count" id="search-archived-chats-count"></span>
+    <div class="tab-panel" id="panel-archived">
+      <!-- Sub-tab switcher -->
+      <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px;overflow-x:auto;">
+        <div class="arch-sub-tab active" data-sub="chats" onclick="switchArchiveSub('chats')" style="padding:10px 20px;font-size:13px;font-weight:600;color:var(--gold);border-bottom:2px solid var(--gold);cursor:pointer;white-space:nowrap;">💬 Chats <span id="tab-archived-chats-count" style="background:rgba(255,255,255,0.06);color:var(--muted);border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;">0</span></div>
+        <div class="arch-sub-tab" data-sub="deals" onclick="switchArchiveSub('deals')" style="padding:10px 20px;font-size:13px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;">🤝 Deals <span id="tab-archived-deals-count" style="background:rgba(255,255,255,0.06);color:var(--muted);border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;">0</span></div>
       </div>
-      <div id="archived-chats-list"></div>
-    </div>
-
-    <div class="tab-panel" id="panel-archived-deals">
-      <div class="section-header"><div class="section-title">Archived Deals</div><div class="section-sub">Completed and cancelled deals</div></div>
-      <div class="tab-search-bar">
-        <div class="tab-search-wrap"><span class="search-icon">🔍</span><input class="tab-search-input" id="search-archived-deals" type="text" placeholder="Search by listing or user name…" oninput="filterArchivedDeals()"></div>
-        <span class="tab-search-count" id="search-archived-deals-count"></span>
+      <!-- Chats sub-panel -->
+      <div id="arch-sub-chats">
+        <div class="tab-search-bar">
+          <div class="tab-search-wrap"><span class="search-icon">🔍</span><input class="tab-search-input" id="search-archived-chats" type="text" placeholder="Search by user name or listing…" oninput="filterArchivedChats()"></div>
+          <span class="tab-search-count" id="search-archived-chats-count"></span>
+        </div>
+        <div class="chat-list" id="archived-chats-list"></div>
       </div>
-      <div id="archived-deals-list"></div>
+      <!-- Deals sub-panel -->
+      <div id="arch-sub-deals" style="display:none;">
+        <div class="tab-search-bar">
+          <div class="tab-search-wrap"><span class="search-icon">🔍</span><input class="tab-search-input" id="search-archived-deals" type="text" placeholder="Search by listing or user name…" oninput="filterArchivedDeals()"></div>
+          <span class="tab-search-count" id="search-archived-deals-count"></span>
+        </div>
+        <div id="archived-deals-list"></div>
+      </div>
     </div>
 
     <!-- HISTORY -->
@@ -1064,8 +1069,9 @@
     const SEVEN_DAYS  = 7  * 24 * 60 * 60 * 1000;
     const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
     const _activeDealsSet = new Set(getDeals().filter(d => d.stage !== 'Cancelled' && !d.stage_complete).map(d => d.chatId));
+    const _anyDealSet = new Set(getDeals().map(d => d.chatId));
     _chatsIndex.forEach(chat => {
-      if (chat.archived || _activeDealsSet.has(chat.chatId)) return;
+      if (chat.archived || _anyDealSet.has(chat.chatId)) return; // Never auto-archive if deal exists
       const lastActivity = chat.lastTs || chat.started || 0;
       if (_now - lastActivity > SEVEN_DAYS) {
         chat.archived = true; chat.archivedTs = _now; chat.autoArchived = true;
@@ -1561,108 +1567,88 @@
   // ── ARCHIVED TAB ─────────────────────────────────────────────
   function renderArchivedChats(container) {
     if (!container) return;
-    const chats  = getChatsIndex();
-    const modLog = getModLog();
-    const archivedChats = chats.filter(c => (c.archived || c.dealComplete) && !getDeals().find(d => d.chatId === c.chatId && (d.stage === 'Complete' || d.stage_complete || d.stage === 'Cancelled')));
+    const chats    = getChatsIndex();
+    const deals    = getDeals();
+    const modLog   = getModLog();
+    const dealChatIds = new Set(deals.map(d => d.chatId));
+    // Archived chats = archived flag AND no deal was ever initiated for this chat
+    const archivedChats = chats.filter(c => (c.archived || c.autoArchived || c.manualArchived) && !dealChatIds.has(c.chatId));
     const tabEl = document.getElementById('tab-archived-chats-count');
     if (tabEl) tabEl.textContent = archivedChats.length;
+    // Also update main archived tab count
+    const allArchiveDeals = deals.filter(d => d.stage === 'Cancelled' || d.stage_complete);
+    const mainTabEl = document.getElementById('tab-archived-count');
+    if (mainTabEl) mainTabEl.textContent = archivedChats.length + allArchiveDeals.length;
     container.innerHTML = '';
     if (!archivedChats.length) {
-      container.innerHTML = `<div class="empty-state" style="text-align:center;padding:60px 20px;"><div class="empty-icon">💬</div><h3>No archived chats</h3><p style="color:var(--muted);font-size:13px;margin-top:6px;">Chats idle for 7+ days are auto-archived here.</p></div>`;
+      container.innerHTML = `<div class="empty-state"><div class="empty-icon">💬</div><h3>No archived chats</h3><p style="color:var(--muted);font-size:13px;margin-top:6px;">Chats idle for 7+ days (with no deal started) are auto-archived here.</p></div>`;
       return;
     }
     archivedChats.forEach(c => {
       const msgs      = getChatMsgs(c.chatId);
       const v         = getChatVio(c.chatId);
       const maxV      = Math.max(...Object.values(v).concat([0]));
-      const chatFlags = modLog.filter(e => e.chatId === c.chatId).length;
-      const card = document.createElement('div');
-      card.className = 'archived-card';
-      card.style.marginBottom = '12px';
-      const archiveReason = c.autoArchived ? '🕒 Auto-archived (7-day inactivity)' : c.manualArchived ? '📁 Manually archived' : '📁 Archived';
-      card.innerHTML = `
-        <div class="deal-card-header">
-          <div class="chat-icon">🏠</div>
-          <div class="deal-card-meta">
-            <div class="deal-card-title">${escH(c.userA)} ↔ ${escH(c.userB)}</div>
-            <div class="deal-card-sub">${escH(c.listing)}</div>
+      const isSusp    = maxV >= 3;
+      const hasFlg    = modLog.some(m => m.chatId === c.chatId);
+      const lastTs    = c.lastTs ? new Date(c.lastTs).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : 'No messages';
+      const archiveReason = c.autoArchived ? '🕒 7-day inactivity' : '📁 Manually archived';
+      const row = document.createElement('div');
+      row.className = `chat-row${hasFlg?' flagged':''}${isSusp?' suspended':''}`;
+      row.innerHTML = `
+        <div class="chat-icon">🏠</div>
+        <div class="chat-meta">
+          <div class="chat-title">${escH(c.userA)} ↔ ${escH(c.userB)}</div>
+          <div class="chat-sub">${escH(c.listing)} · ${lastTs}</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;">
+            ${isSusp?'<span class="badge badge-banned">Suspended</span>':hasFlg?'<span class="badge badge-flagged">⚠ Flagged</span>':'<span class="badge badge-active">Active</span>'}
+            <span class="badge" style="background:rgba(255,255,255,0.05);color:var(--muted);border:1px solid rgba(255,255,255,0.08);">${archiveReason}</span>
           </div>
-          <span class="badge" style="background:rgba(255,255,255,0.05);color:var(--muted);border:1px solid rgba(255,255,255,0.1);">${archiveReason}</span>
         </div>
-        <div class="archived-meta-grid">
-          <div class="deal-meta-item"><div class="deal-meta-label">Started</div><div class="deal-meta-value" style="font-size:12px;">${c.started?fmtTs(c.started):'—'}</div></div>
-          <div class="deal-meta-item"><div class="deal-meta-label">Archived</div><div class="deal-meta-value" style="font-size:12px;">${c.archivedTs?fmtTs(c.archivedTs):'—'}</div></div>
-          <div class="deal-meta-item"><div class="deal-meta-label">Messages</div><div class="deal-meta-value">${msgs.length}</div></div>
-          <div class="deal-meta-item"><div class="deal-meta-label">Flags</div><div class="deal-meta-value" style="color:${chatFlags>0?'#fcd34d':'#34d399'};">${chatFlags}</div></div>
-          <div class="deal-meta-item"><div class="deal-meta-label">Max Violations</div><div class="deal-meta-value" style="color:${maxV>=3?'#f87171':maxV>=1?'#fcd34d':'#34d399'};">${maxV} / 3</div></div>
-        </div>
-        <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
+        <div class="chat-actions" style="gap:6px;align-items:center;flex-shrink:0;">
           <button class="deal-stage-btn" style="background:rgba(59,130,246,0.12);color:#93c5fd;border:1px solid rgba(59,130,246,0.3);" onclick="unarchiveChat('${c.chatId}')">↩ Unarchive</button>
-          <button class="chat-action-btn btn-view" onclick="viewChat('${c.chatId}','${escH(c.listing)}','${escH(c.userA)}','${escH(c.userB)}')">View Chat</button>
+          <button class="chat-action-btn btn-view" onclick="viewChat('${c.chatId}','${escH(c.listing)}','${escH(c.userA)}','${escH(c.userB)}')">View</button>
+          <details class="chat-details-menu">
+            <summary class="chat-details-btn" title="More info">•••</summary>
+            <div class="chat-details-panel">
+              <div class="cdp-row"><span class="cdp-label">Messages</span><span>${msgs.length}</span></div>
+              <div class="cdp-row"><span class="cdp-label">Max violations</span><span>${maxV}</span></div>
+              <div class="cdp-row"><span class="cdp-label">Archived</span><span>${c.archivedTs?fmtTs(c.archivedTs):'—'}</span></div>
+            </div>
+          </details>
         </div>`;
-      container.appendChild(card);
+      container.appendChild(row);
     });
   }
 
   function renderArchivedDeals(container) {
     if (!container) return;
     const deals  = getDeals();
-    const modLog = getModLog();
-    const cancelledDeals = deals.filter(d => d.stage === 'Cancelled');
-    const completedDeals = deals.filter(d => d.stage === 'Complete' || d.stage_complete);
-    const allDeals = [...completedDeals, ...cancelledDeals];
+    const archivedDeals = deals.filter(d => d.stage === 'Cancelled' || d.stage_complete || d.stage === 'Complete');
     const tabEl = document.getElementById('tab-archived-deals-count');
-    if (tabEl) tabEl.textContent = allDeals.length;
+    if (tabEl) tabEl.textContent = archivedDeals.length;
     container.innerHTML = '';
-    if (!allDeals.length) {
-      container.innerHTML = `<div class="empty-state" style="text-align:center;padding:60px 20px;"><div class="empty-icon">📁</div><h3>No archived deals</h3><p style="color:var(--muted);font-size:13px;margin-top:6px;">Completed and cancelled deals appear here.</p></div>`;
+    if (!archivedDeals.length) {
+      container.innerHTML = `<div class="empty-state" style="text-align:center;padding:60px 20px;"><div class="empty-icon">🤝</div><h3>No archived deals</h3><p style="color:var(--muted);font-size:13px;margin-top:6px;">Cancelled and completed deals appear here.</p></div>`;
       return;
     }
-    allDeals.forEach(d => {
-      const isComplete  = d.stage === 'Complete' || d.stage_complete;
-      const msgs        = getChatMsgs(d.chatId);
-      const violations  = Object.values(getChatVio(d.chatId));
-      const totalVio    = violations.reduce((a,b)=>a+b,0);
-      const chatFlags   = modLog.filter(e => e.chatId === d.chatId).length;
-      const pipelineRows = PIPELINE.map(s => {
-        const done = d[`stage_${s.key}`];
-        const ts   = d[`stage_${s.key}_ts`] ? ' · ' + fmtTs(d[`stage_${s.key}_ts`]) : '';
-        return `<div class="archived-timeline-row"><div class="archived-timeline-label">${s.icon} ${s.label}</div><span style="color:${done?'#6ee7b7':'#f87171'};">${done?'✓ Done'+ts:'✗ Not reached'}</span></div>`;
-      }).join('');
-      const card = document.createElement('div');
-      card.className = 'archived-card';
-      card.style.marginBottom = '12px';
-      card.innerHTML = `
-        <div class="deal-card-header">
-          <div class="deal-card-icon" style="background:${isComplete?'linear-gradient(135deg,#78350f,#d97706)':'linear-gradient(135deg,#450a0a,#991b1b)'};">${isComplete?'🏆':'❌'}</div>
-          <div class="deal-card-meta">
-            <div class="deal-card-title">${escH(d.listing)}</div>
-            <div class="deal-card-sub">${escH(d.userA)} ↔ ${escH(d.userB)}</div>
-          </div>
-          <span class="badge ${isComplete?'':'badge-banned'}" style="${isComplete?'background:rgba(212,160,23,0.15);color:#fcd34d;border:1px solid rgba(212,160,23,0.3);':''}">${isComplete?'🏆 Complete':'❌ Cancelled'}</span>
-        </div>
-        <div class="archived-meta-grid">
-          <div class="deal-meta-item"><div class="deal-meta-label">Initiated</div><div class="deal-meta-value" style="font-size:12px;">${d.initiatedTs?fmtTs(d.initiatedTs):'—'}</div></div>
-          <div class="deal-meta-item"><div class="deal-meta-label">${isComplete?'Completed':'Cancelled'}</div><div class="deal-meta-value" style="font-size:12px;">${(d.completedTs||d.cancelledTs)?fmtTs(d.completedTs||d.cancelledTs):'—'}</div></div>
-          <div class="deal-meta-item"><div class="deal-meta-label">Messages</div><div class="deal-meta-value">${msgs.length}</div></div>
-          <div class="deal-meta-item"><div class="deal-meta-label">Flags</div><div class="deal-meta-value" style="color:${chatFlags>0?'#fcd34d':'#34d399'};">${chatFlags}</div></div>
-          <div class="deal-meta-item"><div class="deal-meta-label">Total Violations</div><div class="deal-meta-value" style="color:${totalVio>0?'#f87171':'#34d399'};">${totalVio}</div></div>
-          <div class="deal-meta-item"><div class="deal-meta-label">Initiated By</div><div class="deal-meta-value">${escH(d.initiatedBy==='A'?d.userA:d.userB)}</div></div>
-        </div>
-        <div class="archived-timeline">${pipelineRows}</div>
-        ${d.cancelNotes?`<div style="background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--muted);"><strong style="color:#fca5a5;">Cancellation reason:</strong> ${escH(d.cancelNotes)}</div>`:''}
-        ${d.notes?`<div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--muted);"><strong style="color:var(--text);">Mod Notes:</strong> ${escH(d.notes)}</div>`:''}
-        <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
-          ${!isComplete ? `<button class="deal-stage-btn" style="background:rgba(16,185,129,0.12);color:#6ee7b7;border:1px solid rgba(16,185,129,0.3);" onclick="reinstateDeal('${d.chatId}')">↩ Reinstate Deal</button>` : ''}
-          <button class="chat-action-btn btn-view" onclick="viewChat('${d.chatId}','${escH(d.listing)}','${escH(d.userA)}','${escH(d.userB)}')">View Chat</button>
-          <button class="deal-cancel-deal-btn" style="font-size:11px;padding:5px 12px;" onclick="permanentDeleteDeal('${d.chatId}')">🗑 Delete</button>
-        </div>`;
-      container.appendChild(card);
-    });
+    const sorted = [...archivedDeals].sort((a,b) => (b.cancelledTs||b.completedTs||b.initiatedTs||0) - (a.cancelledTs||a.completedTs||a.initiatedTs||0));
+    sorted.forEach(d => renderDealCard(d, container));
   }
+
 
   // Kept for backward compat with mod-N pages which still call renderArchivedList
   function renderArchivedList(container) { renderArchivedChats(container); }
+
+
+  function switchArchiveSub(sub) {
+    document.querySelectorAll('.arch-sub-tab').forEach(t => {
+      const isActive = t.dataset.sub === sub;
+      t.style.color = isActive ? 'var(--gold)' : 'var(--muted)';
+      t.style.borderBottom = isActive ? '2px solid var(--gold)' : '2px solid transparent';
+    });
+    document.getElementById('arch-sub-chats').style.display = sub === 'chats' ? '' : 'none';
+    document.getElementById('arch-sub-deals').style.display = sub === 'deals' ? '' : 'none';
+  }
 
   function filterArchivedChats() {
     const q = document.getElementById('search-archived-chats')?.value.trim().toLowerCase()||'';
@@ -2405,7 +2391,7 @@
     document.querySelectorAll('.dash-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === `panel-${tab}`));
     // Clear search on tab switch
-    ['chats','flagged','deals','appeals','users','archived-chats','archived-deals','history','defaulters'].forEach(id => {
+    ['chats','flagged','deals','appeals','users','archived','history','defaulters'].forEach(id => {
       const el = document.getElementById(`search-${id}`);
       const ct = document.getElementById(`search-${id}-count`);
       if (el) el.value = '';
@@ -2427,7 +2413,10 @@
   // then call loadDashboard() so the existing v38 render functions pick it up.
   // Nothing in v38 mod-dashboard code is changed.
 
+  let _syncStarted = false;
   function startFirestoreSync() {
+    if (_syncStarted) return;  // Bug 5: prevent duplicate listeners on re-login
+    _syncStarted = true;
     // All chats
     RF.onAllChats(chats => {
       // Merge: keep localStorage data for fields Firestore doesn't have
