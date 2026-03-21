@@ -537,6 +537,7 @@
             <div class="stat-value green" id="stat-deals">0</div>
             <div class="stat-arrow">→ Deal Tracker</div>
           </div>
+
           <div class="stat-card" onclick="switchTab('users')" title="View suspended chats">
             <div class="stat-label">Suspended Chats</div>
             <div class="stat-value red" id="stat-suspended">0</div>
@@ -773,6 +774,8 @@
     const allChats = getChatsIndex();
     const assignments = getAssignments();
     const chats = allChats.filter(c => assignments[c.chatId] === MOD_ID);
+    const appeals = getAppeals();
+
     let totalMsgs = 0, suspended = 0;
     chats.forEach(c => {
       totalMsgs += getChatMsgs(c.chatId).length;
@@ -1611,7 +1614,7 @@
 
     // Auto-purge entries older than 48hrs from storage
     const freshLog     = modLog.filter(e => (now - (e.ts || 0)) < HISTORY_TTL);
-    const freshAppeals = [];
+    const freshAppeals = appeals.filter(a => (now - (a.ts || 0)) < HISTORY_TTL);
     if (freshLog.length !== modLog.length)     { _modLog  = freshLog;    freshLog.forEach(e => RF.updateModLogEntry(e.id, {}).catch(()=>{})); }
     if (freshAppeals.length !== appeals.length){ _appeals = freshAppeals; }
 
@@ -1667,36 +1670,6 @@
           <div class="flag-msg-box"><div class="flag-msg-label" style="color:#a78bfa;">Appeal Text</div><div class="flag-msg-text">${escH(item.text||'')}</div></div>
           <div style="text-align:right;margin-top:6px;">${expiryNote}</div>`;
       }
-      container.appendChild(card);
-    });
-  }
-
-
-  function
-    if (!container) return;
-    const pending  = appeals.filter(a => a.status === 'pending');
-    const resolved = appeals.filter(a => a.status !== 'pending');
-    const sorted   = [...pending, ...resolved];
-    if (!sorted.length) {
-      container.innerHTML = `<div class="empty-state"><div class="empty-icon">📝</div><h3>No appeals</h3><p>No users have submitted appeals yet.</p></div>`;
-      return;
-    }
-    container.innerHTML = '';
-    sorted.forEach(a => {
-      const initials = (a.userName||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-      const card = document.createElement('div');
-      card.className = `appeal-card${a.status !== 'pending' ? ' resolved' : ''}`;
-      card.innerHTML = `
-        <div class="appeal-header">
-          <div class="appeal-avatar">${initials}</div>
-          <div class="flag-info">
-            <div class="flag-who">${escH(a.userName||'Unknown')}</div>
-            <div class="flag-when">${escH(a.userRole||'')} · Chat: ${escH(a.chatId||'')} · ${a.ts ? new Date(a.ts).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : ''}</div>
-          </div>
-          <span class="badge ${a.status==='pending'?'badge-flagged':a.status==='reinstated'?'badge-active':'badge-banned'}">${a.status}</span>
-        </div>
-        <div class="appeal-msg-box"><div class="appeal-msg-label">User's Appeal</div><div class="appeal-msg-text">${escH(a.text)}</div></div>
-        <div style="font-size:11px;color:var(--muted);text-align:right;">⚠️ Only admin can action appeals</div>`;
       container.appendChild(card);
     });
   }

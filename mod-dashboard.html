@@ -736,11 +736,11 @@
     <p id="defaulter-modal-deal-info" style="font-size:13px;color:var(--muted);margin:0;"></p>
     <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;margin-top:4px;">Who defaulted?</div>
     <div class="party-checkbox-row">
-      <label class="party-cb-label" id="cb-label-a">
-        <input type="checkbox" id="cb-party-a" onchange="toggleDefaulterParty('A')"> <span id="cb-party-a-name">Party A</span>
+      <label class="party-cb-label" id="cb-label-a" onclick="toggleDefaulterParty('A');event.preventDefault();">
+        <input type="checkbox" id="cb-party-a"> <span id="cb-party-a-name">Party A</span>
       </label>
-      <label class="party-cb-label" id="cb-label-b">
-        <input type="checkbox" id="cb-party-b" onchange="toggleDefaulterParty('B')"> <span id="cb-party-b-name">Party B</span>
+      <label class="party-cb-label" id="cb-label-b" onclick="toggleDefaulterParty('B');event.preventDefault();">
+        <input type="checkbox" id="cb-party-b"> <span id="cb-party-b-name">Party B</span>
       </label>
     </div>
     <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;">Notes / Reason</div>
@@ -1987,7 +1987,7 @@
   function toggleDefaulterParty(party) {
     const cb    = document.getElementById(`cb-party-${party.toLowerCase()}`);
     const label = document.getElementById(`cb-label-${party.toLowerCase()}`);
-    // cb.checked is already updated by the browser via onchange — just sync the CSS class
+    cb.checked = !cb.checked;
     label.classList.toggle('checked', cb.checked);
   }
 
