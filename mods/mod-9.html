@@ -787,7 +787,7 @@
     const appeals = getAppeals();
 
     let totalMsgs = 0, suspended = 0;
-    chats.forEach(c => {
+    chats.filter(c => !c.archived && !c.autoArchived && !c.manualArchived).forEach(c => {
       totalMsgs += getChatMsgs(c.chatId).length;
       const v = getChatVio(c.chatId);
       if (Math.max(...Object.values(v).concat([0])) >= 3) suspended++;
@@ -870,6 +870,7 @@
             </div>
           </details>
         </div>`;
+      container.appendChild(row);
     });
   }
   // ── FLAGGED LIST ─────────────────────────────────────────────

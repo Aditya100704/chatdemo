@@ -552,7 +552,7 @@
 <div id="dashboard">
   <div class="dash-topbar">
     <div class="dash-logo">RenterFinder</div>
-    <div class="dash-badge">MODERATOR</div>
+    <div class="dash-badge" style="background:rgba(212,160,23,0.15);border-color:rgba(212,160,23,0.4);color:var(--gold);">ADMIN</div>
     <div class="dash-topbar-right">
       <div class="auto-refresh-badge"><div class="auto-refresh-dot"></div> Auto-refresh <span class="refresh-countdown" id="refresh-countdown"></span></div>
       <button class="refresh-btn" onclick="loadDashboard()">↻ Now</button>
@@ -1095,7 +1095,8 @@
     assignNewChats();
     renderModPanel();
     const modLog  = getModLog();
-    const chats   = getChatsIndex();
+    const chats   = getChatsIndex().filter(c => !c.archived && !c.autoArchived && !c.manualArchived);
+    const allChats = getChatsIndex();
     const appeals = getAppeals();
 
     let totalMsgs = 0, suspended = 0;
@@ -1129,7 +1130,8 @@
     renderDealsList(getDeals(), document.getElementById('deals-list'));
     renderAppealsList(appeals, document.getElementById('appeals-list'));
     renderUsersTable(chats, modLog, getBanned());
-    renderArchivedList(document.getElementById('archived-list'));
+    const _acl = document.getElementById('archived-chats-list'); if (_acl) renderArchivedChats(_acl);
+    const _adl = document.getElementById('archived-deals-list'); if (_adl) renderArchivedDeals(_adl);
     renderHistoryList(document.getElementById('history-list'));
     renderDefaultersList(document.getElementById('defaulters-list'));
     const defCount = getDefaulters().length;
