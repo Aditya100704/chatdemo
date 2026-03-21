@@ -537,14 +537,6 @@
             <div class="stat-value green" id="stat-deals">0</div>
             <div class="stat-arrow">→ Deal Tracker</div>
           </div>
-          <div class="stat-value blue" id="stat-appeals">0</div>
-            <div class="stat-arrow">→ Appeals</div>
-          </div>
-          <div class="stat-card" onclick="switchTab('appeals')" title="View open appeals">
-            <div class="stat-label">Open Appeals</div>
-            <div class="stat-value blue" id="stat-appeals">0</div>
-            <div class="stat-arrow">→ Appeals</div>
-          </div>
           <div class="stat-card" onclick="switchTab('users')" title="View suspended chats">
             <div class="stat-label">Suspended Chats</div>
             <div class="stat-value red" id="stat-suspended">0</div>
@@ -586,17 +578,6 @@
       <div id="deals-list"></div>
     </div>
 
-
-
-    <!-- APPEALS (read-only for mods — actions in Admin dashboard) -->
-    <div class="tab-panel" id="panel-appeals">
-      <div class="section-header"><div class="section-title">User Appeals</div><div class="section-sub">Submitted by users — handled by Admin only</div></div>
-      <div class="tab-search-bar">
-        <div class="tab-search-wrap"><span class="search-icon">🔍</span><input class="tab-search-input" id="search-appeals" type="text" placeholder="Search by user name or chat ID…" oninput="filterAppeals()"></div>
-        <span class="tab-search-count" id="search-appeals-count"></span>
-      </div>
-      <div id="appeals-list" class="appeal-list"></div>
-    </div>
 
     <!-- USERS -->
     <div class="tab-panel" id="panel-users">
@@ -792,8 +773,6 @@
     const allChats = getChatsIndex();
     const assignments = getAssignments();
     const chats = allChats.filter(c => assignments[c.chatId] === MOD_ID);
-    const appeals = getAppeals();
-
     let totalMsgs = 0, suspended = 0;
     chats.forEach(c => {
       totalMsgs += getChatMsgs(c.chatId).length;
@@ -810,10 +789,6 @@
     document.getElementById('stat-pending').textContent     = pending;
     document.getElementById('stat-deals').textContent       = activeDeals;
     document.getElementById('stat-suspended').textContent   = suspended;
-    const openAppeals = _appeals.filter(a => a.status === 'pending').length;
-    const apEl = document.getElementById('stat-appeals'); if (apEl) apEl.textContent = openAppeals;
-    const apTab = document.getElementById('tab-appeals-count'); if (apTab) apTab.textContent = openAppeals;
-    renderAppealsList(_appeals, document.getElementById('appeals-list'));
     document.getElementById('tab-chats-count').textContent  = chats.length;
     document.getElementById('tab-flagged-count').textContent = pending;
     document.getElementById('tab-deals-count').textContent  = activeDeals;
@@ -1636,7 +1611,7 @@
 
     // Auto-purge entries older than 48hrs from storage
     const freshLog     = modLog.filter(e => (now - (e.ts || 0)) < HISTORY_TTL);
-    const freshAppeals = appeals.filter(a => (now - (a.ts || 0)) < HISTORY_TTL);
+    const freshAppeals = [];
     if (freshLog.length !== modLog.length)     { _modLog  = freshLog;    freshLog.forEach(e => RF.updateModLogEntry(e.id, {}).catch(()=>{})); }
     if (freshAppeals.length !== appeals.length){ _appeals = freshAppeals; }
 
@@ -1697,7 +1672,7 @@
   }
 
 
-  function renderAppealsList(appeals, container) {
+  function
     if (!container) return;
     const pending  = appeals.filter(a => a.status === 'pending');
     const resolved = appeals.filter(a => a.status !== 'pending');
@@ -1726,18 +1701,6 @@
     });
   }
 
-  function filterAppeals() {
-    const q = document.getElementById('search-appeals')?.value.trim().toLowerCase() || '';
-    const rows = document.querySelectorAll('#appeals-list .appeal-card');
-    let shown = 0;
-    rows.forEach(r => {
-      const match = !q || r.textContent.toLowerCase().includes(q);
-      r.style.display = match ? '' : 'none';
-      if (match) shown++;
-    });
-    const el = document.getElementById('search-appeals-count');
-    if (el) el.textContent = q ? `${shown} result${shown!==1?'s':''}` : '';
-  }
   function filterHistory() {
     const _sh = document.getElementById('search-history'); if (!_sh) return;
     const q = _sh.value.trim().toLowerCase();
