@@ -532,6 +532,16 @@
   .mod-menu-item { display:block; width:100%; text-align:left; padding:7px 10px; border-radius:5px; font-family:'Outfit',sans-serif; font-size:12px; font-weight:600; color:var(--text); background:transparent; border:none; cursor:pointer; text-decoration:none; transition:background 0.1s; white-space:nowrap; }
   .mod-menu-item:hover { background:rgba(255,255,255,0.08); }
 
+
+  /* Mod performance metrics */
+  .mod-metrics-table{width:100%;border-collapse:collapse;font-size:12px;}
+  .mod-metrics-table th{text-align:left;color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;padding:8px 12px;border-bottom:1px solid var(--border);}
+  .mod-metrics-table td{padding:9px 12px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--text);}
+  .mod-metrics-table tr:last-child td{border-bottom:none;}
+  .mod-metrics-table tr:hover td{background:rgba(255,255,255,0.02);}
+  .perf-bar-wrap{width:80px;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;display:inline-block;vertical-align:middle;}
+  .perf-bar{height:6px;border-radius:3px;background:var(--gold);}
+
 </style>
 </head>
 <body>
@@ -635,6 +645,12 @@
       </div>
       <div class="section-header"><div class="section-title">Pending Review</div><div class="section-sub">Flagged messages awaiting your decision</div></div>
       <div id="pending-flagged-list" class="flag-list"></div>
+      <div class="section-header" style="margin-top:28px;"><div class="section-title">Mod Performance</div><div class="section-sub">Flags reviewed · approval rate · avg response time</div></div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
+        <table class="mod-metrics-table"><thead><tr>
+          <th>Mod / Admin</th><th>Flags Reviewed</th><th>Approved / Dismissed</th><th>Approval Rate</th><th>Avg Response</th>
+        </tr></thead><tbody id="mod-metrics-body"></tbody></table>
+      </div>
     </div>
 
     <!-- ALL CHATS -->
@@ -766,7 +782,12 @@
   <div class="modal-card">
     <div class="modal-header">
       <div class="modal-title-text" id="modal-title">Chat Details</div>
+      <button onclick="exportChatTranscript()" style="padding:5px 12px;border-radius:6px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;background:rgba(212,160,23,0.1);color:var(--gold);border:1px solid rgba(212,160,23,0.25);" title="Export as text file">⬇ Export</button>
       <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div style="position:relative;margin-bottom:14px;">
+      <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;opacity:0.4;">🔍</span>
+      <input id="modal-search" type="text" placeholder="Search messages…" oninput="filterModalMessages()" style="width:100%;padding:8px 12px 8px 32px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;box-sizing:border-box;">
     </div>
     <div class="modal-msgs" id="modal-messages"></div>
   </div>
@@ -1133,6 +1154,7 @@
     const _adl = document.getElementById('archived-deals-list'); if (_adl) renderArchivedDeals(_adl);
     renderHistoryList(document.getElementById('history-list'));
     renderDefaultersList(document.getElementById('defaulters-list'));
+    renderModMetrics();
     const defCount = getDefaulters().length;
     const defEl = document.getElementById('stat-defaulters'); if (defEl) defEl.textContent = defCount;
     const defTab = document.getElementById('tab-defaulters-count'); if (defTab) defTab.textContent = defCount;
@@ -1651,6 +1673,43 @@
     document.getElementById('arch-sub-deals').style.display = sub === 'deals' ? '' : 'none';
   }
 
+
+  function renderModMetrics() {
+    const container = document.getElementById('mod-metrics-body');
+    if (!container) return;
+    const modLog = getModLog();
+    const resolved = modLog.filter(e => e.status !== 'pending' && e.actorName);
+    container.innerHTML = '';
+    if (!resolved.length) {
+      container.innerHTML = '<tr><td colspan="5" style="color:var(--muted);text-align:center;padding:16px;">No resolved flags yet.</td></tr>';
+      return;
+    }
+    // Group by actorName
+    const byMod = {};
+    resolved.forEach(e => {
+      const name = e.actorName || 'Unknown';
+      if (!byMod[name]) byMod[name] = { approved:0, dismissed:0, totalTime:0, count:0 };
+      if (e.status === 'approved') byMod[name].approved++;
+      else byMod[name].dismissed++;
+      if (e.actorTs && e.ts) { byMod[name].totalTime += (e.actorTs - e.ts); byMod[name].count++; }
+    });
+    const maxTotal = Math.max(...Object.values(byMod).map(m => m.approved + m.dismissed), 1);
+    Object.entries(byMod).sort((a,b) => (b[1].approved+b[1].dismissed) - (a[1].approved+a[1].dismissed)).forEach(([name, d]) => {
+      const total = d.approved + d.dismissed;
+      const approvalRate = total ? Math.round((d.approved / total) * 100) : 0;
+      const avgMins = d.count ? Math.round(d.totalTime / d.count / 60000) : null;
+      const avgStr = avgMins !== null ? (avgMins < 60 ? `${avgMins}m` : `${Math.round(avgMins/60)}h`) : '—';
+      const barW = Math.round((total / maxTotal) * 80);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="font-weight:600;">${escH(name)}</td>
+        <td><div class="perf-bar-wrap"><div class="perf-bar" style="width:${barW}px;"></div></div> <span style="margin-left:6px;">${total}</span></td>
+        <td><span style="color:#34d399;">${d.approved}</span> / <span style="color:#f87171;">${d.dismissed}</span></td>
+        <td><span style="color:${approvalRate>=70?'#34d399':approvalRate>=40?'#fcd34d':'#f87171'};font-weight:700;">${approvalRate}%</span></td>
+        <td style="color:var(--muted);">${avgStr}</td>`;
+      container.appendChild(tr);
+    });
+  }
   function filterArchivedChats() {
     const q = document.getElementById('search-archived-chats')?.value.trim().toLowerCase()||'';
     const rows = document.querySelectorAll('#archived-chats-list .archived-card');
@@ -1774,6 +1833,7 @@
   }
 
   function viewChat(chatId, listing, userA, userB) {
+    _currentChatExport = { chatId, listing, userA, userB };
     const msgs = getChatMsgs(chatId);
     document.getElementById('modal-title').textContent = `${listing}: ${userA} ↔ ${userB}`;
     const modMsgs = document.getElementById('modal-messages');
@@ -1791,7 +1851,43 @@
     });
     document.getElementById('chat-modal').classList.add('show');
   }
-  function closeModal() { document.getElementById('chat-modal').classList.remove('show'); }
+  function closeModal() {
+    document.getElementById('chat-modal').classList.remove('show');
+    const s = document.getElementById('modal-search'); if (s) s.value = '';
+    filterModalMessages();
+  }
+
+  function filterModalMessages() {
+    const q = (document.getElementById('modal-search')?.value || '').toLowerCase().trim();
+    document.querySelectorAll('#modal-messages .modal-bubble').forEach(el => {
+      el.style.display = (!q || el.textContent.toLowerCase().includes(q)) ? '' : 'none';
+    });
+  }
+
+  let _currentChatExport = { chatId:'', listing:'', userA:'', userB:'' };
+  function exportChatTranscript() {
+    const msgs = getChatMsgs(_currentChatExport.chatId);
+    if (!msgs.length) { showToast('No messages to export', ''); return; }
+    const lines = [
+      `Chat Transcript — ${_currentChatExport.listing}`,
+      `${_currentChatExport.userA} ↔ ${_currentChatExport.userB}`,
+      `Exported: ${new Date().toLocaleString('en-IN')}`,
+      '─'.repeat(50),
+      ''
+    ];
+    msgs.forEach(m => {
+      const time = new Date(m.ts).toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      const approved = m.moderatorApproved ? ' [MOD APPROVED]' : '';
+      lines.push(`[${time}] ${m.senderName}${approved}: ${m.text || '[Image]'}`);
+    });
+    const blob = new Blob([lines.join('
+')], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `transcript_${_currentChatExport.chatId}_${Date.now()}.txt`;
+    a.click(); URL.revokeObjectURL(a.href);
+    showToast('Transcript downloaded', 'success');
+  }
 
   let pendingBanId = null, pendingBanName = null;
   function confirmBan(userId, userName) { pendingBanId = userId; pendingBanName = userName; document.getElementById('confirm-msg').textContent = `Ban ${userName}? They will be unable to send further messages.`; document.getElementById('confirm-box').classList.add('show'); }
