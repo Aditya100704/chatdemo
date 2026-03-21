@@ -389,6 +389,14 @@
   @media(min-width:3200px){
     #chat-wrap { zoom: 2.2; height: calc(100vh / 2.2); height: calc(100dvh / 2.2); }
   }
+
+  /* Contact Mod */
+  .contact-mod-btn{padding:6px 14px;border-radius:8px;border:1px solid rgba(99,102,241,0.4);background:rgba(99,102,241,0.08);color:#a5b4fc;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:5px;}
+  .contact-mod-btn:hover{background:rgba(99,102,241,0.18);border-color:rgba(99,102,241,0.6);}
+  .contact-mod-reply{background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:10px;padding:10px 14px;margin-top:6px;}
+  .contact-mod-reply-label{font-size:10px;font-weight:700;color:#a5b4fc;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;}
+  .contact-mod-reply-text{font-size:13px;color:var(--text,#e2e8f0);line-height:1.5;}
+
 </style>
 </head>
 <body>
@@ -445,6 +453,7 @@
   <strong>🚫 This chat has been suspended</strong>
   <span>You have exceeded the maximum number of policy violations.</span>
   <button class="appeal-btn" onclick="openAppeal()">📝 Submit an Appeal</button>
+  <button class="appeal-btn contact-mod-btn" style="margin-top:4px;" onclick="openContactMod()">💬 Contact Moderator</button>
 </div>
 
 <div class="mod-status" id="mod-status"></div>
@@ -466,7 +475,7 @@
     <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
   </button>
 </div>
-<div class="chat-disclaimer">🛡️ AI-moderated · No phone numbers, emails, addresses or meeting details allowed · Images are scanned before delivery</div>
+<div class="chat-disclaimer" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px;">🛡️ AI-moderated · No phone numbers, emails, addresses or meeting details allowed · Images are scanned before delivery<button onclick="openContactMod()" style="background:transparent;border:none;color:rgba(99,102,241,0.7);font-size:11px;font-family:'Outfit',sans-serif;cursor:pointer;padding:0;white-space:nowrap;">💬 Contact Mod</button></div>
 
 <!-- Calendar Modal (Party 1: Propose dates) -->
 <div class="modal-overlay" id="cal-modal" onclick="if(event.target===this)closeCalendarModal()">
@@ -591,6 +600,31 @@
         <p>Your appeal has been logged and will be reviewed by the RenterFinder moderation team within 24 hours. You'll be notified at your registered mobile number.</p>
       </div>
       <div class="modal-btns"><button class="modal-submit" onclick="closeAppeal()">Close</button></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Contact Mod Modal -->
+<div class="modal-overlay" id="contact-mod-modal" onclick="if(event.target===this)closeContactMod()">
+  <div class="modal-card">
+    <div id="contact-mod-form-view">
+      <div class="modal-title">💬 Contact Your Moderator</div>
+      <div class="modal-sub">Your assigned moderator will be notified and will respond as soon as possible. This conversation is also visible to RenterFinder admin.</div>
+      <textarea class="modal-textarea" id="contact-mod-text" placeholder="Describe your concern or question…" maxlength="300" oninput="document.getElementById('contact-mod-counter').textContent=(this.value.length)+' / 300'"></textarea>
+      <div style="font-size:11px;color:var(--mid);text-align:right;margin-top:-8px;" id="contact-mod-counter">0 / 300</div>
+      <div class="modal-btns">
+        <button class="modal-cancel" onclick="closeContactMod()">Cancel</button>
+        <button class="modal-submit" id="contact-mod-submit-btn" onclick="submitContactMod()">Send to Moderator</button>
+      </div>
+    </div>
+    <div id="contact-mod-success-view" style="display:none;">
+      <div class="modal-success">
+        <div class="check">✅</div>
+        <div class="modal-title" style="margin-bottom:8px;">Message Sent</div>
+        <p>Your moderator has been notified and will respond shortly.</p>
+      </div>
+      <div class="modal-btns"><button class="modal-submit" onclick="closeContactMod()">Close</button></div>
     </div>
   </div>
 </div>
@@ -1229,6 +1263,55 @@ Message: ${JSON.stringify(text)}`;
     } catch {}
     document.getElementById('appeal-form-view').style.display = 'none';
     document.getElementById('appeal-success-view').style.display = 'block';
+  }
+
+
+  // ── CONTACT MOD ──────────────────────────────────────────────
+  function openContactMod() {
+    document.getElementById('contact-mod-text').value = '';
+    document.getElementById('contact-mod-counter').textContent = '0 / 300';
+    document.getElementById('contact-mod-text').style.borderColor = '';
+    document.getElementById('contact-mod-form-view').style.display = '';
+    document.getElementById('contact-mod-success-view').style.display = 'none';
+    document.getElementById('contact-mod-modal').classList.add('show');
+  }
+
+  function closeContactMod() {
+    document.getElementById('contact-mod-modal').classList.remove('show');
+  }
+
+  async function submitContactMod() {
+    const text = document.getElementById('contact-mod-text').value.trim();
+    if (!text || text.length < 5) {
+      document.getElementById('contact-mod-text').style.borderColor = '#ef4444';
+      return;
+    }
+    const btn = document.getElementById('contact-mod-submit-btn');
+    btn.disabled = true; btn.textContent = 'Sending…';
+    try {
+      // Look up assigned mod from Firestore
+      const assignedModId = await RF.getAssignment(CHAT_ID).catch(() => null);
+      const call = {
+        id: Date.now(),
+        chatId: CHAT_ID,
+        listing: LISTING,
+        userId: USERS[currentIdentity].id,
+        userName: USERS[currentIdentity].name,
+        userRole: USERS[currentIdentity].role,
+        assignedModId: assignedModId || 'unassigned',
+        message: text,
+        ts: Date.now(),
+        status: 'open'
+      };
+      await RF.saveModCall(call);
+      document.getElementById('contact-mod-form-view').style.display = 'none';
+      document.getElementById('contact-mod-success-view').style.display = 'block';
+    } catch(e) {
+      console.error('[RF] submitContactMod', e);
+      btn.textContent = 'Error — try again';
+    } finally {
+      btn.disabled = false;
+    }
   }
 
   // ── CROSS-TAB EVENTS ─────────────────────────────────────────

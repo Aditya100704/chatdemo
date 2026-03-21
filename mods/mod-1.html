@@ -472,6 +472,26 @@
     /* Section header sub-text: wrap */
     .section-header { flex-direction: column; align-items: flex-start; gap: 4px; }
   }
+
+  /* Mod Calls */
+  .call-card{background:var(--card);border:1px solid rgba(99,102,241,0.25);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;transition:border-color 0.2s;}
+  .call-card.answered{opacity:0.55;border-color:var(--border);}
+  .call-card-header{display:flex;align-items:flex-start;gap:10px;}
+  .call-avatar{width:34px;height:34px;border-radius:50%;background:rgba(99,102,241,0.2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#a5b4fc;flex-shrink:0;}
+  .call-card.answered .call-avatar{background:rgba(255,255,255,0.04);color:var(--muted);}
+  .call-info{flex:1;min-width:0;}
+  .call-who{font-size:13px;font-weight:700;color:var(--text);}
+  .call-when{font-size:11px;color:var(--muted);margin-top:1px;}
+  .call-msg{font-size:13px;color:var(--text);line-height:1.55;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.15);border-radius:8px;padding:10px 12px;}
+  .call-reply-area{display:flex;gap:8px;align-items:flex-end;}
+  .call-reply-input{flex:1;padding:8px 12px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;resize:none;min-height:38px;}
+  .call-reply-input:focus{border-color:rgba(99,102,241,0.5);}
+  .call-reply-btn{padding:7px 14px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3);transition:all 0.15s;white-space:nowrap;}
+  .call-reply-btn:hover{background:rgba(99,102,241,0.28);}
+  .call-replied-box{background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:8px;padding:8px 12px;}
+  .call-replied-label{font-size:10px;font-weight:700;color:#a5b4fc;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:3px;}
+  .call-replied-text{font-size:12px;color:var(--text);}
+
 </style>
 </head>
 <body>
@@ -506,6 +526,7 @@
     <div class="dash-tab" data-tab="flagged" onclick="switchTab('flagged')">🚩 Flagged <span class="tab-count" id="tab-flagged-count">0</span></div>
     <div class="dash-tab" data-tab="deals" onclick="switchTab('deals')">🤝 Deal Tracker <span class="tab-count green" id="tab-deals-count">0</span></div>
     <div class="dash-tab" data-tab="archived" onclick="switchTab('archived')">📁 Archived <span class="tab-count" id="tab-archived-count" style="background:rgba(255,255,255,0.06);color:var(--muted);">0</span></div>
+    <div class="dash-tab" data-tab="calls" onclick="switchTab('calls')">📞 Calls <span class="tab-count" id="tab-calls-count" style="background:rgba(99,102,241,0.18);color:#a5b4fc;">0</span></div>
     <div class="dash-tab" data-tab="users" onclick="switchTab('users')">👥 Users</div>
   </div>
 
@@ -584,6 +605,20 @@
 
 
     <!-- USERS -->
+
+    <!-- MOD CALLS -->
+    <div class="tab-panel" id="panel-calls">
+      <div class="section-header"><div class="section-title">User Calls</div><div class="section-sub">Messages from users requesting moderator assistance</div></div>
+      <div class="tab-search-bar">
+        <div class="tab-search-wrap"><span class="search-icon">🔍</span><input class="tab-search-input" id="search-calls" type="text" placeholder="Search by user name or listing…" oninput="filterCalls()"></div>
+        <span class="tab-search-count" id="search-calls-count"></span>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer;user-select:none;">
+          <input type="checkbox" id="calls-show-answered" onchange="renderCallsList()" style="cursor:pointer;">
+          Show answered
+        </label>
+      </div>
+      <div id="calls-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </div>
     <div class="tab-panel" id="panel-users">
       <div class="section-header"><div class="section-title">Users &amp; Violation History</div><div class="section-sub">Track and manage user violations</div></div>
       <div class="tab-search-bar">
@@ -782,6 +817,18 @@
 
   // ── LOAD DASHBOARD ───────────────────────────────────────────
   function loadDashboard() {
+    // ── Auto-archive: chats inactive 7 days (no deal started) ────
+    const _now7 = Date.now();
+    const _SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+    const _anyDealChatIds = new Set(getDeals().map(d => d.chatId));
+    _chatsIndex.forEach(chat => {
+      if (chat.archived || _anyDealChatIds.has(chat.chatId)) return;
+      const lastActivity = chat.lastTs || chat.started || 0;
+      if (lastActivity && (_now7 - lastActivity) > _SEVEN_DAYS) {
+        chat.archived = true; chat.archivedTs = _now7; chat.autoArchived = true;
+        RF.updateChatMeta(chat.chatId, { archived: true, archivedTs: _now7, autoArchived: true }).catch(()=>{});
+      }
+    });
     renderModPanel();
     const modLog  = getModLog();
     const allChats = getChatsIndex();
@@ -817,6 +864,7 @@
     renderDealsList(getDeals(), document.getElementById('deals-list'));
     renderUsersTable(chats, modLog, getBanned());
     const _al = document.getElementById('archived-list'); if (_al) renderArchivedList(_al);
+    renderCallsList();
     const _hl = document.getElementById('history-list'); if (_hl) renderHistoryList(_hl);
   }
 
@@ -1646,6 +1694,75 @@
     loadDashboard();
   }
 
+
+  // ── MOD CALLS ─────────────────────────────────────────────────
+  let _modCalls = [];
+
+  function renderCallsList() {
+    const container = document.getElementById('calls-list');
+    if (!container) return;
+    const showAnswered = document.getElementById('calls-show-answered')?.checked;
+    const calls = _modCalls.filter(c => showAnswered || c.status !== 'answered');
+    const openCount = _modCalls.filter(c => c.status === 'open').length;
+    const tabEl = document.getElementById('tab-calls-count');
+    if (tabEl) tabEl.textContent = openCount;
+    container.innerHTML = '';
+    if (!_modCalls.length) {
+      container.innerHTML = `<div class="empty-state"><div class="empty-icon">📞</div><h3>No calls yet</h3><p style="color:var(--muted);font-size:13px;margin-top:6px;">Users can contact you from within their chat. Their messages will appear here.</p></div>`;
+      return;
+    }
+    if (!calls.length) {
+      container.innerHTML = `<div class="empty-state"><div class="empty-icon">✅</div><h3>All caught up</h3><p style="color:var(--muted);font-size:13px;margin-top:6px;">All calls have been answered.</p></div>`;
+      return;
+    }
+    calls.forEach(c => {
+      const initials = (c.userName||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+      const answered = c.status === 'answered';
+      const card = document.createElement('div');
+      card.className = `call-card${answered?' answered':''}`;
+      card.innerHTML = `
+        <div class="call-card-header">
+          <div class="call-avatar">${initials}</div>
+          <div class="call-info">
+            <div class="call-who">${escH(c.userName||'Unknown')} <span style="font-size:11px;color:var(--muted);font-weight:400;">(${escH(c.userRole||'')})</span></div>
+            <div class="call-when">${escH(c.listing||'')} · ${c.ts?new Date(c.ts).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):''}</div>
+          </div>
+          ${answered?'<span class="badge" style="background:rgba(16,185,129,0.12);color:#6ee7b7;border:1px solid rgba(16,185,129,0.2);align-self:flex-start;">✓ Answered</span>':'<span class="badge badge-flagged" style="background:rgba(99,102,241,0.12);color:#a5b4fc;border:1px solid rgba(99,102,241,0.25);">Open</span>'}
+        </div>
+        <div class="call-msg">${escH(c.message||'')}</div>
+        ${answered && c.modReply
+          ? `<div class="call-replied-box"><div class="call-replied-label">Your reply</div><div class="call-replied-text">${escH(c.modReply)}</div></div>`
+          : !answered ? `<div class="call-reply-area">
+              <textarea class="call-reply-input" id="call-reply-${c.id}" placeholder="Type your reply…" rows="2"></textarea>
+              <button class="call-reply-btn" onclick="replyAndAnswer(${c.id})">✓ Reply &amp; Answer</button>
+            </div>` : ''
+        }`;
+      container.appendChild(card);
+    });
+  }
+
+  function replyAndAnswer(callId) {
+    const input = document.getElementById(`call-reply-${callId}`);
+    if (!input) return;
+    const reply = input.value.trim();
+    if (!reply) { input.style.borderColor = '#ef4444'; return; }
+    const patch = { status: 'answered', modReply: reply, modReplierName: MOD_NAME, modRepliedTs: Date.now() };
+    RF.updateModCall(callId, patch).catch(e => console.warn('[RF] updateModCall', e));
+    // Update in-memory immediately
+    const call = _modCalls.find(c => c.id === callId);
+    if (call) Object.assign(call, patch);
+    showToast('✓ Reply sent', 'success');
+    renderCallsList();
+  }
+
+  function filterCalls() {
+    const q = document.getElementById('search-calls')?.value.trim().toLowerCase().normalize('NFC') || '';
+    const rows = document.querySelectorAll('#calls-list .call-card');
+    let shown = 0;
+    rows.forEach(r => { const m = !q||r.textContent.toLowerCase().normalize('NFC').includes(q); r.style.display=m?'':'none'; if(m)shown++; });
+    const el = document.getElementById('search-calls-count'); if(el) el.textContent = q?`${shown} result${shown!==1?'s':''}`:' ';
+  }
+
   function filterHistory() {
     const _sh = document.getElementById('search-history'); if (!_sh) return;
     const q = _sh.value.trim().toLowerCase();
@@ -1674,7 +1791,7 @@
     document.querySelectorAll('.dash-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === `panel-${tab}`));
     // Clear search on tab switch
-    ['chats','flagged','deals','users','archived','history'].forEach(id => {
+    ['chats','flagged','deals','users','archived','history','calls'].forEach(id => {
       const el = document.getElementById(`search-${id}`);
       const ct = document.getElementById(`search-${id}-count`);
       if (el) el.value = '';
@@ -1743,6 +1860,12 @@ if (_sess) {
     // Modlog → write to rf_modlog localStorage
     RF.onModLog(log => {
       _modLog = log;
+    });
+
+    // Mod Calls → notify mod of user contact requests
+    RF.onModCalls(MOD_ID, calls => {
+      _modCalls = calls;
+      renderCallsList();
     });
 
     // Deals → write to rf_deals localStorage + per-chat rf_deal_*

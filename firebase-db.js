@@ -49,6 +49,11 @@ const RF = (function() {
   }
 
   // ── DEAL ─────────────────────────────────────────────────────
+  async function saveDefaulter(defaulter) {
+    try { await db.collection('defaulters').doc(String(defaulter.id)).set(defaulter); }
+    catch(e) { console.error('[RF] saveDefaulter', e); }
+  }
+
   async function deleteDeal(chatId) {
     try { await db.collection('deals').doc(String(chatId)).delete(); }
     catch(e) { console.error('[RF] deleteDeal', e); }
@@ -221,6 +226,24 @@ const RF = (function() {
     return msg;
   }
 
+
+  async function saveModContact(contact) {
+    try { await db.collection('modcontacts').doc(String(contact.id)).set(contact); }
+    catch(e) { console.error('[RF] saveModContact', e); }
+  }
+
+  async function updateModContact(id, patch) {
+    try { await db.collection('modcontacts').doc(String(id)).update(patch); }
+    catch(e) { console.error('[RF] updateModContact', e); }
+  }
+
+  function onModContacts(cb) {
+    return db.collection('modcontacts').onSnapshot(
+      snap => cb(snap.docs.map(d => d.data())),
+      e => console.error('[RF] onModContacts', e)
+    );
+  }
+
   return {
     saveMessage, onMessages,
     registerChat, updateChatMeta, onChatMeta,
@@ -230,9 +253,11 @@ const RF = (function() {
     saveAssignment, deleteAssignment, getAssignment, onAssignments,
     setModActive, onModsActive,
     banUser, unbanUser, onBanned,
-    onAllChats, onDeals, deleteDeal,
+    onAllChats, onDeals, deleteDeal, saveDefaulter,
     getUserChats, saveUserChats,
-    postSystemMsg
+    saveModCall, updateModCall, onModCalls, onAllModCalls,
+    postSystemMsg,
+    saveModContact, updateModContact, onModContacts
   };
 
 })();

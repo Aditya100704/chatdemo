@@ -664,9 +664,11 @@
         </div>
       </div>
       <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
-        <table class="mod-metrics-table"><thead><tr>
-          <th>Mod / Admin</th><th>Reviewed</th><th>Approved / Dismissed</th><th>Approval %</th><th>Avg Response</th><th>Last Action</th>
-        </tr></thead><tbody id="mod-metrics-body"></tbody></table>
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+          <table class="mod-metrics-table" style="min-width:560px;"><thead><tr>
+            <th>Mod / Admin</th><th>Reviewed</th><th>Approved / Dismissed</th><th>Approval %</th><th>Avg Response</th><th>Calls</th><th>Last Action</th>
+          </tr></thead><tbody id="mod-metrics-body"></tbody></table>
+        </div>
       </div>
     </div>
 
@@ -1044,6 +1046,7 @@
   let _banned          = {};
   let _modsActive      = { 'mod-1': true, 'mod-2': true };
   let _defaulters      = [];
+  let _modCalls        = [];
 
   // ── DATA ACCESSORS (read from in-memory, write to Firestore) ──
   const getModLog      = () => _modLog;
@@ -1056,7 +1059,7 @@
   const getModeActive  = () => _modsActive;
   const getAssignments = () => _assignments;
   const getDefaulters  = () => _defaulters;
-  const saveDefaulters = d => { _defaulters = Array.isArray(d) ? d : [d]; _defaulters.forEach(x => RF.saveDefaulter ? RF.saveDefaulter(x).catch(()=>{}) : db.collection('defaulters').doc(String(x.id)).set(x).catch(()=>{})); };
+  const saveDefaulters = d => { _defaulters = Array.isArray(d) ? d : [d]; _defaulters.forEach(x => RF.saveDefaulter(x).catch(e => console.warn('[RF] saveDefaulter', e))); };
 
   function getJoinSlots(chatId) {
     return _joinSlotsByChat[chatId] || { admin: null, mod: null };
@@ -1493,6 +1496,8 @@
     const deals = getDeals();
     const deal  = deals.find(d => d.chatId === chatId);
     if (!deal) return;
+    if (deal.stage === 'Cancelled') { showToast('This deal has already been cancelled.', 'error'); return; }
+    if (deal.stage_complete || deal.stage === 'Complete') { showToast('This deal is already marked complete.', ''); return; }
     deal.stage_complete    = true;
     deal.stage_complete_ts = Date.now();
     deal.stage             = 'Complete';
@@ -1741,6 +1746,14 @@
         const avgStr = avgMins !== null ? (avgMins < 60 ? `${avgMins}m` : `${Math.round(avgMins/60)}h`) : '—';
         const barW = total ? Math.round((total / maxTotal) * 80) : 0;
         const lastStr = d.lastTs ? fmtTs(d.lastTs) : '—';
+        const modCalls = _modCalls.filter(c => {
+          const modId = MODS.find(m => m.name === name)?.id;
+          return modId && c.assignedModId === modId;
+        });
+        const answeredCalls = modCalls.filter(c => c.status === 'answered').length;
+        const callsStr = modCalls.length
+          ? `<span style="font-weight:600;">${answeredCalls}</span><span style="color:var(--muted);"> / ${modCalls.length}</span>`
+          : '<span style="color:var(--muted);">—</span>';
         const rateStr = approvalRate !== null
           ? `<span style="color:${approvalRate>=70?'#34d399':approvalRate>=40?'#fcd34d':'#f87171'};font-weight:700;">${approvalRate}%</span>`
           : '<span style="color:var(--muted);">—</span>';
@@ -1752,6 +1765,7 @@
           <td><span style="color:#34d399;">${d.approved}</span> / <span style="color:#f87171;">${d.dismissed}</span></td>
           <td>${rateStr}</td>
           <td style="color:var(--muted);">${avgStr}</td>
+          <td>${callsStr}</td>
           <td style="color:var(--muted);font-size:11px;">${lastStr}</td>`;
         container.appendChild(tr);
       });
@@ -2611,6 +2625,11 @@ if (_sess) {
       _defaulters = snap.docs.map(d => d.data());
       loadDashboard();
     }, e => console.warn('[RF] defaulters', e));
+
+    // All mod calls — admin can see all
+    RF.onAllModCalls(calls => {
+      _modCalls = calls;
+    });
 
     // Banned → write to rf_banned_users localStorage
     RF.onBanned(banned => {
