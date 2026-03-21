@@ -671,6 +671,16 @@
       <div id="history-list"></div>
     </div>
 
+    <div class="tab-panel" id="panel-defaulters">
+      <div class="section-header"><div class="section-title">Defaulters List</div><div class="section-sub">Parties who defaulted on a deal — admin use only</div></div>
+      <div class="tab-search-bar">
+        <div class="tab-search-wrap"><span class="search-icon">🔍</span><input class="tab-search-input" id="search-defaulters" type="text" placeholder="Search by name or listing…" oninput="filterDefaulters()"></div>
+        <span class="tab-search-count" id="search-defaulters-count"></span>
+      </div>
+      <div id="defaulters-list" style="display:flex;flex-direction:column;gap:12px;"></div>
+    </div>
+
+
   </div>
 </div>
 
