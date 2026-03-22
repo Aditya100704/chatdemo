@@ -1699,7 +1699,7 @@
     const minPaid = stageKey === 'final_received' ? (payA || payB) : (payA && payB);
     if (!minPaid) {
       showToast(stageKey === 'final_received'
-        ? 'At least one party's payment must be ticked before closing.'
+        ? 'At least one payment must be ticked before closing.'
         : 'Both payments must be ticked before proceeding.', 'error'); return;
     }
     deal[`stage_${stageKey}`]    = true;

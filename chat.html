@@ -1819,28 +1819,6 @@ Message: ${JSON.stringify(text)}`;
 
     const proposals = keys.map(k => ({ date: k, ...calSelected[k] }));
 
-    // Count total individual slots (date × time-of-day combos)
-    const totalSlots = proposals.reduce((n, p) => n + (p.morning?1:0) + (p.evening?1:0), 0);
-
-    if (totalSlots === 1) {
-      // Only 1 slot proposed — auto-confirm it immediately for party 2
-      const p = proposals[0];
-      const slotLabel = p.morning ? 'Morning' : 'Evening';
-      const d = new Date(p.date + 'T00:00:00');
-      const dateLabel = d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-      const confirmedSlot = { date: p.date, slot: p.morning ? 'morning' : 'evening', dateLabel, slotLabel };
-      const meeting = { status: 'confirmed', proposals, confirmedSlot, proposedTs: Date.now(),
-                        proposedBy: currentIdentity, confirmedTs: Date.now(), confirmedBy: currentIdentity === 'A' ? 'B' : 'A' };
-      saveMeeting(meeting); syncMeetingToDeal(meeting);
-      const msgs = loadMessages();
-      msgs.push({ id: Date.now(), senderIdentity:'SYS', senderId:'system', senderName:'System',
-        text: `📅 Meeting auto-confirmed: ${dateLabel}, ${slotLabel}. Both parties have agreed on this slot.`,
-        ts: Date.now(), isSystem: true, meetingConfirmed: meeting });
-      saveMessages(msgs);
-      closeCalendarModal(); updateCalendarBtn(); updatePayBtn(); renderMessages();
-      return;
-    }
-
     const meeting = { status: 'proposed', proposals, proposedTs: Date.now(), proposedBy: currentIdentity };
     saveMeeting(meeting);
     syncMeetingToDeal(meeting);
@@ -1866,7 +1844,18 @@ Message: ${JSON.stringify(text)}`;
     calPickedKey = null;
     document.getElementById('cal-pick-confirm').disabled = true;
 
-    sub.textContent = 'The other party has proposed these dates. Choose one that works for you.';
+    // Collect all slot keys to detect single-slot case
+    const allSlotKeys = [];
+    meeting.proposals.forEach(p => {
+      if (p.morning) allSlotKeys.push(`${p.date}|morning`);
+      if (p.evening) allSlotKeys.push(`${p.date}|evening`);
+    });
+    const isSingle = allSlotKeys.length === 1;
+
+    sub.textContent = isSingle
+      ? 'One date has been proposed — pre-selected below. Confirm or choose a different date.'
+      : 'The other party has proposed these dates. Choose one that works for you.';
+
     wrap.innerHTML = meeting.proposals.map(p => {
       const d = new Date(p.date + 'T00:00:00');
       const dateLabel = d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long' });
@@ -1880,6 +1869,11 @@ Message: ${JSON.stringify(text)}`;
         </div>`;
       }).join('');
     }).join('');
+
+    // Auto-select the only slot if there's just one
+    if (isSingle) {
+      pickSlot(allSlotKeys[0]);
+    }
   }
 
   function pickSlot(key) {
