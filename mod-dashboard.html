@@ -573,8 +573,8 @@
     <div class="dash-logo">RenterFinder</div>
     <div class="dash-badge" style="background:rgba(212,160,23,0.15);border-color:rgba(212,160,23,0.4);color:var(--gold);">ADMIN</div>
     <div class="dash-topbar-right">
-      <div class="auto-refresh-badge"><div class="auto-refresh-dot"></div> Auto-refresh <span class="refresh-countdown" id="refresh-countdown"></span></div>
-      <button class="refresh-btn" onclick="loadDashboard()">↻ Now</button>
+      <div class="auto-refresh-badge"><div class="auto-refresh-dot"></div> <span class="refresh-countdown" id="refresh-countdown"></span></div>
+      <button class="refresh-btn" onclick="loadDashboard()">↻ Refresh</button>
       <button class="logout-btn" onclick="logout()">Log Out</button>
     </div>
   </div>
@@ -595,9 +595,9 @@
   <div class="dash-tabs">
     <div class="dash-tab active" data-tab="overview" onclick="switchTab('overview')">📊 Overview</div>
     <div class="dash-tab" data-tab="flagged" onclick="switchTab('flagged')">🚩 Flagged <span class="tab-count" id="tab-flagged-count">0</span></div>
-    <div class="dash-tab" data-tab="appeals" onclick="switchTab('appeals')">📝 Appeals <span class="tab-count purple" id="tab-appeals-count">0</span></div>
     <div class="dash-tab" data-tab="deals" onclick="switchTab('deals')">🤝 Deal Tracker <span class="tab-count green" id="tab-deals-count">0</span></div>
     <div class="dash-tab" data-tab="contacts" onclick="switchTab('contacts')">📩 Query <span class="tab-count purple" id="tab-contacts-count">0</span></div>
+    <div class="dash-tab" data-tab="appeals" onclick="switchTab('appeals')">📝 Appeals <span class="tab-count purple" id="tab-appeals-count">0</span></div>
     <div class="dash-tab" data-tab="chats" onclick="switchTab('chats')">💬 Active Chats <span class="tab-count green" id="tab-chats-count">0</span></div>
     <div class="dash-tab" data-tab="users" onclick="switchTab('users')">👥 Users</div>
     <div class="dash-tab" data-tab="archived" onclick="switchTab('archived')">📁 Archived <span class="tab-count" id="tab-archived-count" style="background:rgba(255,255,255,0.06);color:var(--muted);">0</span></div>
@@ -1520,7 +1520,8 @@
         } else if (stage.gateType === 'payment') {
           const payA = d[`pay_${stage.key}_A`];
           const payB = d[`pay_${stage.key}_B`];
-          rightEl = `<button class="pipeline-action-btn green" onclick="proceedPaymentStage('${d.chatId}','${stage.key}')" ${payA && payB ? '' : 'disabled style="opacity:0.4;cursor:not-allowed;"'}>Proceed →</button>`;
+          const canProceed = stage.key === 'final_received' ? (payA || payB) : (payA && payB);
+          rightEl = `<button class="pipeline-action-btn green" onclick="proceedPaymentStage('${d.chatId}','${stage.key}')" ${canProceed ? '' : 'disabled style="opacity:0.4;cursor:not-allowed;"'}>Proceed →</button>`;
         } else if (stage.key === 'meeting') {
           rightEl = `<span style="font-size:11px;color:var(--gold);text-align:right;line-height:1.5;">⏳ Awaiting<br>date selection<br>by parties</span>`;
         } else if (stage.gateType === 'action') {
@@ -1536,13 +1537,24 @@
           <div class="pipeline-sub">${stage.sub}</div>
           ${isActive && stage.gateType === 'payment' ? buildPaymentToggles(d, stage.key) : ''}
           ${isActive && stage.gateType === 'select' ? `
-            <div style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-              <span style="font-size:12px;color:var(--muted);">${stage.key === 'security_deposit' ? 'Deposit' : 'Advance'} Amount:</span>
-              <select onchange="setAdvanceDays('${d.chatId}','${stage.key}',this.value)" style="padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--card2,#1a1a2e);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;">
-                <option value="">Select days of rent</option>
-                ${[1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`<option value="${n}" ${((d[stage.key+'_days'] ?? 6))==n?'selected':''}>${n} day${n>1?'s':''} rent${n===6?' (default)':''}</option>`).join('')}
-              </select>
-              ${d[stage.key+'_days'] ? `<span style="font-size:12px;font-weight:700;color:#34d399;">${d[stage.key+'_days']} day(s) selected</span>` : ''}
+            <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
+              <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;">Payment Amount (days of rent)</div>
+              <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:7px 10px;">
+                  <span style="font-size:12px;color:var(--text);font-weight:600;">👤 ${escH(d.userA)}</span>
+                  <select onchange="setAdvanceDays('${d.chatId}','${stage.key}','A',this.value)" style="padding:3px 7px;border-radius:6px;border:1px solid var(--border);background:var(--card2,#1a1a2e);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;">
+                    ${[1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`<option value="${n}" ${((d[stage.key+'_days_A'] ?? 6))==n?'selected':''}>${n} day${n>1?'s':''}</option>`).join('')}
+                  </select>
+                  <span style="font-size:11px;color:#34d399;">rent</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:7px 10px;">
+                  <span style="font-size:12px;color:var(--text);font-weight:600;">👤 ${escH(d.userB)}</span>
+                  <select onchange="setAdvanceDays('${d.chatId}','${stage.key}','B',this.value)" style="padding:3px 7px;border-radius:6px;border:1px solid var(--border);background:var(--card2,#1a1a2e);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;">
+                    ${[1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`<option value="${n}" ${((d[stage.key+'_days_B'] ?? 6))==n?'selected':''}>${n} day${n>1?'s':''}</option>`).join('')}
+                  </select>
+                  <span style="font-size:11px;color:#34d399;">rent</span>
+                </div>
+              </div>
             </div>` : ''}
         </div>
         ${rightEl}`;
@@ -1568,11 +1580,15 @@
     container.appendChild(card);
   }
 
-  function setAdvanceDays(chatId, stageKey, days) {
+  function setAdvanceDays(chatId, stageKey, party, days) {
     const deals = getDeals();
     const deal = deals.find(d => d.chatId === chatId);
     if (!deal) return;
-    deal[stageKey + '_days'] = parseInt(days) || null;
+    deal[stageKey + '_days_' + party] = parseInt(days) || 6;
+    // Keep a shared _days fallback = average of A and B for system messages
+    const dA = deal[stageKey + '_days_A'] ?? 6;
+    const dB = deal[stageKey + '_days_B'] ?? 6;
+    deal[stageKey + '_days'] = Math.round((dA + dB) / 2);
     saveDeals(deals);
     syncDealToChat(chatId, deal);
     _refreshDealCard(chatId, deal);
@@ -1651,14 +1667,19 @@
     const deals = getDeals();
     const deal  = deals.find(d => d.chatId === chatId);
     if (!deal) return;
-    const days = deal[stageKey + '_days'] ?? 6;
-    deal[stageKey + '_days'] = days; // ensure stored
-    if (!confirm(`Set ${days}-day rent as the payment amount and notify both parties? This cannot be undone.`)) return;
+    const daysA = deal[stageKey + '_days_A'] ?? 6;
+    const daysB = deal[stageKey + '_days_B'] ?? 6;
+    deal[stageKey + '_days_A'] = daysA;
+    deal[stageKey + '_days_B'] = daysB;
+    deal[stageKey + '_days']   = Math.round((daysA + daysB) / 2);
+    const amtNote = daysA === daysB
+      ? `${daysA} day(s) rent each`
+      : `${daysA} day(s) rent (${deal.userA}), ${daysB} day(s) rent (${deal.userB})`;
+    if (!confirm(`Confirm payment amounts — ${amtNote}? Both parties will be notified. This cannot be undone.`)) return;
     deal[`stage_${stageKey}`]    = true;
     deal[`stage_${stageKey}_ts`] = Date.now();
     deal.lastActionTs = Date.now();
-    // Notify chat — users will see the payment button appear
-    postDealSystemMsg(chatId, `💳 ${label} confirmed: ${days} day(s) rent required from both parties. Please use the Pay Now button below to complete your payment.`);
+    postDealSystemMsg(chatId, `💳 ${label} confirmed. Amount: ${deal.userA}: ${daysA} day(s) rent · ${deal.userB}: ${daysB} day(s) rent. Please use the Pay Now button in chat to complete payment.`);
     saveDeals(deals);
     syncDealToChat(chatId, deal);
     showToast(`✓ ${label} confirmed — both parties notified`, 'success');
@@ -1672,8 +1693,14 @@
     const deal  = deals.find(d => d.chatId === chatId);
     if (!deal) return;
     // days already handled in proceedSelectStage
-    if (!deal[`pay_${stageKey}_A`] || !deal[`pay_${stageKey}_B`]) {
-      showToast('Both payments must be ticked before proceeding.', 'error'); return;
+    const payA = deal[`pay_${stageKey}_A`];
+    const payB = deal[`pay_${stageKey}_B`];
+    // For final_received: allow closing with at least 1 party paid (deal can still close)
+    const minPaid = stageKey === 'final_received' ? (payA || payB) : (payA && payB);
+    if (!minPaid) {
+      showToast(stageKey === 'final_received'
+        ? 'At least one party's payment must be ticked before closing.'
+        : 'Both payments must be ticked before proceeding.', 'error'); return;
     }
     deal[`stage_${stageKey}`]    = true;
     deal[`stage_${stageKey}_ts`] = Date.now();

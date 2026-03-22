@@ -428,7 +428,7 @@
   </div>
   <button id="pay-now-btn" onclick="openPaymentGateway()" style="display:none;padding:5px 12px;border-radius:20px;background:linear-gradient(135deg,#1d4ed8,#2563eb);border:none;color:#fff;font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 2px 8px rgba(37,99,235,0.4);">💳 Pay Now</button>
   <button class="topbar-calendar-btn" id="calendar-btn" onclick="openCalendarModal()">📅 Schedule</button>
-  <button class="topbar-contact-btn" id="topbar-contact-btn" onclick="openContactMod()" title="Contact your moderator">🛡️ Contact Mod</button>
+  <button class="topbar-contact-btn" id="topbar-contact-btn" onclick="openContactMod()" title="Contact your moderator">🛡️ Contact Moderator</button>
 </div>
 
 <div class="identity-bar">
@@ -562,6 +562,15 @@
       <div class="deal-modal-title">⏳ Confirmation Recorded</div>
       <div class="deal-modal-sub">Your confirmation has been saved. The deal will be officially initiated once the other party also confirms. You can close this and continue chatting.</div>
       <div class="deal-modal-btns"><button class="deal-confirm-btn" onclick="closeDealConfirm()">Got it</button></div>
+    </div>
+    <div id="deal-reject-view" style="display:none;flex-direction:column;gap:14px;">
+      <div class="deal-modal-title">🤔 Deal Offer Received</div>
+      <div class="deal-modal-sub" id="deal-reject-sub">The other party has expressed interest in moving forward with this deal. Do you want to proceed?</div>
+      <div class="deal-modal-listing" id="deal-reject-listing">Loading…</div>
+      <div class="deal-modal-btns">
+        <button class="deal-cancel-btn" onclick="rejectDeal()" style="background:#fff1f2;color:#ef4444;border:1px solid #fecaca;">✕ Decline</button>
+        <button class="deal-confirm-btn" onclick="confirmDeal()">✓ Accept &amp; Confirm</button>
+      </div>
     </div>
     <div id="deal-done-view" style="display:none;flex-direction:column;gap:14px;text-align:center;">
       <div class="deal-modal-title">🎉 Deal Initiated!</div>
@@ -1451,15 +1460,48 @@ Message: ${JSON.stringify(text)}`;
   }
 
   function openDealConfirm() {
+    const deal = loadDeal();
+    const otherIdentity = currentIdentity === 'A' ? 'B' : 'A';
+    const otherConfirmed = deal?.[`confirmed${otherIdentity}`];
+    const myConfirmed    = deal?.[`confirmed${currentIdentity}`];
+
     document.getElementById('deal-modal-listing').textContent = LISTING;
-    document.getElementById('deal-form-view').style.display    = 'flex';
+    const rejectListing = document.getElementById('deal-reject-listing');
+    if (rejectListing) rejectListing.textContent = LISTING;
+    document.getElementById('deal-form-view').style.display    = 'none';
     document.getElementById('deal-waiting-view').style.display = 'none';
     document.getElementById('deal-done-view').style.display    = 'none';
+    const rv = document.getElementById('deal-reject-view');
+    if (rv) rv.style.display = 'none';
+
+    if (!myConfirmed && otherConfirmed) {
+      // Party 2 sees accept/decline view
+      if (rv) rv.style.display = 'flex';
+    } else {
+      document.getElementById('deal-form-view').style.display = 'flex';
+    }
     document.getElementById('deal-modal').classList.add('show');
   }
 
   function closeDealConfirm() {
     document.getElementById('deal-modal').classList.remove('show');
+  }
+
+  function rejectDeal() {
+    const deal = loadDeal();
+    if (!deal) { closeDealConfirm(); return; }
+    // Clear the other party's confirmation — reset to no deal
+    const otherIdentity = currentIdentity === 'A' ? 'B' : 'A';
+    deal[`confirmed${otherIdentity}`] = false;
+    saveDeal(deal);
+    const msgs = loadMessages();
+    msgs.push({ id: Date.now(), senderIdentity: 'SYS', senderId: 'system', senderName: 'System',
+      text: '❌ Deal offer was declined. Either party can start a new deal discussion.',
+      ts: Date.now(), isSystem: true });
+    saveMessages(msgs);
+    closeDealConfirm();
+    updateDealBar();
+    renderMessages();
   }
 
   function confirmDeal() {
@@ -1776,6 +1818,29 @@ Message: ${JSON.stringify(text)}`;
     if (keys.length === 0) return;
 
     const proposals = keys.map(k => ({ date: k, ...calSelected[k] }));
+
+    // Count total individual slots (date × time-of-day combos)
+    const totalSlots = proposals.reduce((n, p) => n + (p.morning?1:0) + (p.evening?1:0), 0);
+
+    if (totalSlots === 1) {
+      // Only 1 slot proposed — auto-confirm it immediately for party 2
+      const p = proposals[0];
+      const slotLabel = p.morning ? 'Morning' : 'Evening';
+      const d = new Date(p.date + 'T00:00:00');
+      const dateLabel = d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+      const confirmedSlot = { date: p.date, slot: p.morning ? 'morning' : 'evening', dateLabel, slotLabel };
+      const meeting = { status: 'confirmed', proposals, confirmedSlot, proposedTs: Date.now(),
+                        proposedBy: currentIdentity, confirmedTs: Date.now(), confirmedBy: currentIdentity === 'A' ? 'B' : 'A' };
+      saveMeeting(meeting); syncMeetingToDeal(meeting);
+      const msgs = loadMessages();
+      msgs.push({ id: Date.now(), senderIdentity:'SYS', senderId:'system', senderName:'System',
+        text: `📅 Meeting auto-confirmed: ${dateLabel}, ${slotLabel}. Both parties have agreed on this slot.`,
+        ts: Date.now(), isSystem: true, meetingConfirmed: meeting });
+      saveMessages(msgs);
+      closeCalendarModal(); updateCalendarBtn(); updatePayBtn(); renderMessages();
+      return;
+    }
+
     const meeting = { status: 'proposed', proposals, proposedTs: Date.now(), proposedBy: currentIdentity };
     saveMeeting(meeting);
     syncMeetingToDeal(meeting);

@@ -494,8 +494,8 @@
     <div class="dash-logo">RenterFinder</div>
     <div class="dash-badge">MOD 7</div>
     <div class="dash-topbar-right">
-      <div class="auto-refresh-badge"><div class="auto-refresh-dot"></div> Auto-refresh <span class="refresh-countdown" id="refresh-countdown"></span></div>
-      <button class="refresh-btn" onclick="loadDashboard()">↻ Now</button>
+      <div class="auto-refresh-badge"><div class="auto-refresh-dot"></div> <span class="refresh-countdown" id="refresh-countdown"></span></div>
+      <button class="refresh-btn" onclick="loadDashboard()">↻ Refresh</button>
       <button class="logout-btn" onclick="logout()">Log Out</button>
     </div>
   </div>
@@ -1113,9 +1113,9 @@
           const days = d[stage.key + '_days'] != null ? d[stage.key + '_days'] : 6;
           rightEl = `<span style="font-size:11px;color:var(--muted);">${days} days rent selected</span>`;
         } else if (stage.gateType === 'payment') {
-          const payA = d[`pay_${stage.key}_A`];
-          const payB = d[`pay_${stage.key}_B`];
-          rightEl = `<button class="pipeline-action-btn green" onclick="proceedPaymentStage('${d.chatId}','${stage.key}')" ${payA && payB ? '' : 'disabled style="opacity:0.4;cursor:not-allowed;"'}>Proceed →</button>`;
+          const payA = d[`pay_${stage.key}_A`]; const payB = d[`pay_${stage.key}_B`];
+          const canProceed = stage.key === 'final_received' ? (payA || payB) : (payA && payB);
+          rightEl = `<button class="pipeline-action-btn green" onclick="proceedPaymentStage('${d.chatId}','${stage.key}')" ${canProceed ? '' : 'disabled style="opacity:0.4;cursor:not-allowed;"'}>Proceed →</button>`;
         } else if (stage.key === 'meeting') {
           rightEl = `<span style="font-size:11px;color:var(--gold);text-align:right;line-height:1.5;">⏳ Awaiting<br>date selection<br>by parties</span>`;
         } else if (stage.gateType === 'action') {
@@ -1131,11 +1131,22 @@
           <div class="pipeline-sub">${stage.sub}</div>
           ${isActive && stage.gateType === 'payment' ? buildPaymentToggles(d, stage.key) : ''}
           ${isActive && stage.gateType === 'select' ? `
-            <div style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-              <span style="font-size:12px;color:var(--muted);">Days of rent:</span>
-              <select onchange="setAdvanceDays('${d.chatId}','${stage.key}',this.value)" style="padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--card2,#1a1a2e);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;">
-                ${[1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`<option value="${n}" ${((d[stage.key+'_days']??6))==n?'selected':''}>${n} day${n>1?'s':''} rent${n===6?' (default)':''}</option>`).join('')}
-              </select>
+            <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
+              <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;">Payment Amount (days of rent)</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:7px 10px;">
+                  <span style="font-size:12px;color:var(--text);font-weight:600;">👤 ${escH(d.userA)}</span>
+                  <select onchange="setAdvanceDays('${d.chatId}','${stage.key}','A',this.value)" style="padding:3px 7px;border-radius:6px;border:1px solid var(--border);background:var(--card2,#1a1a2e);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;">
+                    ${[1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`<option value="${n}" ${((d[stage.key+'_days_A']??6))==n?'selected':''}>${n} day${n>1?'s':''}</option>`).join('')}
+                  </select>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:7px 10px;">
+                  <span style="font-size:12px;color:var(--text);font-weight:600;">👤 ${escH(d.userB)}</span>
+                  <select onchange="setAdvanceDays('${d.chatId}','${stage.key}','B',this.value)" style="padding:3px 7px;border-radius:6px;border:1px solid var(--border);background:var(--card2,#1a1a2e);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;">
+                    ${[1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`<option value="${n}" ${((d[stage.key+'_days_B']??6))==n?'selected':''}>${n} day${n>1?'s':''}</option>`).join('')}
+                  </select>
+                </div>
+              </div>
             </div>` : ''}
         </div>
         ${rightEl}`;
@@ -1156,11 +1167,14 @@
     container.appendChild(card);
   }
 
-  function setAdvanceDays(chatId, stageKey, days) {
+  function setAdvanceDays(chatId, stageKey, party, days) {
     const deals = getDeals();
     const deal = deals.find(d => d.chatId === chatId);
     if (!deal) return;
-    deal[stageKey + '_days'] = parseInt(days) || null;
+    deal[stageKey + '_days_' + party] = parseInt(days) || 6;
+    const dA = deal[stageKey + '_days_A'] ?? 6;
+    const dB = deal[stageKey + '_days_B'] ?? 6;
+    deal[stageKey + '_days'] = Math.round((dA + dB) / 2);
     saveDeals(deals);
     syncDealToChat(chatId, deal);
     _refreshDealCard(chatId, deal);
@@ -1212,13 +1226,16 @@
     const deals = getDeals();
     const deal  = deals.find(d => d.chatId === chatId);
     if (!deal) return;
-    const days = deal[stageKey + '_days'] ?? 6;
-    deal[stageKey + '_days'] = days;
-    if (!confirm(`Set ${days}-day rent as the payment amount and notify both parties?`)) return;
+    const daysA = deal[stageKey + '_days_A'] ?? 6;
+    const daysB = deal[stageKey + '_days_B'] ?? 6;
+    deal[stageKey + '_days_A'] = daysA; deal[stageKey + '_days_B'] = daysB;
+    deal[stageKey + '_days'] = Math.round((daysA + daysB) / 2);
+    const amtNote = daysA === daysB ? `${daysA} day(s) rent each` : `${daysA} days (${deal.userA}), ${daysB} days (${deal.userB})`;
+    if (!confirm(`Confirm amounts — ${amtNote}? Both parties will be notified.`)) return;
     deal[`stage_${stageKey}`]    = true;
     deal[`stage_${stageKey}_ts`] = Date.now();
     deal.lastActionTs = Date.now();
-    postDealSystemMsg(chatId, `💳 ${label} confirmed: ${days} day(s) rent required. Please use the Pay Now button in chat.`);
+    postDealSystemMsg(chatId, `💳 ${label}: ${deal.userA}: ${daysA} day(s) rent · ${deal.userB}: ${daysB} day(s) rent. Use the Pay Now button in chat.`);
     saveDeals(deals);
     syncDealToChat(chatId, deal);
     showToast(`✓ ${label} confirmed — parties notified`, 'success');
@@ -1229,9 +1246,9 @@
     const deals = getDeals();
     const deal  = deals.find(d => d.chatId === chatId);
     if (!deal) return;
-    if (!deal[`pay_${stageKey}_A`] || !deal[`pay_${stageKey}_B`]) {
-      showToast('Both payments must be ticked before proceeding.', 'error'); return;
-    }
+    const payA = deal[`pay_${stageKey}_A`]; const payB = deal[`pay_${stageKey}_B`];
+    const minPaid = stageKey === 'final_received' ? (payA || payB) : (payA && payB);
+    if (!minPaid) { showToast(stageKey === 'final_received' ? 'At least one payment must be ticked.' : 'Both payments must be ticked.', 'error'); return; }
     deal[`stage_${stageKey}`]    = true;
     deal[`stage_${stageKey}_ts`] = Date.now();
     const label = PIPELINE.find(p => p.key === stageKey)?.label || stageKey;
