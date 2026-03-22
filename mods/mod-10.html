@@ -992,11 +992,13 @@
 
   // ── GATED DEAL PIPELINE ──────────────────────────────────────
   const PIPELINE = [
-    { key:'advance_payment', label:'Advance Payment',     sub:'Tick off advance payment received from both parties, then confirm.', gateType:'payment',  icon:'💳' },
-    { key:'meeting',         label:'Meeting Arrangement', sub:'Parties select dates via chat. Auto-confirms once both agree on a slot.',      gateType:'action',   icon:'📅' },
-    { key:'closure',         label:'Deal Closure',        sub:'Confirm once rent agreement / deal terms are finalised.',             gateType:'action',   icon:'📝' },
-    { key:'final_payment',   label:'Final Payment',       sub:'Tick off final payment received from both parties, then confirm.',    gateType:'payment',  icon:'✅' },
-    { key:'complete',        label:'Complete',             sub:'Deal is fully closed and will be archived.',                         gateType:'terminal', icon:'🏆' },
+    { key:'advance_select',   label:'Advance — Set Amount',       sub:'Select amount (default 6 days rent). On confirm, both parties receive a payment button.',  gateType:'select',   icon:'💳' },
+    { key:'advance_received', label:'Advance — Payment Received',  sub:'Tick off advance payment received from both parties, then confirm.',                       gateType:'payment',  icon:'✅' },
+    { key:'meeting',          label:'Meeting Arrangement',         sub:'Parties select dates via the calendar button in chat.',                                   gateType:'action',   icon:'📅' },
+    { key:'closure',          label:'Deal Closure',                sub:'Confirm once rent agreement and deal terms are finalised.',                               gateType:'action',   icon:'📝' },
+    { key:'final_select',     label:'Final Payment — Set Amount',  sub:'Select amount (default 6 days rent). On confirm, both parties receive a payment button.',  gateType:'select',   icon:'💰' },
+    { key:'final_received',   label:'Final Payment — Received',    sub:'Tick off final payment received from both parties, then confirm.',                         gateType:'payment',  icon:'✅' },
+    { key:'complete',         label:'Complete',                    sub:'Deal is fully closed and will be archived.',                                               gateType:'terminal', icon:'🏆' },
   ];
 
   function currentPipelineIdx(deal) {
@@ -1106,7 +1108,10 @@
           rightEl = `<span class="pipeline-done-tag">✓ Done${ts}</span>`;
         }
       } else if (isActive) {
-        if (stage.gateType === 'payment') {
+        if (stage.gateType === 'select') {
+          const days = d[stage.key + '_days'] != null ? d[stage.key + '_days'] : 6;
+          rightEl = `<span style="font-size:11px;color:var(--muted);">${days} days rent selected</span>`;
+        } else if (stage.gateType === 'payment') {
           const payA = d[`pay_${stage.key}_A`];
           const payB = d[`pay_${stage.key}_B`];
           rightEl = `<button class="pipeline-action-btn green" onclick="proceedPaymentStage('${d.chatId}','${stage.key}')" ${payA && payB ? '' : 'disabled style="opacity:0.4;cursor:not-allowed;"'}>Proceed →</button>`;
@@ -1172,7 +1177,12 @@
     deal[`${field}_ts`] = deal[field] ? Date.now() : null;
     saveDeals(deals);
     syncDealToChat(chatId, deal);
-    loadDashboard();
+    _refreshDealCard(chatId, deal);
+  }
+
+  function _refreshDealCard(chatId, deal) {
+    const bodyEl = document.getElementById(`acc-active-${CSS.escape(chatId)}`);
+    if (bodyEl) { bodyEl.innerHTML = ''; renderDealCard(deal, bodyEl, false); }
   }
 
   function proceedPaymentStage(chatId, stageKey) {

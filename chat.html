@@ -426,6 +426,7 @@
       </div>
     </div>
   </div>
+  <button id="pay-now-btn" onclick="openPaymentGateway()" style="display:none;padding:5px 12px;border-radius:20px;background:linear-gradient(135deg,#1d4ed8,#2563eb);border:none;color:#fff;font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 2px 8px rgba(37,99,235,0.4);">💳 Pay Now</button>
   <button class="topbar-calendar-btn" id="calendar-btn" onclick="openCalendarModal()">📅 Schedule</button>
   <button class="topbar-contact-btn" id="topbar-contact-btn" onclick="openContactMod()" title="Contact your moderator">🛡️ Contact Mod</button>
 </div>
@@ -465,7 +466,7 @@
     <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
   </button>
 </div>
-<div class="chat-disclaimer">Sharing of phone/mobile numbers, emails, addresses or social handles is not allowed · No abusive language · All messages are monitored</div>
+<div class="chat-disclaimer">Sharing of phone/mobile numbers, emails, addresses, social handles or meeting details is not allowed · No abusive language · All messages are monitored</div>
 
 <!-- Calendar Modal (Party 1: Propose dates) -->
 <div class="modal-overlay" id="cal-modal" onclick="if(event.target===this)closeCalendarModal()">
@@ -1270,7 +1271,7 @@ Message: ${JSON.stringify(text)}`;
     _chatMeta = data;
     if (data.violations !== undefined) _violations = data.violations;
     if (data.deal       !== undefined) { _deal    = data.deal;    updateDealBar();    checkDealCancelledBanner(); }
-    if (data.meeting    !== undefined) { _meeting = data.meeting; updateCalendarBtn(); }
+    if (data.meeting    !== undefined) { _meeting = data.meeting; updateCalendarBtn(); updatePayBtn(); }
     if (data.joinSlots  !== undefined) {
       const wasJoined = isModJoined();
       _joinSlots = data.joinSlots;
@@ -1355,7 +1356,7 @@ Message: ${JSON.stringify(text)}`;
     }
     markRead();
     updateDealBar();
-    updateCalendarBtn();
+    updateCalendarBtn(); updatePayBtn();
     checkWelcome();
     renderMessages();
   }
@@ -1502,7 +1503,7 @@ Message: ${JSON.stringify(text)}`;
     }
 
     updateDealBar();
-    updateCalendarBtn();
+    updateCalendarBtn(); updatePayBtn();
     renderMessages();
   }
 
@@ -1562,6 +1563,25 @@ Message: ${JSON.stringify(text)}`;
   }
 
   // Update the calendar button visibility for the current identity
+  function updatePayBtn() {
+    const btn = document.getElementById('pay-now-btn');
+    if (!btn || currentIdentity === 'MOD') { if (btn) btn.style.display = 'none'; return; }
+    const deal = loadDeal();
+    if (!deal || !(deal.confirmedA && deal.confirmedB)) { btn.style.display = 'none'; return; }
+    const showAdvance = deal.stage_advance_select  && !deal.stage_advance_received;
+    const showFinal   = deal.stage_final_select    && !deal.stage_final_received;
+    if (showAdvance || showFinal) {
+      btn.style.display = '';
+      btn.textContent = showFinal ? '💰 Final Payment' : '💳 Advance Payment';
+    } else {
+      btn.style.display = 'none';
+    }
+  }
+
+  function openPaymentGateway() {
+    alert('Payment gateway coming soon. Please use the secure payment link sent to your registered contact.');
+  }
+
   function updateCalendarBtn() {
     const btn  = document.getElementById('calendar-btn');
     if (!btn) return;
@@ -1770,7 +1790,7 @@ Message: ${JSON.stringify(text)}`;
     saveMessages(msgs);
 
     closeCalendarModal();
-    updateCalendarBtn();
+    updateCalendarBtn(); updatePayBtn();
     renderMessages();
   }
 
@@ -1838,7 +1858,7 @@ Message: ${JSON.stringify(text)}`;
     document.getElementById('cal-done-sub').textContent = `Meeting confirmed: ${dateLabel}, ${slotLabel}`;
     document.getElementById('cal-pick-view').style.display = 'none';
     document.getElementById('cal-done-view').style.display = 'flex';
-    updateCalendarBtn();
+    updateCalendarBtn(); updatePayBtn();
     renderMessages();
   }
 
@@ -1881,7 +1901,7 @@ Message: ${JSON.stringify(text)}`;
     saveMessages(msgs);
 
     closeCalendarModal();
-    updateCalendarBtn();
+    updateCalendarBtn(); updatePayBtn();
     renderMessages();
   }
 
@@ -1920,7 +1940,7 @@ Message: ${JSON.stringify(text)}`;
     // UI will be populated by the Firebase onMessages + onChatMeta listeners above.
     // Call lightweight UI setup that doesn't depend on Firestore data.
     updateDealBar();
-    updateCalendarBtn();
+    updateCalendarBtn(); updatePayBtn();
     renderMessages();   // renders empty state initially; listeners will re-render with data
     checkWelcome();
 
