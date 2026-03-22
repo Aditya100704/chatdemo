@@ -1108,7 +1108,7 @@
     pipeEl.className = 'deal-pipeline';
     PIPELINE.forEach((stage, i) => {
       // Auto-tick meeting stage if parties have confirmed a date
-      if (stage.key === 'meeting' && !d.stage_meeting) {
+      if (stage.key === 'meeting' && !d.stage_meeting && !d.meeting_reversed) {
         try {
           const meeting = _meetingByChat[d.chatId] || null;
           if (meeting?.status === 'confirmed') {
@@ -1389,8 +1389,9 @@
 
   function syncDealToChat(chatId, deal) {
     _dealByChat[chatId] = deal;
-    RF.saveDeal(chatId, deal).catch(e => console.warn('[RF] syncDealToChat', e));
-    RF.updateChatMeta(chatId, { deal }).catch(e => console.warn('[RF] syncDealMeta', e));
+    const cleanDeal = JSON.parse(JSON.stringify(deal));
+    RF.saveDeal(chatId, cleanDeal).catch(e => console.warn('[RF] syncDealToChat', e));
+    RF.updateChatMeta(chatId, { deal: cleanDeal }).catch(e => console.warn('[RF] syncDealMeta', e));
   }
 
   function postDealSystemMsg(chatId, text) {
@@ -1412,6 +1413,22 @@
       delete deal[`pay_${last.key}_B`]; delete deal[`pay_${last.key}_B_ts`];
     }
     if (last.gateType === 'select') postDealSystemMsg(chatId, `↩ ${last.label} reversed. Awaiting updated instructions.`);
+    // Clear meeting if reversing meeting step or any step after it
+    if (last.key === 'meeting') {
+      delete deal.meeting; delete deal.stage_meeting; delete deal.stage_meeting_ts;
+      deal.meeting_reversed = true;
+      if (typeof _meetingByChat !== 'undefined') _meetingByChat[chatId] = null;
+      RF.updateChatMeta(chatId, { meeting: null }).catch(e => console.warn('[RF] clearMeeting', e));
+    } else {
+      const _mIdx = PIPELINE.findIndex(p => p.key === 'meeting');
+      const _lIdx = PIPELINE.findIndex(p => p.key === last.key);
+      if (_lIdx > _mIdx) {
+        delete deal.meeting; delete deal.stage_meeting; delete deal.stage_meeting_ts;
+        deal.meeting_reversed = true;
+        if (typeof _meetingByChat !== 'undefined') _meetingByChat[chatId] = null;
+        RF.updateChatMeta(chatId, { meeting: null }).catch(e => console.warn('[RF] clearMeetingPost', e));
+      }
+    }
     deal.lastActionTs = Date.now(); deal.stage = 'Initiated';
     const didx = _deals.findIndex(x => x.chatId === chatId);
     if (didx !== -1) _deals[didx] = deal;

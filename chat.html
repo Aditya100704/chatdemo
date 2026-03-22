@@ -1647,7 +1647,8 @@ Message: ${JSON.stringify(text)}`;
     const bothConfirmed = deal?.confirmedA && deal?.confirmedB;
     if (!bothConfirmed || !advanceDone) { btn.classList.remove('show'); return; }
 
-    if (meeting?.status === 'confirmed') { btn.classList.remove('show'); return; }
+    // If meeting was reversed by admin, allow re-scheduling even if meeting object says confirmed
+    if (meeting?.status === 'confirmed' && !deal?.meeting_reversed) { btn.classList.remove('show'); return; }
 
     const originalProposer = deal.initiatedBy;   // Party 1 always starts
     const isOriginalProposer = currentIdentity === originalProposer;
@@ -1832,6 +1833,9 @@ Message: ${JSON.stringify(text)}`;
     const meeting = { status: 'proposed', proposals, proposedTs: Date.now(), proposedBy: currentIdentity };
     saveMeeting(meeting);
     syncMeetingToDeal(meeting);
+    // Clear meeting_reversed flag now that parties have rescheduled
+    const _curDeal = loadDeal();
+    if (_curDeal?.meeting_reversed) { _curDeal.meeting_reversed = false; saveDeal(_curDeal); }
 
     // Post system message in chat
     const msgs = loadMessages();

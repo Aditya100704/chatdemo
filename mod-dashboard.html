@@ -1822,6 +1822,17 @@
     }
     if (stage.key === 'meeting') {
       delete deal.meeting; delete deal.stage_meeting; delete deal.stage_meeting_ts;
+      deal.meeting_reversed = true;
+      _meetingByChat[chatId] = null;
+      RF.updateChatMeta(chatId, { meeting: null }).catch(e => console.warn('[RF] clearMeeting', e));
+    }
+    // If reversing a step AFTER meeting, also un-confirm the meeting so parties can re-schedule
+    const _meetingIdx = PIPELINE.findIndex(p => p.key === 'meeting');
+    if (lastDoneIdx > _meetingIdx && stage.key !== 'meeting') {
+      delete deal.meeting; delete deal.stage_meeting; delete deal.stage_meeting_ts;
+      deal.meeting_reversed = true;
+      _meetingByChat[chatId] = null;
+      RF.updateChatMeta(chatId, { meeting: null }).catch(e => console.warn('[RF] clearMeetingPost', e));
     }
     deal.lastActionTs = Date.now();
     // Recalculate stage label so accordion header shows correct current step
@@ -1832,7 +1843,11 @@
     const dealIdx = _deals.findIndex(x => x.chatId === chatId);
     if (dealIdx !== -1) _deals[dealIdx] = deal;
     saveDeals(deals);
-    syncDealToChat(chatId, deal);
+    // Strip undefined/deleted keys before writing to Firestore
+    const cleanDeal = JSON.parse(JSON.stringify(deal));
+    syncDealToChat(chatId, cleanDeal);
+    // Also explicitly update chatMeta so chat.html onChatMeta fires with clean data
+    RF.updateChatMeta(chatId, { deal: cleanDeal }).catch(e => console.warn('[RF] reversal meta', e));
     showToast(`↩ "${stage.label}" reversed`, 'success');
     _refreshDealCard(chatId, deal);
   }
@@ -1924,9 +1939,11 @@
 
   function syncDealToChat(chatId, deal) {
     _dealByChat[chatId] = deal;
-    RF.saveDeal(chatId, deal).catch(e => console.warn('[RF] syncDealToChat', e));
+    // Strip undefined/deleted keys — Firestore update() fails on undefined values
+    const cleanDeal = JSON.parse(JSON.stringify(deal));
+    RF.saveDeal(chatId, cleanDeal).catch(e => console.warn('[RF] syncDealToChat', e));
     // Also write deal into chatMeta so chat.html onChatMeta fires immediately
-    RF.updateChatMeta(chatId, { deal }).catch(e => console.warn('[RF] syncDealMeta', e));
+    RF.updateChatMeta(chatId, { deal: cleanDeal }).catch(e => console.warn('[RF] syncDealMeta', e));
   }
 
   function postDealSystemMsg(chatId, text) {
