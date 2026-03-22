@@ -224,19 +224,13 @@ const RF = (function() {
     try { await db.collection('contacts').doc(String(contact.id)).set(contact); }
     catch(e) { console.error('[RF] saveContact', e); }
   }
-
   async function updateContact(id, patch) {
     try { await db.collection('contacts').doc(String(id)).update(patch); }
     catch(e) { console.error('[RF] updateContact', e); }
   }
-
   function onContacts(cb) {
     return db.collection('contacts').onSnapshot(
-      snap => {
-        const data = snap.docs.map(d => d.data());
-        data.sort((a,b) => (b.ts||0)-(a.ts||0));
-        cb(data);
-      },
+      snap => { const d = snap.docs.map(x => x.data()); d.sort((a,b)=>(b.ts||0)-(a.ts||0)); cb(d); },
       e => console.error('[RF] onContacts', e)
     );
   }
