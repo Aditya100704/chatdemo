@@ -1995,7 +1995,10 @@ Message: ${JSON.stringify(text)}`;
     clearInterval(_blinkInterval);
     const existing = _getMyActiveContact();
     if (existing) {
-      _renderContactThread(existing);
+      // Open modal first so layout exists, then render + scroll
+      document.getElementById('contact-modal').classList.add('show');
+      requestAnimationFrame(() => _renderContactThread(existing));
+      return;
     } else {
       document.getElementById('contact-form-view').style.display = 'flex';
       document.getElementById('contact-form-view').style.flexDirection = 'column';
@@ -2005,7 +2008,7 @@ Message: ${JSON.stringify(text)}`;
       document.getElementById('contact-counter').textContent = '0 / 600';
       document.getElementById('contact-modal-sub').textContent = 'Reach out to your assigned moderator';
     }
-    document.getElementById('contact-modal').classList.add('show');
+    if (!existing) document.getElementById('contact-modal').classList.add('show');
   }
 
   function closeContactMod() {
@@ -2014,8 +2017,9 @@ Message: ${JSON.stringify(text)}`;
 
   function _renderContactThread(contact) {
     document.getElementById('contact-form-view').style.display = 'none';
-    document.getElementById('contact-thread-view').style.display = 'flex';
-    document.getElementById('contact-thread-view').style.flexDirection = 'column';
+    const threadView = document.getElementById('contact-thread-view');
+    threadView.style.display = 'flex';
+    threadView.style.flexDirection = 'column';
     const statusText = contact.status === 'answered' ? '✓ Replied by moderator' : '⏳ Awaiting moderator reply';
     document.getElementById('contact-modal-sub').textContent = statusText;
     const msgBox = document.getElementById('contact-thread-messages');
@@ -2039,7 +2043,7 @@ Message: ${JSON.stringify(text)}`;
         <div style="font-size:10px;color:${isMe ? 'rgba(255,255,255,0.35)' : 'var(--mid)'};margin-top:2px;">${time}</div>`;
       msgBox.appendChild(wrap);
     });
-    msgBox.scrollTop = msgBox.scrollHeight;
+    requestAnimationFrame(() => { msgBox.scrollTop = msgBox.scrollHeight; });
   }
 
   function submitContactMod() {
@@ -2118,6 +2122,10 @@ Message: ${JSON.stringify(text)}`;
     if (!_isLocal) RF.updateContact(contact.id, { followups: contact.followups, status: 'open' }).catch(e => console.warn('[RF] followup', e));
     textarea.value = '';
     _renderContactThread(contact);
+    requestAnimationFrame(() => {
+      const mb = document.getElementById('contact-thread-messages');
+      if (mb) mb.scrollTop = mb.scrollHeight;
+    });
   }
 
   // Listen for mod replies via Firestore onChatMeta / contacts

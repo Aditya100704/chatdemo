@@ -1947,9 +1947,11 @@ if (_sess) {
     if (!c) return;
     document.getElementById('ctp-title').textContent = c.subject || 'Support Thread';
     document.getElementById('ctp-sub').textContent = `${c.userName} · ${c.listing||''}`;
-    _renderThreadMessages(c);
     document.getElementById('contact-thread-overlay').style.display = 'flex';
-    setTimeout(() => document.getElementById('ctp-reply-input').focus(), 100);
+    requestAnimationFrame(() => {
+      _renderThreadMessages(c);
+      setTimeout(() => document.getElementById('ctp-reply-input')?.focus(), 100);
+    });
   }
 
   function closeContactThreadPopup() {
@@ -1989,7 +1991,7 @@ if (_sess) {
       wrap.appendChild(bubble); wrap.appendChild(meta);
       box.appendChild(wrap);
     });
-    box.scrollTop = box.scrollHeight;
+    requestAnimationFrame(() => { box.scrollTop = box.scrollHeight; });
   }
 
   function sendContactThreadReply() {

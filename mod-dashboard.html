@@ -16,6 +16,7 @@
   /* LOGIN */
   #login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:1000;background-image:radial-gradient(ellipse at 30% 20%,rgba(184,134,11,0.08) 0%,transparent 60%);}
   #login-screen.hidden{display:none;}
+  .hidden{display:none!important;}
   .login-card{background:var(--card);border:1px solid rgba(212,160,23,0.2);border-radius:20px;padding:48px 40px;width:100%;max-width:400px;box-shadow:0 32px 80px rgba(0,0,0,0.5);display:flex;flex-direction:column;gap:24px;}
   .login-shield{font-size:48px;text-align:center;}
   .login-logo{text-align:center;}
@@ -1973,7 +1974,7 @@
       wrap.appendChild(bubble); wrap.appendChild(meta);
       box.appendChild(wrap);
     });
-    box.scrollTop = box.scrollHeight;
+    requestAnimationFrame(() => { box.scrollTop = box.scrollHeight; });
   }
 
   function sendContactThreadReply() {
@@ -1984,7 +1985,13 @@
     input.value = '';
     // Re-render immediately from in-memory state
     const c = getContacts().find(x => x.id === _activeThreadContactId);
-    if (c) _renderThreadMessages(c);
+    if (c) {
+      _renderThreadMessages(c);
+      requestAnimationFrame(() => {
+        const b = document.getElementById('ctp-messages');
+        if (b) b.scrollTop = b.scrollHeight;
+      });
+    }
   }
 
   function renderModMetrics() {
@@ -2683,29 +2690,61 @@
       return;
     }
     const sorted = [...defaulters].sort((a,b) => (b.ts||0)-(a.ts||0));
-    container.innerHTML = '';
-    sorted.forEach(d => {
-      const card = document.createElement('div');
-      card.className = 'defaulter-card';
-      card.innerHTML = `
-        <div class="defaulter-card-header">
-          <div class="defaulter-icon">🚫</div>
-          <div class="defaulter-meta">
-            <div class="defaulter-title">${escH(d.name)}</div>
-            <div class="defaulter-sub">${escH(d.role)} · ${escH(d.listing)}</div>
-            <div class="defaulter-parties"><span class="defaulter-party-tag">${escH(d.name)}</span><span style="font-size:11px;color:var(--muted);align-self:center;">defaulted on deal with</span><span class="defaulter-party-tag" style="background:rgba(255,255,255,0.06);color:var(--muted);border-color:rgba(255,255,255,0.1);">${escH(d.otherParty)}</span></div>
-          </div>
-          <button class="btn-remove-defaulter" onclick="removeDefaulter('${d.id}')">✕ Remove</button>
+
+    // Compact list with expandable notes
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;';
+
+    // Header row
+    const hdr = document.createElement('div');
+    hdr.style.cssText = 'display:grid;grid-template-columns:1fr 100px 140px 110px 80px;gap:0;padding:9px 16px;border-bottom:1px solid var(--border);';
+    hdr.innerHTML = `
+      <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:0.4px;text-transform:uppercase;">Party</div>
+      <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:0.4px;text-transform:uppercase;">Role</div>
+      <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:0.4px;text-transform:uppercase;">Defaulted With</div>
+      <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:0.4px;text-transform:uppercase;">Added</div>
+      <div></div>`;
+    wrap.appendChild(hdr);
+
+    sorted.forEach((d, idx) => {
+      const row = document.createElement('div');
+      row.style.cssText = `border-bottom:${idx < sorted.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none'};`;
+
+      const mainRow = document.createElement('div');
+      mainRow.style.cssText = 'display:grid;grid-template-columns:1fr 100px 140px 110px 80px;gap:0;padding:11px 16px;align-items:center;';
+      mainRow.innerHTML = `
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--text);">${escH(d.name)}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escH(d.listing)}</div>
         </div>
-        ${d.notes ? `<div class="defaulter-notes">${escH(d.notes)}</div>` : ''}
-        <div class="defaulter-ts">Added ${fmtTs(d.ts)}</div>`;
-      container.appendChild(card);
+        <div><span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(239,68,68,0.12);color:#fca5a5;border:1px solid rgba(239,68,68,0.25);">${escH(d.role)}</span></div>
+        <div style="font-size:12px;color:var(--muted);">${escH(d.otherParty)}</div>
+        <div style="font-size:11px;color:var(--muted);">${d.ts ? new Date(d.ts).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '—'}</div>
+        <div style="display:flex;gap:6px;justify-content:flex-end;">
+          ${d.notes ? `<button onclick="var p=document.getElementById('defnotes-'+${d.id});if(p)p.classList.toggle('hidden');" style="padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--muted);font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;">📋 Notes</button>` : ''}
+          <button onclick="removeDefaulter('${d.id}')" style="padding:4px 10px;border-radius:6px;border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.08);color:#fca5a5;font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;">Remove</button>
+        </div>`;
+      row.setAttribute('data-drow', d.id);
+      row.appendChild(mainRow);
+
+      if (d.notes) {
+        const notesPanel = document.createElement('div');
+        notesPanel.id = 'defnotes-' + d.id;
+        notesPanel.className = 'def-notes-panel hidden';
+        notesPanel.style.cssText = 'padding:0 16px 12px;';
+        notesPanel.innerHTML = `<div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.18);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--text);line-height:1.5;">${escH(d.notes)}</div>`;
+        row.appendChild(notesPanel);
+      }
+      wrap.appendChild(row);
     });
+
+    container.innerHTML = '';
+    container.appendChild(wrap);
   }
 
   function filterDefaulters() {
     const q    = document.getElementById('search-defaulters')?.value.trim().toLowerCase() || '';
-    const rows = document.querySelectorAll('#defaulters-list .defaulter-card');
+    const rows = document.querySelectorAll('#defaulters-list [data-drow]');
     let shown  = 0;
     rows.forEach(r => {
       const match = !q || r.textContent.toLowerCase().includes(q);
