@@ -783,6 +783,24 @@
   </div>
 </div>
 
+<!-- CONTACT THREAD POPUP -->
+<div style="position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:600;display:none;align-items:center;justify-content:center;padding:16px;" id="contact-thread-overlay" onclick="if(event.target===this)closeContactThreadPopup()">
+  <div style="background:var(--card);border-radius:16px;width:100%;max-width:480px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.4);">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <div>
+        <div style="font-size:15px;font-weight:700;color:var(--text);" id="ctp-title">Support Thread</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;" id="ctp-sub"></div>
+      </div>
+      <button onclick="closeContactThreadPopup()" style="background:none;border:none;font-size:18px;color:var(--muted);cursor:pointer;">✕</button>
+    </div>
+    <div id="ctp-messages" style="flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:10px;"></div>
+    <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end;flex-shrink:0;">
+      <textarea id="ctp-reply-input" placeholder="Type a reply…" maxlength="500" style="flex:1;resize:none;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--text);background:rgba(255,255,255,0.04);outline:none;min-height:50px;max-height:100px;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendContactThreadReply();}"></textarea>
+      <button onclick="sendContactThreadReply()" style="padding:10px 20px;border:none;border-radius:8px;background:rgba(16,185,129,0.2);color:#6ee7b7;border:1px solid rgba(16,185,129,0.4);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Send</button>
+    </div>
+  </div>
+</div>
+
 <!-- USER PROFILE MODAL -->
 <div class="user-profile-overlay" id="user-profile-overlay" onclick="if(event.target===this)closeUserProfile()">
   <div class="user-profile-modal">
@@ -1106,7 +1124,6 @@
     const modLog  = getModLog();
     const allChats = getChatsIndex();
     const chats   = allChats.filter(c => !c.archived && !c.autoArchived && !c.manualArchived).filter(c => getAssignments()[c.chatId] === MOD_ID);
-    const allChats = getChatsIndex();
     const appeals = getAppeals();
 
     let totalMsgs = 0, suspended = 0;
@@ -1659,7 +1676,7 @@
 
   function renderArchivedDeals(container) {
     if (!container) return;
-    const deals  = getDeals();
+    const deals = getDeals();
     const archivedDeals = deals.filter(d => d.stage === 'Cancelled' || d.stage_complete || d.stage === 'Complete');
     const tabEl = document.getElementById('tab-archived-deals-count');
     if (tabEl) tabEl.textContent = archivedDeals.length;
@@ -1668,13 +1685,40 @@
       container.innerHTML = `<div class="empty-state" style="text-align:center;padding:60px 20px;"><div class="empty-icon">🤝</div><h3>No archived deals</h3><p style="color:var(--muted);font-size:13px;margin-top:6px;">Cancelled and completed deals appear here.</p></div>`;
       return;
     }
-    // Permanent delete all button
+    // Header with delete all
     const hdr = document.createElement('div');
     hdr.style.cssText = 'display:flex;justify-content:flex-end;margin-bottom:12px;';
     hdr.innerHTML = `<button onclick="permanentDeleteAllDeals()" style="padding:7px 16px;border:1px solid rgba(239,68,68,0.35);border-radius:8px;background:rgba(239,68,68,0.08);color:#fca5a5;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">🗑 Permanently Delete All</button>`;
     container.appendChild(hdr);
+    // Compact accordion list
     const sorted = [...archivedDeals].sort((a,b) => (b.cancelledTs||b.completedTs||b.initiatedTs||0) - (a.cancelledTs||a.completedTs||a.initiatedTs||0));
-    sorted.forEach(d => renderDealCard(d, container, true));
+    sorted.forEach(d => {
+      const statusLabel = d.stage === 'Complete' ? '✅ Completed' : d.stage_complete ? '✅ Completed' : '❌ Cancelled';
+      const statusColor = (d.stage === 'Complete' || d.stage_complete) ? '#6ee7b7' : '#fca5a5';
+      const ts = fmtTs(d.cancelledTs || d.completedTs || d.initiatedTs || 0);
+      const acc = document.createElement('details');
+      acc.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;';
+      acc.innerHTML = `
+        <summary style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;list-style:none;user-select:none;">
+          <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);">${escH(d.listing||'—')}</span>
+          <span style="font-size:11px;color:var(--muted);">${escH(d.userA)} ↔ ${escH(d.userB)}</span>
+          <span style="font-size:11px;font-weight:700;color:${statusColor};padding:2px 8px;border-radius:20px;background:${statusColor}22;border:1px solid ${statusColor}44;">${statusLabel}</span>
+          <span style="font-size:11px;color:var(--muted);">${ts}</span>
+          <span style="color:var(--muted);font-size:14px;transition:transform 0.2s;" class="acc-chevron">›</span>
+        </summary>
+        <div style="padding:0 16px 16px;border-top:1px solid var(--border);" class="acc-body">
+          <div id="acc-deal-${escH(d.chatId)}"></div>
+        </div>`;
+      acc.addEventListener('toggle', () => {
+        const chevron = acc.querySelector('.acc-chevron');
+        if (chevron) chevron.style.transform = acc.open ? 'rotate(90deg)' : '';
+        if (acc.open) {
+          const body = acc.querySelector(`#acc-deal-${CSS.escape(d.chatId)}`);
+          if (body && !body.innerHTML) renderDealCard(d, body, true);
+        }
+      });
+      container.appendChild(acc);
+    });
   }
 
   function permanentDeleteAllDeals() {
@@ -1768,19 +1812,25 @@
             <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;">MOD REPLY · ${r.ts ? new Date(r.ts).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : ''}</div>
             <div style="font-size:13px;color:var(--text);line-height:1.5;">${escH(r.text)}</div>
           </div>`).join('') : ''}
-        <div style="display:flex;gap:8px;align-items:flex-end;border-top:1px solid var(--border);padding-top:10px;">
-          <textarea id="contact-reply-${c.id}" placeholder="Type a reply…" maxlength="500" style="flex:1;resize:none;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--text);background:rgba(255,255,255,0.04);outline:none;min-height:60px;"></textarea>
-          <button onclick="replyToContact(${c.id})" style="padding:9px 18px;border:none;border-radius:8px;background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.3);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">Reply</button>
+        <div style="display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--border);padding-top:10px;">
+          <button onclick="openContactThreadPopup(${c.id})" style="padding:8px 16px;border:1px solid rgba(99,102,241,0.4);border-radius:8px;background:rgba(99,102,241,0.1);color:#a5b4fc;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;text-align:left;">💬 Open Thread</button>
+          <div style="display:flex;gap:8px;align-items:flex-end;">
+            <textarea id="contact-reply-${c.id}" placeholder="Quick reply…" maxlength="500" style="flex:1;resize:none;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--text);background:rgba(255,255,255,0.04);outline:none;min-height:50px;"></textarea>
+            <button onclick="replyToContact(${c.id})" style="padding:9px 18px;border:none;border-radius:8px;background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.3);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">Reply</button>
+          </div>
         </div>`;
       container.appendChild(card);
     });
   }
 
-  function replyToContact(contactId) {
-    const textarea = document.getElementById(`contact-reply-${contactId}`);
-    if (!textarea) return;
-    const reply = textarea.value.trim();
-    if (!reply) { textarea.style.borderColor = '#ef4444'; return; }
+  function replyToContact(contactId, replyText) {
+    let reply = replyText;
+    if (!reply) {
+      const textarea = document.getElementById(`contact-reply-${contactId}`);
+      if (!textarea) return;
+      reply = textarea.value.trim();
+      if (!reply) { textarea.style.borderColor = '#ef4444'; return; }
+    }
 
     const newReply = { text: reply, ts: Date.now(), author: 'Moderator' };
 
@@ -1807,6 +1857,65 @@
 
     showToast('✓ Reply sent', 'success');
     loadDashboard();
+  }
+
+  // ── CONTACT THREAD POPUP ─────────────────────────────────────
+  let _activeThreadContactId = null;
+
+  function openContactThreadPopup(contactId) {
+    _activeThreadContactId = contactId;
+    const c = getContacts().find(x => x.id === contactId);
+    if (!c) return;
+    document.getElementById('ctp-title').textContent = c.subject || 'Support Thread';
+    document.getElementById('ctp-sub').textContent = `${c.userName} · ${c.listing || ''}`;
+    _renderThreadMessages(c);
+    document.getElementById('contact-thread-overlay').style.display = 'flex';
+    setTimeout(() => document.getElementById('ctp-reply-input').focus(), 100);
+  }
+
+  function closeContactThreadPopup() {
+    document.getElementById('contact-thread-overlay').style.display = 'none';
+    _activeThreadContactId = null;
+  }
+
+  function _renderThreadMessages(c) {
+    const box = document.getElementById('ctp-messages');
+    if (!box) return;
+    box.innerHTML = '';
+    const allMsgs = [];
+    allMsgs.push({ text: c.message, ts: c.ts, author: c.userName, side: 'user' });
+    (c.followups || []).forEach(f => allMsgs.push({ text: f.text, ts: f.ts, author: c.userName, side: 'user' }));
+    (c.replies || (c.reply ? [{ text: c.reply, ts: c.repliedTs }] : [])).forEach(r =>
+      allMsgs.push({ text: r.text, ts: r.ts, author: 'Moderator', side: 'mod' })
+    );
+    allMsgs.sort((a,b) => (a.ts||0)-(b.ts||0));
+    allMsgs.forEach(m => {
+      const wrap = document.createElement('div');
+      wrap.style.cssText = `display:flex;flex-direction:column;align-items:${m.side==='mod'?'flex-end':'flex-start'};gap:3px;`;
+      const bubble = document.createElement('div');
+      bubble.style.cssText = `max-width:78%;padding:9px 13px;border-radius:10px;font-size:13px;line-height:1.5;word-break:break-word;${m.side==='mod'?'background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.25);':'background:rgba(255,255,255,0.06);color:var(--text);border:1px solid var(--border);'}`;
+      bubble.textContent = m.text;
+      const meta = document.createElement('div');
+      meta.style.cssText = 'font-size:10px;color:var(--muted);';
+      meta.textContent = `${m.author} · ${m.ts ? new Date(m.ts).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}) : ''}`;
+      wrap.appendChild(bubble);
+      wrap.appendChild(meta);
+      box.appendChild(wrap);
+    });
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function sendContactThreadReply() {
+    const input = document.getElementById('ctp-reply-input');
+    const text = input.value.trim();
+    if (!text || !_activeThreadContactId) return;
+    replyToContact(_activeThreadContactId, text);
+    input.value = '';
+    // Re-render thread
+    setTimeout(() => {
+      const c = getContacts().find(x => x.id === _activeThreadContactId);
+      if (c) _renderThreadMessages(c);
+    }, 100);
   }
 
   function renderModMetrics() {

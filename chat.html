@@ -1324,6 +1324,26 @@ Message: ${JSON.stringify(text)}`;
     renderMessages();
   });
 
+  // Listen for contact updates (mod replies) via Firestore
+  if (!_isLocal) {
+    RF.onContacts(function(contacts) {
+      // Update localStorage
+      try { localStorage.setItem('rf_mod_contacts', JSON.stringify(contacts)); } catch {}
+      // If contact thread modal is open, re-render it
+      const modal = document.getElementById('contact-modal');
+      if (modal && modal.classList.contains('show')) {
+        const existing = _getMyActiveContact();
+        if (existing) {
+          // Find updated version from Firestore data
+          const updated = contacts.find(c => c.id === existing.id);
+          if (updated) _renderContactThread(updated);
+        }
+      }
+      // Update FAB state
+      _checkForContactReplies();
+    });
+  }
+
   // Typing indicator stays localStorage (ephemeral same-device)
   window.addEventListener('storage', function(e) {
     if (e.key === READ_KEY) renderMessages();
@@ -2059,8 +2079,14 @@ Message: ${JSON.stringify(text)}`;
       if (idx !== -1) contacts[idx] = contact;
       localStorage.setItem(CONTACTS_KEY, JSON.stringify(contacts));
     } catch {}
-    // Update Firestore
-    if (!_isLocal) RF.updateContact(contact.id, { followups: contact.followups }).catch(e => console.warn('[RF] followup', e));
+    // Mark back as open (needs mod reply) and update Firestore
+    contact.status = 'open';
+    try {
+      const contacts2 = JSON.parse(localStorage.getItem(CONTACTS_KEY) || '[]');
+      const idx2 = contacts2.findIndex(c => c.id === contact.id);
+      if (idx2 !== -1) { contacts2[idx2] = contact; localStorage.setItem(CONTACTS_KEY, JSON.stringify(contacts2)); }
+    } catch {}
+    if (!_isLocal) RF.updateContact(contact.id, { followups: contact.followups, status: 'open' }).catch(e => console.warn('[RF] followup', e));
     textarea.value = '';
     _renderContactThread(contact);
   }
