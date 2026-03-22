@@ -504,7 +504,7 @@
     <div class="dash-tab active" data-tab="overview" onclick="switchTab('overview')">📊 Overview</div>
     <div class="dash-tab" data-tab="flagged" onclick="switchTab('flagged')">🚩 Flagged <span class="tab-count" id="tab-flagged-count">0</span></div>
     <div class="dash-tab" data-tab="deals" onclick="switchTab('deals')">🤝 Deal Tracker <span class="tab-count green" id="tab-deals-count">0</span></div>
-    <div class="dash-tab" data-tab="contacts" onclick="switchTab('contacts')">📩 Contacts <span class="tab-count purple" id="tab-contacts-count">0</span></div>
+    <div class="dash-tab" data-tab="contacts" onclick="switchTab('contacts')">📩 Query <span class="tab-count purple" id="tab-contacts-count">0</span></div>
     <div class="dash-tab" data-tab="chats" onclick="switchTab('chats')">💬 Active Chats <span class="tab-count green" id="tab-chats-count">0</span></div>
     <div class="dash-tab" data-tab="archived" onclick="switchTab('archived')">📁 Archived <span class="tab-count" id="tab-archived-count" style="background:rgba(255,255,255,0.06);color:var(--muted);">0</span></div>
     <div class="dash-tab" data-tab="users" onclick="switchTab('users')">👥 Users</div>
@@ -616,7 +616,7 @@
 
   <div class="tab-panel" id="panel-contacts">
       <div class="section-header">
-        <div><div class="section-title">User Contacts</div><div class="section-sub">Messages sent by users to their assigned moderator</div></div>
+        <div><div class="section-title">User Queries</div><div class="section-sub">Messages sent by users to their assigned moderator</div></div>
         <div style="display:flex;gap:8px;">
           <button class="perf-period-btn active" onclick="filterContacts('all')" id="contacts-filter-all">All</button>
           <button class="perf-period-btn" onclick="filterContacts('open')" id="contacts-filter-open">Open</button>
@@ -733,17 +733,10 @@
   let countdown    = AUTO_REFRESH_SECS;
 
   function startAutoRefresh() {
+    // Auto-refresh disabled — Firestore real-time listeners handle all updates instantly
+    const el = document.getElementById('refresh-countdown');
+    if (el) el.textContent = '(live)';
     clearInterval(refreshTimer);
-    countdown = AUTO_REFRESH_SECS;
-    refreshTimer = setInterval(() => {
-      countdown--;
-      const el = document.getElementById('refresh-countdown');
-      if (el) el.textContent = `(${countdown}s)`;
-      if (countdown <= 0) {
-        countdown = AUTO_REFRESH_SECS;
-        loadDashboard();
-      }
-    }, 1000);
   }
 
   // ── DATA HELPERS ─────────────────────────────────────────────

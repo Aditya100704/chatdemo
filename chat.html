@@ -43,6 +43,10 @@
   .topbar-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .topbar-sub{font-size:11px;color:rgba(212,160,23,0.75);letter-spacing:0.3px;}
   .topbar-shield{background:rgba(212,160,23,0.12);border:1px solid rgba(212,160,23,0.3);border-radius:20px;padding:4px 10px;font-size:10px;font-weight:600;color:var(--gold-lt);letter-spacing:0.5px;display:flex;align-items:center;gap:5px;}
+  .topbar-contact-btn{padding:5px 12px;border-radius:20px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.6);font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;cursor:pointer;transition:all 0.2s;white-space:nowrap;letter-spacing:0.3px;}
+  .topbar-contact-btn:hover{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.85);}
+  .topbar-contact-btn.has-thread{background:rgba(16,185,129,0.15);border-color:rgba(16,185,129,0.4);color:#6ee7b7;}
+  .topbar-contact-btn.blink{animation:fabBlink 0.7s ease-in-out infinite;}
 
   /* IDENTITY BAR */
   .identity-bar{background:var(--dark);padding:8px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid rgba(212,160,23,0.15);flex-shrink:0;}
@@ -436,7 +440,7 @@
     </div>
   </div>
   <button class="topbar-calendar-btn" id="calendar-btn" onclick="openCalendarModal()">📅 Schedule</button>
-  <div class="topbar-shield">🛡️ AI Moderated</div>
+  <button class="topbar-contact-btn" id="topbar-contact-btn" onclick="openContactMod()" title="Contact your moderator">🛡️ Contact Mod</button>
 </div>
 
 <div class="identity-bar">
@@ -462,24 +466,19 @@
 
 <div class="mod-status" id="mod-status"></div>
 <div class="cooldown-bar" id="cooldown-bar"></div>
-    <div style="font-size:10px;color:var(--mid,#666);text-align:right;padding:0 4px 2px;">Enter to send · Shift+Enter for new line</div>
+    <div style="font-size:10px;color:var(--mid,#666);text-align:right;padding:0 4px 2px;"></div>
 
 <!-- Image preview -->
-<div class="img-preview-bar" id="img-preview-bar">
-  <img class="img-preview-thumb" id="img-preview-thumb" src="" alt="preview">
-  <span class="img-preview-name" id="img-preview-name"></span>
-  <button class="img-preview-remove" onclick="clearImagePreview()">×</button>
-</div>
+<!-- image preview removed -->
 
 <div class="chat-inputbar">
-  <button class="attach-btn" id="attach-btn" title="Send image" onclick="document.getElementById('img-file-input').click()">📎</button>
-  <input type="file" id="img-file-input" accept="image/*">
+<!-- attachment removed -->
   <textarea class="chat-textarea" id="msg-input" rows="1" placeholder="Type a message…" maxlength="1000"></textarea>
   <button class="send-btn" id="send-btn" disabled>
     <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
   </button>
 </div>
-<div class="chat-disclaimer">🛡️ AI-moderated · No phone numbers, emails, addresses or meeting details allowed · Images are scanned before delivery</div>
+<div class="chat-disclaimer">Sharing of phone/mobile numbers, emails, addresses or social handles is not allowed · No abusive language · All messages are monitored</div>
 
 <!-- Calendar Modal (Party 1: Propose dates) -->
 <div class="modal-overlay" id="cal-modal" onclick="if(event.target===this)closeCalendarModal()">
@@ -614,9 +613,7 @@
 </div>
 
 <!-- Contact Mod FAB + Thread Modal -->
-<button class="contact-mod-fab" id="contact-mod-fab" onclick="openContactMod()" title="Contact your moderator">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-</button>
+<!-- contact-mod-fab removed - moved to topbar -->
 
 <div class="modal-overlay" id="contact-modal" onclick="if(event.target===this)closeContactMod()">
   <div class="modal-card" style="max-width:420px;gap:0;padding:0;overflow:hidden;background:#1a2030;border:1px solid rgba(255,255,255,0.08);">
@@ -1475,7 +1472,13 @@ Message: ${JSON.stringify(text)}`;
 
     const myConfirmed = deal?.[`confirmed${currentIdentity}`];
 
-    if (deal?.confirmedA && deal?.confirmedB) {
+    if (deal?.stage === 'Cancelled') {
+      // Deal cancelled by mod — reset to default state so user can start a new deal
+      btn.textContent = '🤝 Deal';
+      btn.disabled    = false;
+      btn.classList.remove('deal-live');
+      if (dealBadge) dealBadge.classList.remove('show');
+    } else if (deal?.confirmedA && deal?.confirmedB) {
       btn.textContent = '🤝 Deal Active';
       btn.disabled    = true;
       btn.classList.add('deal-live');
@@ -1990,7 +1993,7 @@ Message: ${JSON.stringify(text)}`;
   function openContactMod() {
     if (currentIdentity === 'MOD') return;
     // Stop blinking
-    const fab = document.getElementById('contact-mod-fab');
+    const fab = document.getElementById('topbar-contact-btn');
     if (fab) fab.classList.remove('blink');
     clearInterval(_blinkInterval);
     const existing = _getMyActiveContact();
@@ -2089,7 +2092,7 @@ Message: ${JSON.stringify(text)}`;
     if (!_isLocal) RF.saveContact(contact).catch(e => console.warn('[RF] saveContact', e));
 
     // Update FAB to thread mode
-    const fab = document.getElementById('contact-mod-fab');
+    const fab = document.getElementById('topbar-contact-btn');
     if (fab) fab.classList.add('has-thread');
 
     // Show thread view immediately
@@ -2132,14 +2135,14 @@ Message: ${JSON.stringify(text)}`;
   function _checkForContactReplies() {
     const existing = _getMyActiveContact();
     if (existing) {
-      const fab = document.getElementById('contact-mod-fab');
+      const fab = document.getElementById('topbar-contact-btn');
       if (fab) fab.classList.add('has-thread');
     }
   }
 
   let _blinkInterval = null;
   function _blinkContactFab() {
-    const fab = document.getElementById('contact-mod-fab');
+    const fab = document.getElementById('topbar-contact-btn');
     if (!fab) return;
     fab.classList.add('blink');
     // Stop blinking when user opens the thread
@@ -2157,8 +2160,8 @@ Message: ${JSON.stringify(text)}`;
   const _origSwitchIdentity = switchIdentity;
   switchIdentity = function(id) {
     _origSwitchIdentity(id);
-    const fab = document.getElementById('contact-mod-fab');
-    if (fab) fab.classList.toggle('hidden', id === 'MOD');
+    const fab = document.getElementById('topbar-contact-btn');
+    if (fab) fab.style.display = (id === 'MOD') ? 'none' : '';
   };
 
   init();

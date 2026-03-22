@@ -831,8 +831,11 @@ window.addEventListener('pageshow',function(){
           <button id="db-tab-list" onclick="dbSwitchTab('list')" style="padding:14px 28px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.55);border:none;border-radius:0;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:0.3px;transition:all 0.2s;border-top-left-radius:6px;border-top-right-radius:6px;margin-right:4px;">
             <span id="db-tab-list-label">🏠 Properties List</span>
           </button>
-          <button id="db-tab-chats" onclick="dbSwitchTab('chats')" style="padding:14px 28px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.55);border:none;border-radius:0;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:0.3px;transition:all 0.2s;border-top-left-radius:6px;border-top-right-radius:6px;position:relative;">
+          <button id="db-tab-chats" onclick="dbSwitchTab('chats')" style="padding:14px 28px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.55);border:none;border-radius:0;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:0.3px;transition:all 0.2s;border-top-left-radius:6px;border-top-right-radius:6px;position:relative;margin-right:4px;">
             💬 My Chats <span id="db-chat-badge" style="display:none;position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:#ef4444;"></span>
+          </button>
+          <button id="db-tab-notifications" onclick="dbSwitchTab('notifications')" style="padding:14px 28px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.55);border:none;border-radius:0;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;letter-spacing:0.3px;transition:all 0.2s;border-top-left-radius:6px;border-top-right-radius:6px;position:relative;">
+            🔔 Notifications <span id="db-notif-badge" style="display:none;position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:#ef4444;"></span>
           </button>
         </div>
       </div>
@@ -1409,5 +1412,23 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
   <script src="./chatbot.js" defer></script>
+
+      <!-- NOTIFICATIONS PANEL -->
+      <div id="db-panel-notifications" class="db-content-area" style="display:none;padding:40px 60px 80px;max-width:1100px;margin:0 auto;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:28px;">
+          <div>
+            <h2 style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--gold);">🔔 Notifications</h2>
+            <p style="font-size:14px;color:rgba(255,255,255,0.5);margin-top:4px;">Stay updated on your chats, deals and account activity</p>
+          </div>
+        </div>
+        <div id="db-notif-list" style="display:flex;flex-direction:column;gap:12px;">
+          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:40px;text-align:center;">
+            <div style="font-size:32px;margin-bottom:12px;">🔔</div>
+            <div style="font-size:15px;font-weight:600;color:rgba(255,255,255,0.6);">No notifications yet</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.3);margin-top:6px;">Updates about your deals, messages and account will appear here</div>
+          </div>
+        </div>
+      </div>
+
 </body>
 </html>

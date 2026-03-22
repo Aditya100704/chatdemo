@@ -597,7 +597,7 @@
     <div class="dash-tab" data-tab="flagged" onclick="switchTab('flagged')">🚩 Flagged <span class="tab-count" id="tab-flagged-count">0</span></div>
     <div class="dash-tab" data-tab="appeals" onclick="switchTab('appeals')">📝 Appeals <span class="tab-count purple" id="tab-appeals-count">0</span></div>
     <div class="dash-tab" data-tab="deals" onclick="switchTab('deals')">🤝 Deal Tracker <span class="tab-count green" id="tab-deals-count">0</span></div>
-    <div class="dash-tab" data-tab="contacts" onclick="switchTab('contacts')">📩 Contacts <span class="tab-count purple" id="tab-contacts-count">0</span></div>
+    <div class="dash-tab" data-tab="contacts" onclick="switchTab('contacts')">📩 Query <span class="tab-count purple" id="tab-contacts-count">0</span></div>
     <div class="dash-tab" data-tab="chats" onclick="switchTab('chats')">💬 Active Chats <span class="tab-count green" id="tab-chats-count">0</span></div>
     <div class="dash-tab" data-tab="users" onclick="switchTab('users')">👥 Users</div>
     <div class="dash-tab" data-tab="archived" onclick="switchTab('archived')">📁 Archived <span class="tab-count" id="tab-archived-count" style="background:rgba(255,255,255,0.06);color:var(--muted);">0</span></div>
@@ -741,6 +741,19 @@
 
     <!-- ARCHIVED -->
     <div class="tab-panel" id="panel-archived">
+      <!-- Download section -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <span style="font-size:13px;font-weight:600;color:var(--text);">📥 Download Archive</span>
+        <span style="font-size:12px;color:var(--muted);">Export all chats and deals for a time period:</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-left:auto;">
+          <button onclick="downloadArchive(7)"   style="padding:6px 12px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">1 Week</button>
+          <button onclick="downloadArchive(30)"  style="padding:6px 12px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">1 Month</button>
+          <button onclick="downloadArchive(90)"  style="padding:6px 12px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">3 Months</button>
+          <button onclick="downloadArchive(180)" style="padding:6px 12px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">6 Months</button>
+          <button onclick="downloadArchive(365)" style="padding:6px 12px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">1 Year</button>
+          <button onclick="downloadArchive(0)"   style="padding:6px 12px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">All Time</button>
+        </div>
+      </div>
       <!-- Sub-tab switcher -->
       <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px;overflow-x:auto;">
         <div class="arch-sub-tab active" data-sub="chats" onclick="switchArchiveSub('chats')" style="padding:10px 20px;font-size:13px;font-weight:600;color:var(--gold);border-bottom:2px solid var(--gold);cursor:pointer;white-space:nowrap;">💬 Chats <span id="tab-archived-chats-count" style="background:rgba(255,255,255,0.06);color:var(--muted);border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;">0</span></div>
@@ -767,7 +780,7 @@
     <!-- CONTACTS -->
     <div class="tab-panel" id="panel-contacts">
       <div class="section-header">
-        <div><div class="section-title">User Contacts</div><div class="section-sub">Messages sent by users to their assigned moderator</div></div>
+        <div><div class="section-title">User Queries</div><div class="section-sub">Support requests sent by users to their assigned moderator</div></div>
         <div style="display:flex;gap:8px;">
           <button class="perf-period-btn active" onclick="filterContacts('all')" id="contacts-filter-all">All</button>
           <button class="perf-period-btn" onclick="filterContacts('open')" id="contacts-filter-open">Open</button>
@@ -1060,17 +1073,10 @@
   let countdown    = AUTO_REFRESH_SECS;
 
   function startAutoRefresh() {
+    // Auto-refresh disabled — Firestore real-time listeners handle all updates instantly
+    const el = document.getElementById('refresh-countdown');
+    if (el) el.textContent = '(live)';
     clearInterval(refreshTimer);
-    countdown = AUTO_REFRESH_SECS;
-    refreshTimer = setInterval(() => {
-      countdown--;
-      const el = document.getElementById('refresh-countdown');
-      if (el) el.textContent = `(${countdown}s)`;
-      if (countdown <= 0) {
-        countdown = AUTO_REFRESH_SECS;
-        loadDashboard();
-      }
-    }, 1000);
   }
 
   // ── DATA HELPERS ─────────────────────────────────────────────
@@ -1355,10 +1361,11 @@
 
   // ── GATED DEAL PIPELINE ──────────────────────────────────────
   const PIPELINE = [
-    { key:'advance_payment', label:'Advance Payment',     sub:'Tick off advance payment received from both parties, then confirm.', gateType:'payment',  icon:'💳' },
+    { key:'advance_payment', label:'Advance Payment',     sub:'Set advance amount (1–12 days of rent), tick off payment received from both parties, then confirm.', gateType:'payment',  icon:'💳' },
     { key:'meeting',         label:'Meeting Arrangement', sub:'Parties select dates via chat. Auto-confirms once both agree on a slot.',      gateType:'action',   icon:'📅' },
     { key:'closure',         label:'Deal Closure',        sub:'Confirm once rent agreement / deal terms are finalised.',             gateType:'action',   icon:'📝' },
     { key:'final_payment',   label:'Final Payment',       sub:'Tick off final payment received from both parties, then confirm.',    gateType:'payment',  icon:'✅' },
+    { key:'security_deposit', label:'Security Deposit',   sub:'Set deposit amount (1–12 days of rent), tick off deposit received from both parties, then confirm.', gateType:'payment',  icon:'🔒' },
     { key:'complete',        label:'Complete',             sub:'Deal is fully closed and will be archived.',                         gateType:'terminal', icon:'🏆' },
   ];
 
@@ -1488,6 +1495,15 @@
           <div class="pipeline-title">${stage.icon} ${stage.label}</div>
           <div class="pipeline-sub">${stage.sub}</div>
           ${isActive && stage.gateType === 'payment' ? buildPaymentToggles(d, stage.key) : ''}
+          ${isActive && (stage.key === 'advance_payment' || stage.key === 'security_deposit') ? `
+            <div style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <span style="font-size:12px;color:var(--muted);">${stage.key === 'security_deposit' ? 'Deposit' : 'Advance'} Amount:</span>
+              <select onchange="setAdvanceDays('${d.chatId}','${stage.key}',this.value)" style="padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--card2,#1a1a2e);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;">
+                <option value="">Select days of rent</option>
+                ${[1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`<option value="${n}" ${(d[stage.key+'_days'])==n?'selected':''}>${n} day${n>1?'s':''} rent</option>`).join('')}
+              </select>
+              ${d[stage.key+'_days'] ? `<span style="font-size:12px;font-weight:700;color:#34d399;">${d[stage.key+'_days']} day(s) selected</span>` : ''}
+            </div>` : ''}
         </div>
         ${rightEl}`;
       pipeEl.appendChild(stageEl);
@@ -1510,6 +1526,16 @@
       </div>`;
     card.appendChild(footer);
     container.appendChild(card);
+  }
+
+  function setAdvanceDays(chatId, stageKey, days) {
+    const deals = getDeals();
+    const deal = deals.find(d => d.chatId === chatId);
+    if (!deal) return;
+    deal[stageKey + '_days'] = parseInt(days) || null;
+    saveDeals(deals);
+    syncDealToChat(chatId, deal);
+    loadDashboard();
   }
 
   function buildPaymentToggles(d, stageKey) {
@@ -1550,13 +1576,17 @@
     const deals = getDeals();
     const deal  = deals.find(d => d.chatId === chatId);
     if (!deal) return;
+    if ((stageKey === 'advance_payment' || stageKey === 'security_deposit') && !deal[stageKey + '_days']) {
+      showToast('Please select the number of days rent for the amount before proceeding.', 'error'); return;
+    }
     if (!deal[`pay_${stageKey}_A`] || !deal[`pay_${stageKey}_B`]) {
       showToast('Both payments must be ticked before proceeding.', 'error'); return;
     }
     deal[`stage_${stageKey}`]    = true;
     deal[`stage_${stageKey}_ts`] = Date.now();
     deal.lastActionTs = Date.now();
-    postDealSystemMsg(chatId, `✅ ${label} confirmed by RenterFinder. Moving to next stage.`);
+    const daysNote = deal[stageKey + '_days'] ? ` Amount: ${deal[stageKey + '_days']} day(s) rent.` : '';
+    postDealSystemMsg(chatId, `✅ ${label} confirmed by RenterFinder.${daysNote} Moving to next stage.`);
     saveDeals(deals);
     syncDealToChat(chatId, deal);
     showToast(`✓ ${label} stage completed`, 'success');
@@ -2062,6 +2092,37 @@
         container.appendChild(tr);
       });
   }
+  function downloadArchive(days) {
+    const cutoff = days > 0 ? Date.now() - days * 86400000 : 0;
+    const label  = days === 0 ? 'All Time' : days === 7 ? '1 Week' : days === 30 ? '1 Month' : days === 90 ? '3 Months' : days === 180 ? '6 Months' : '1 Year';
+
+    const chats   = getChatsIndex().filter(c => (c.archived || c.autoArchived || c.manualArchived) && (c.archivedTs || 0) >= cutoff);
+    const deals   = getDeals().filter(d => (d.stage === 'Cancelled' || d.stage_complete) && (d.cancelledTs || d.completedTs || d.initiatedTs || 0) >= cutoff);
+
+    let csv = 'RENTERFINDER ARCHIVE EXPORT\n';
+    csv += `Period: ${label} · Generated: ${new Date().toLocaleString('en-IN')}\n\n`;
+    csv += '=== ARCHIVED CHATS ===\n';
+    csv += 'Chat ID,Landlord,Renter,Listing,Archived Date,Reason\n';
+    chats.forEach(c => {
+      const reason = c.autoArchived ? '7-day inactivity' : 'Manual';
+      csv += `"${c.chatId}","${c.userA||''}","${c.userB||''}","${c.listing||''}","${c.archivedTs ? new Date(c.archivedTs).toLocaleDateString('en-IN') : ''}","${reason}"\n`;
+    });
+    csv += '\n=== ARCHIVED DEALS ===\n';
+    csv += 'Chat ID,Listing,Party A,Party B,Stage,Initiated,Closed\n';
+    deals.forEach(d => {
+      const closedTs = d.cancelledTs || d.completedTs || '';
+      csv += `"${d.chatId}","${d.listing||''}","${d.userA||''}","${d.userB||''}","${d.stage||''}","${d.initiatedTs ? new Date(d.initiatedTs).toLocaleDateString('en-IN') : ''}","${closedTs ? new Date(closedTs).toLocaleDateString('en-IN') : ''}"\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = `RenterFinder_Archive_${label.replace(' ','')}_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast(`📥 Downloaded archive (${chats.length} chats, ${deals.length} deals)`, 'success');
+  }
+
   function filterArchivedChats() {
     const q = document.getElementById('search-archived-chats')?.value.trim().toLowerCase()||'';
     const rows = document.querySelectorAll('#archived-chats-list .archived-card');
