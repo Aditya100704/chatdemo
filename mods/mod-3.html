@@ -754,6 +754,10 @@
   const getAppeals     = () => _appeals;
   const getModeActive  = () => _modsActive;
   const getAssignments = () => _assignments;
+  let _contacts        = [];
+  try { _contacts = JSON.parse(localStorage.getItem('rf_mod_contacts') || '[]'); } catch {}
+  const getContacts    = () => _contacts;
+  let _contactsFilter  = 'all';
 
   function getJoinSlots(chatId) {
     return _joinSlotsByChat[chatId] || { admin: null, mod: null };
@@ -1810,15 +1814,17 @@ if (_sess) {
       const myChats = new Set(getChatsIndex().map(c => c.chatId));
       _contacts = contacts.filter(c => myChats.has(c.chatId));
       try { localStorage.setItem('rf_mod_contacts', JSON.stringify(_contacts)); } catch {}
+      // Re-render open thread live without full dashboard reload
+      const overlay = document.getElementById('contact-thread-overlay');
+      if (overlay && overlay.style.display === 'flex' && _activeThreadContactId) {
+        const ct = _contacts.find(x => x.id === _activeThreadContactId);
+        if (ct) _renderThreadMessages(ct);
+      }
       loadDashboard();
     });
   }
 
   // ── CONTACTS ─────────────────────────────────────────────────
-  let _contacts = [];
-  try { _contacts = JSON.parse(localStorage.getItem('rf_mod_contacts') || '[]'); } catch {}
-  const getContacts = () => _contacts;
-  let _contactsFilter = 'all';
 
   function filterContacts(filter) {
     _contactsFilter = filter;
@@ -1890,8 +1896,7 @@ if (_sess) {
     RF.updateContact(contactId, { replies: (c&&c.replies)||[newReply], reply, repliedTs:Date.now(), status:'answered' })
       .catch(e => console.warn('[RF] updateContact', e));
     if (c && c.chatId) {
-      RF.postSystemMsg(c.chatId, `📩 Moderator replied to your contact request: "${reply}"`)
-        .catch(e => console.warn('[RF] contact reply msg', e));
+      // Reply delivered via RF.onContacts listener in chat.html (no system message needed)
     }
     showToast('✓ Reply sent', 'success');
     loadDashboard();
@@ -1920,19 +1925,28 @@ if (_sess) {
     const box = document.getElementById('ctp-messages');
     if (!box) return;
     box.innerHTML = '';
+    // Merge ALL messages chronologically
     const allMsgs = [];
-    allMsgs.push({ text: c.message, ts: c.ts, author: c.userName, side: 'user' });
-    (c.followups||[]).forEach(f => allMsgs.push({ text:f.text, ts:f.ts, author:c.userName, side:'user' }));
-    (c.replies||(c.reply?[{text:c.reply,ts:c.repliedTs}]:[])).forEach(r =>
-      allMsgs.push({ text:r.text, ts:r.ts, author:'You', side:'mod' })
+    allMsgs.push({ text: c.message, ts: c.ts || 0, author: c.userName, side: 'user', label: c.subject });
+    (c.followups||[]).forEach(f => allMsgs.push({ text:f.text, ts:f.ts||0, author:c.userName, side:'user' }));
+    (c.replies||(c.reply?[{text:c.reply,ts:c.repliedTs||0}]:[])).forEach(r =>
+      allMsgs.push({ text:r.text, ts:r.ts||0, author:'You', side:'mod' })
     );
-    allMsgs.sort((a,b) => (a.ts||0)-(b.ts||0));
+    allMsgs.sort((a,b) => a.ts - b.ts);
     allMsgs.forEach(m => {
       const wrap = document.createElement('div');
-      wrap.style.cssText = `display:flex;flex-direction:column;align-items:${m.side==='mod'?'flex-end':'flex-start'};gap:3px;`;
+      const isMod = m.side === 'mod';
+      wrap.style.cssText = `display:flex;flex-direction:column;align-items:${isMod?'flex-end':'flex-start'};gap:3px;`;
       const bubble = document.createElement('div');
-      bubble.style.cssText = `max-width:78%;padding:9px 13px;border-radius:10px;font-size:13px;line-height:1.5;word-break:break-word;${m.side==='mod'?'background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.25);':'background:rgba(255,255,255,0.06);color:var(--text);border:1px solid var(--border);'}`;
-      bubble.textContent = m.text;
+      bubble.style.cssText = `max-width:78%;padding:9px 13px;border-radius:10px;font-size:13px;line-height:1.5;word-break:break-word;${isMod?'background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.25);':'background:rgba(255,255,255,0.06);color:var(--text);border:1px solid var(--border);'}`;
+      if (m.label) {
+        const lbl = document.createElement('div');
+        lbl.style.cssText = 'font-size:10px;font-weight:700;letter-spacing:0.4px;margin-bottom:3px;opacity:0.65;';
+        lbl.textContent = m.label;
+        bubble.appendChild(lbl);
+      }
+      const txt = document.createElement('div'); txt.textContent = m.text;
+      bubble.appendChild(txt);
       const meta = document.createElement('div');
       meta.style.cssText = 'font-size:10px;color:var(--muted);';
       meta.textContent = `${m.author} · ${m.ts?new Date(m.ts).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):''}`;
