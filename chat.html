@@ -1591,7 +1591,7 @@ Message: ${JSON.stringify(text)}`;
 
     if (currentIdentity === 'MOD') { btn.classList.remove('show'); return; }
 
-    const advanceDone   = deal?.stage_advance_payment === true;
+    const advanceDone   = deal?.stage_advance_received === true;
     const bothConfirmed = deal?.confirmedA && deal?.confirmedB;
     if (!bothConfirmed || !advanceDone) { btn.classList.remove('show'); return; }
 

@@ -1393,28 +1393,29 @@
       const stageLabel = d.stage || 'Initiated';
       const ts = d.initiatedTs ? fmtTs(d.initiatedTs) : '—';
       const dealId = String(d.chatId).slice(-8).toUpperCase();
-      const acc = document.createElement('details');
+      const acc = document.createElement('div');
       acc.style.cssText = 'background:var(--card);border:1px solid rgba(16,185,129,0.25);border-radius:12px;margin-bottom:10px;overflow:hidden;';
-      acc.innerHTML = `
-        <summary style="display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;list-style:none;user-select:none;">
-          <span style="font-size:10px;font-weight:700;color:var(--muted);background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:2px 7px;flex-shrink:0;">ID: ${dealId}</span>
-          <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);">${escH(d.listing||'—')}</span>
-          <span style="font-size:11px;color:var(--muted);">${escH(d.userA)} ↔ ${escH(d.userB)}</span>
-          <span style="font-size:11px;font-weight:700;color:#34d399;padding:2px 8px;border-radius:20px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);">● ${escH(stageLabel)}</span>
-          <span style="font-size:11px;color:var(--muted);">${ts}</span>
-          <span style="color:var(--muted);font-size:16px;transition:transform 0.2s;" class="acc-chev">›</span>
-        </summary>
-        <div style="padding:0 18px 18px;border-top:1px solid rgba(16,185,129,0.15);" class="acc-body">
-          <div id="acc-active-${escH(d.chatId)}"></div>
-        </div>`;
-      acc.addEventListener('toggle', () => {
-        const chev = acc.querySelector('.acc-chev');
-        if (chev) chev.style.transform = acc.open ? 'rotate(90deg)' : '';
-        if (acc.open) {
-          const body = acc.querySelector(`#acc-active-${CSS.escape(d.chatId)}`);
-          if (body && !body.innerHTML) renderDealCard(d, body, false);
-        }
+      const hdr = document.createElement('div');
+      hdr.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none;';
+      hdr.innerHTML = `
+        <span style="font-size:10px;font-weight:700;color:var(--muted);background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:2px 7px;flex-shrink:0;">ID: ${dealId}</span>
+        <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);">${escH(d.listing||'—')}</span>
+        <span style="font-size:11px;color:var(--muted);">${escH(d.userA)} ↔ ${escH(d.userB)}</span>
+        <span style="font-size:11px;font-weight:700;color:#34d399;padding:2px 8px;border-radius:20px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);">● ${escH(stageLabel)}</span>
+        <span style="font-size:11px;color:var(--muted);">${ts}</span>
+        <span style="color:var(--muted);font-size:16px;transition:transform 0.2s;" class="acc-chev">›</span>`;
+      const bdy = document.createElement('div');
+      bdy.id = safeId(d.chatId);
+      bdy.style.cssText = 'display:none;padding:0 18px 18px;border-top:1px solid rgba(16,185,129,0.15);';
+      hdr.addEventListener('click', () => {
+        const isOpen = bdy.style.display !== 'none';
+        const chev = hdr.querySelector('.acc-chev');
+        bdy.style.display = isOpen ? 'none' : 'block';
+        if (chev) chev.style.transform = isOpen ? '' : 'rotate(90deg)';
+        if (!isOpen && !bdy.innerHTML) renderDealCard(d, bdy, false);
       });
+      acc.appendChild(hdr);
+      acc.appendChild(bdy);
       container.appendChild(acc);
     });
   }
@@ -1542,15 +1543,37 @@
     _refreshDealCard(chatId, deal);
   }
 
+  function safeId(chatId) {
+    // Convert any chatId to a safe DOM id (alphanumeric + hyphens only)
+    return 'did-' + chatId.replace(/[^a-zA-Z0-9]/g, c => '_' + c.charCodeAt(0) + '_');
+  }
+
+  function _removeDealAccordion(chatId) {
+    // Remove this deal's accordion from the DOM, then do a lightweight stats update
+    const activeBody = document.getElementById(safeId(chatId));
+    if (activeBody) {
+      // Walk up to the <details> element and remove it
+      let el = activeBody;
+      while (el && el.tagName !== 'DETAILS') el = el.parentElement;
+      if (el) el.remove();
+    }
+    // Update tab counts and stat cards without full re-render
+    const activeDeals = getDeals().filter(d => d.stage !== 'Cancelled' && !d.stage_complete).length;
+    const el2 = document.getElementById('stat-deals'); if (el2) el2.textContent = activeDeals;
+    const te  = document.getElementById('tab-deals-count'); if (te) te.textContent = activeDeals;
+    // Re-render deals list and archived deals to reflect the change
+    const dealsList = document.getElementById('deals-list');
+    if (dealsList) renderDealsList(getDeals(), dealsList);
+    const archList = document.getElementById('archived-deals-list');
+    if (archList) renderArchivedDeals(archList);
+  }
+
   function _refreshDealCard(chatId, deal) {
-    // Re-render the deal card inside the open accordion without closing it
-    const bodyEl = document.getElementById(`acc-active-${CSS.escape(chatId)}`);
-    if (bodyEl) {
+    const bodyEl = document.getElementById(safeId(chatId));
+    if (bodyEl && bodyEl.style.display !== 'none') {
       bodyEl.innerHTML = '';
       renderDealCard(deal, bodyEl, false);
     }
-    // Also update the Proceed button state (disabled/enabled based on payment ticks)
-    // and update overview stats without full re-render
     const activeDeals = getDeals().filter(d => d.stage !== 'Cancelled' && !d.stage_complete).length;
     const el = document.getElementById('stat-deals'); if (el) el.textContent = activeDeals;
     const tabEl = document.getElementById('tab-deals-count'); if (tabEl) tabEl.textContent = activeDeals;
@@ -1625,7 +1648,7 @@
     saveDeals(deals);
     syncDealToChat(chatId, deal);
     showToast(`✓ ${label} stage completed`, 'success');
-    loadDashboard();
+    _refreshDealCard(chatId, deal);
   }
 
   function proceedActionStage(chatId, stageKey) {
@@ -1641,7 +1664,7 @@
     saveDeals(deals);
     syncDealToChat(chatId, deal);
     showToast(`✓ ${label} confirmed`, 'success');
-    loadDashboard();
+    _refreshDealCard(chatId, deal);
   }
 
   function completeAndArchive(chatId) {
@@ -1666,7 +1689,7 @@
     saveDeals(deals);
     syncDealToChat(chatId, deal);
     showToast('🏆 Deal archived successfully', 'success');
-    loadDashboard();
+    _removeDealAccordion(chatId);
   }
 
   let pendingCancelChatId = null;
@@ -1703,7 +1726,7 @@
     syncDealToChat(chatId, deal);
     closeCancelDealConfirm();
     showToast('Deal cancelled', 'error');
-    loadDashboard();
+    _removeDealAccordion(chatId);
   }
 
 
@@ -1741,7 +1764,7 @@
     saveDeals(deals);
     syncDealToChat(chatId, deal);
     showToast('✓ Deal reinstated', 'success');
-    loadDashboard();
+    _refreshDealCard(chatId, deal);
   }
 
   function saveDealNotes(chatId) {
@@ -1860,13 +1883,13 @@
           <span style="color:var(--muted);font-size:14px;transition:transform 0.2s;" class="acc-chevron">›</span>
         </summary>
         <div style="padding:0 16px 16px;border-top:1px solid var(--border);" class="acc-body">
-          <div id="acc-deal-${escH(d.chatId)}"></div>
+          <div id="${safeId(d.chatId)+'a'}"></div>
         </div>`;
       acc.addEventListener('toggle', () => {
         const chevron = acc.querySelector('.acc-chevron');
         if (chevron) chevron.style.transform = acc.open ? 'rotate(90deg)' : '';
         if (acc.open) {
-          const body = acc.querySelector(`#acc-deal-${CSS.escape(d.chatId)}`);
+          const body = acc.querySelector(`#${CSS.escape(safeId(d.chatId)+'a')}`);
           if (body && !body.innerHTML) renderDealCard(d, body, true);
         }
       });

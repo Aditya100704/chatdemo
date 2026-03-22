@@ -1024,27 +1024,28 @@
       const stageLabel = d.stage || 'Initiated';
       const ts = d.initiatedTs ? fmtTs(d.initiatedTs) : '—';
       const dealId = String(d.chatId||'').slice(-8).toUpperCase();
-      const acc = document.createElement('details');
+      const acc = document.createElement('div');
       acc.style.cssText = 'background:var(--card);border:1px solid rgba(16,185,129,0.25);border-radius:12px;margin-bottom:10px;overflow:hidden;';
-      acc.innerHTML = `
-        <summary style="display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;list-style:none;user-select:none;">
-          <span style="font-size:10px;font-weight:700;color:var(--muted);background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:2px 7px;flex-shrink:0;">ID: ${dealId}</span>
-          <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escH(d.listing||'—')}</span>
-          <span style="font-size:11px;color:var(--muted);white-space:nowrap;">${escH(d.userA)} ↔ ${escH(d.userB)}</span>
-          <span style="font-size:11px;font-weight:700;color:#34d399;padding:2px 8px;border-radius:20px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);white-space:nowrap;">● ${escH(stageLabel)}</span>
-          <span style="color:var(--muted);font-size:16px;transition:transform 0.2s;" class="acc-chev">›</span>
-        </summary>
-        <div style="padding:0 16px 16px;border-top:1px solid rgba(16,185,129,0.15);" class="acc-body">
-          <div id="acc-active-${escH(d.chatId)}"></div>
-        </div>`;
-      acc.addEventListener('toggle', () => {
-        const chev = acc.querySelector('.acc-chev');
-        if (chev) chev.style.transform = acc.open ? 'rotate(90deg)' : '';
-        if (acc.open) {
-          const body = acc.querySelector(`#acc-active-${CSS.escape(d.chatId)}`);
-          if (body && !body.innerHTML) renderDealCard(d, body, false);
-        }
+      const hdr = document.createElement('div');
+      hdr.style.cssText = 'display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;user-select:none;';
+      hdr.innerHTML = `
+        <span style="font-size:10px;font-weight:700;color:var(--muted);background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:2px 7px;flex-shrink:0;">ID: ${dealId}</span>
+        <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escH(d.listing||'—')}</span>
+        <span style="font-size:11px;color:var(--muted);white-space:nowrap;">${escH(d.userA)} ↔ ${escH(d.userB)}</span>
+        <span style="font-size:11px;font-weight:700;color:#34d399;padding:2px 8px;border-radius:20px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);white-space:nowrap;">● ${escH(stageLabel)}</span>
+        <span style="color:var(--muted);font-size:16px;transition:transform 0.2s;" class="acc-chev">›</span>`;
+      const bdy = document.createElement('div');
+      bdy.id = safeId(d.chatId);
+      bdy.style.cssText = 'display:none;padding:0 16px 16px;border-top:1px solid rgba(16,185,129,0.15);';
+      hdr.addEventListener('click', () => {
+        const isOpen = bdy.style.display !== 'none';
+        const chev = hdr.querySelector('.acc-chev');
+        bdy.style.display = isOpen ? 'none' : 'block';
+        if (chev) chev.style.transform = isOpen ? '' : 'rotate(90deg)';
+        if (!isOpen && !bdy.innerHTML) renderDealCard(d, bdy, false);
       });
+      acc.appendChild(hdr);
+      acc.appendChild(bdy);
       container.appendChild(acc);
     });
   }
@@ -1129,6 +1130,13 @@
           <div class="pipeline-title">${stage.icon} ${stage.label}</div>
           <div class="pipeline-sub">${stage.sub}</div>
           ${isActive && stage.gateType === 'payment' ? buildPaymentToggles(d, stage.key) : ''}
+          ${isActive && stage.gateType === 'select' ? `
+            <div style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <span style="font-size:12px;color:var(--muted);">Days of rent:</span>
+              <select onchange="setAdvanceDays('${d.chatId}','${stage.key}',this.value)" style="padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--card2,#1a1a2e);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;">
+                ${[1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`<option value="${n}" ${((d[stage.key+'_days']??6))==n?'selected':''}>${n} day${n>1?'s':''} rent${n===6?' (default)':''}</option>`).join('')}
+              </select>
+            </div>` : ''}
         </div>
         ${rightEl}`;
       pipeEl.appendChild(stageEl);
@@ -1146,6 +1154,16 @@
       </div>`;
     card.appendChild(footer);
     container.appendChild(card);
+  }
+
+  function setAdvanceDays(chatId, stageKey, days) {
+    const deals = getDeals();
+    const deal = deals.find(d => d.chatId === chatId);
+    if (!deal) return;
+    deal[stageKey + '_days'] = parseInt(days) || null;
+    saveDeals(deals);
+    syncDealToChat(chatId, deal);
+    _refreshDealCard(chatId, deal);
   }
 
   function buildPaymentToggles(d, stageKey) {
@@ -1180,9 +1198,31 @@
     _refreshDealCard(chatId, deal);
   }
 
+  function safeId(chatId) {
+    return 'did-' + chatId.replace(/[^a-zA-Z0-9]/g, c => '_' + c.charCodeAt(0) + '_');
+  }
+
   function _refreshDealCard(chatId, deal) {
-    const bodyEl = document.getElementById(`acc-active-${CSS.escape(chatId)}`);
-    if (bodyEl) { bodyEl.innerHTML = ''; renderDealCard(deal, bodyEl, false); }
+    const bodyEl = document.getElementById(safeId(chatId));
+    if (bodyEl && bodyEl.style.display !== 'none') { bodyEl.innerHTML = ''; renderDealCard(deal, bodyEl, false); }
+  }
+
+  function proceedSelectStage(chatId, stageKey) {
+    const label = PIPELINE.find(p => p.key === stageKey)?.label || stageKey;
+    const deals = getDeals();
+    const deal  = deals.find(d => d.chatId === chatId);
+    if (!deal) return;
+    const days = deal[stageKey + '_days'] ?? 6;
+    deal[stageKey + '_days'] = days;
+    if (!confirm(`Set ${days}-day rent as the payment amount and notify both parties?`)) return;
+    deal[`stage_${stageKey}`]    = true;
+    deal[`stage_${stageKey}_ts`] = Date.now();
+    deal.lastActionTs = Date.now();
+    postDealSystemMsg(chatId, `💳 ${label} confirmed: ${days} day(s) rent required. Please use the Pay Now button in chat.`);
+    saveDeals(deals);
+    syncDealToChat(chatId, deal);
+    showToast(`✓ ${label} confirmed — parties notified`, 'success');
+    _refreshDealCard(chatId, deal);
   }
 
   function proceedPaymentStage(chatId, stageKey) {
@@ -1199,7 +1239,7 @@
     saveDeals(deals);
     syncDealToChat(chatId, deal);
     showToast(`✓ ${label} stage completed`, 'success');
-    loadDashboard();
+    _refreshDealCard(chatId, deal);
   }
 
   function proceedActionStage(chatId, stageKey) {
@@ -1213,7 +1253,7 @@
     saveDeals(deals);
     syncDealToChat(chatId, deal);
     showToast(`✓ ${label} confirmed`, 'success');
-    loadDashboard();
+    _refreshDealCard(chatId, deal);
   }
 
   function completeAndArchive(chatId) {
@@ -1234,7 +1274,7 @@
     saveDeals(deals);
     syncDealToChat(chatId, deal);
     showToast('🏆 Deal archived successfully', 'success');
-    loadDashboard();
+    _removeDealAccordion(chatId);
   }
 
   let pendingCancelChatId = null;
@@ -1266,7 +1306,7 @@
     syncDealToChat(chatId, deal);
     closeCancelDealConfirm();
     showToast('Deal cancelled', 'error');
-    loadDashboard();
+    _removeDealAccordion(chatId);
   }
 
   function reinstateDeal(chatId) {
@@ -1280,7 +1320,7 @@
     saveDeals(deals);
     syncDealToChat(chatId, deal);
     showToast('✓ Deal reinstated', 'success');
-    loadDashboard();
+    _refreshDealCard(chatId, deal);
   }
 
   function saveDealNotes(chatId) {
