@@ -742,16 +742,32 @@
     <!-- ARCHIVED -->
     <div class="tab-panel" id="panel-archived">
       <!-- Download section -->
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-        <span style="font-size:13px;font-weight:600;color:var(--text);">📥 Download Archive</span>
-        <span style="font-size:12px;color:var(--muted);">Export all chats and deals for a time period:</span>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-left:auto;">
-          <button onclick="downloadArchive(7)"   style="padding:6px 12px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">1 Week</button>
-          <button onclick="downloadArchive(30)"  style="padding:6px 12px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">1 Month</button>
-          <button onclick="downloadArchive(90)"  style="padding:6px 12px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">3 Months</button>
-          <button onclick="downloadArchive(180)" style="padding:6px 12px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">6 Months</button>
-          <button onclick="downloadArchive(365)" style="padding:6px 12px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">1 Year</button>
-          <button onclick="downloadArchive(0)"   style="padding:6px 12px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">All Time</button>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:16px;display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span style="font-size:13px;font-weight:600;color:var(--text);">📥 Download Archive</span>
+          <span style="font-size:12px;color:var(--muted);">Quick export:</span>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button onclick="downloadArchive(7)"   style="padding:5px 11px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;">1 Week</button>
+            <button onclick="downloadArchive(30)"  style="padding:5px 11px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;">1 Month</button>
+            <button onclick="downloadArchive(90)"  style="padding:5px 11px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;">3 Months</button>
+            <button onclick="downloadArchive(180)" style="padding:5px 11px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;">6 Months</button>
+            <button onclick="downloadArchive(365)" style="padding:5px 11px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;">1 Year</button>
+            <button onclick="downloadArchive(0)"   style="padding:5px 11px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.05);color:var(--text);font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;">All Time</button>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--border);">
+          <span style="font-size:12px;color:var(--muted);white-space:nowrap;">Custom date range:</span>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <label style="font-size:11px;color:var(--muted);">From</label>
+              <input type="date" id="archive-date-from" style="padding:5px 8px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.06);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;outline:none;">
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <label style="font-size:11px;color:var(--muted);">To</label>
+              <input type="date" id="archive-date-to" style="padding:5px 8px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.06);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;outline:none;">
+            </div>
+            <button onclick="downloadArchiveRange()" style="padding:5px 14px;border-radius:7px;border:1px solid rgba(212,160,23,0.4);background:rgba(212,160,23,0.1);color:var(--gold);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">⬇ Download</button>
+          </div>
         </div>
       </div>
       <!-- Sub-tab switcher -->
@@ -956,8 +972,26 @@
       delete assignments[chatId];
     }
     saveAssignments(assignments);
-    const modName = modId ? (MODS.find(m => m.id === modId)?.name || modId) : 'nobody';
-    showToast(`Chat reassigned to ${modName}`, 'success');
+    const modName = modId ? (MODS.find(m => m.id === modId)?.name || modId) : null;
+
+    // Also update any contacts for this chat so they follow the new mod
+    const contacts = getContacts();
+    let contactsChanged = false;
+    contacts.forEach(c => {
+      if (c.chatId === chatId) {
+        c.assignedModId   = modId || null;
+        c.assignedModName = modName;
+        RF.updateContact(c.id, { assignedModId: modId || null, assignedModName: modName })
+          .catch(e => console.warn('[RF] contact reassign', e));
+        contactsChanged = true;
+      }
+    });
+    if (contactsChanged) {
+      _contacts = contacts;
+      try { localStorage.setItem('rf_mod_contacts', JSON.stringify(contacts)); } catch {}
+    }
+
+    showToast(`Chat reassigned to ${modName || 'nobody'}`, 'success');
     loadDashboard();
   }
 
@@ -1224,6 +1258,7 @@
     renderUsersTable(allChats, modLog, getBanned());
     const _acl = document.getElementById('archived-chats-list'); if (_acl) renderArchivedChats(_acl);
     const _adl = document.getElementById('archived-deals-list'); if (_adl) renderArchivedDeals(_adl);
+    initArchiveDateDefaults();
     renderHistoryList(document.getElementById('history-list'));
     renderDefaultersList(document.getElementById('defaulters-list'));
     renderModMetrics();
@@ -2181,6 +2216,59 @@
     showToast(`📥 Downloaded archive (${chats.length} chats, ${deals.length} deals)`, 'success');
   }
 
+  function downloadArchiveRange() {
+    const fromVal = document.getElementById('archive-date-from')?.value;
+    const toVal   = document.getElementById('archive-date-to')?.value;
+    if (!fromVal || !toVal) { showToast('Please select both From and To dates.', 'error'); return; }
+    const fromTs = new Date(fromVal).setHours(0,0,0,0);
+    const toTs   = new Date(toVal).setHours(23,59,59,999);
+    if (fromTs > toTs) { showToast('From date must be before To date.', 'error'); return; }
+
+    const chats = getChatsIndex().filter(c =>
+      (c.archived || c.autoArchived || c.manualArchived) &&
+      (c.archivedTs || 0) >= fromTs && (c.archivedTs || 0) <= toTs
+    );
+    const deals = getDeals().filter(d => {
+      const ts = d.cancelledTs || d.completedTs || d.initiatedTs || 0;
+      return (d.stage === 'Cancelled' || d.stage_complete) && ts >= fromTs && ts <= toTs;
+    });
+    if (!chats.length && !deals.length) {
+      showToast('No archived data found for that date range.', ''); return;
+    }
+    const label = `${fromVal} to ${toVal}`;
+    let csv = 'RENTERFINDER ARCHIVE EXPORT\n';
+    csv += `Period: ${label} · Generated: ${new Date().toLocaleString('en-IN')}\n\n`;
+    csv += '=== ARCHIVED CHATS ===\n';
+    csv += 'Chat ID,Landlord,Renter,Listing,Archived Date,Reason\n';
+    chats.forEach(c => {
+      const reason = c.autoArchived ? '7-day inactivity' : 'Manual';
+      csv += `"${c.chatId}","${c.userA||''}","${c.userB||''}","${c.listing||''}","${c.archivedTs ? new Date(c.archivedTs).toLocaleDateString('en-IN') : ''}","${reason}"\n`;
+    });
+    csv += '\n=== ARCHIVED DEALS ===\n';
+    csv += 'Chat ID,Listing,Party A,Party B,Stage,Initiated,Closed\n';
+    deals.forEach(d => {
+      const closedTs = d.cancelledTs || d.completedTs || '';
+      csv += `"${d.chatId}","${d.listing||''}","${d.userA||''}","${d.userB||''}","${d.stage||''}","${d.initiatedTs ? new Date(d.initiatedTs).toLocaleDateString('en-IN') : ''}","${closedTs ? new Date(closedTs).toLocaleDateString('en-IN') : ''}"\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = `RenterFinder_Archive_${fromVal}_to_${toVal}.csv`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast(`📥 Downloaded (${chats.length} chats, ${deals.length} deals) · ${label}`, 'success');
+  }
+
+  function initArchiveDateDefaults() {
+    const toEl   = document.getElementById('archive-date-to');
+    const fromEl = document.getElementById('archive-date-from');
+    if (!toEl || !fromEl || toEl.value) return;
+    const today = new Date();
+    const prior = new Date(today); prior.setDate(prior.getDate() - 30);
+    toEl.value   = today.toISOString().slice(0,10);
+    fromEl.value = prior.toISOString().slice(0,10);
+  }
+
   function filterArchivedChats() {
     const q = document.getElementById('search-archived-chats')?.value.trim().toLowerCase()||'';
     const rows = document.querySelectorAll('#archived-chats-list .archived-card');
@@ -2957,6 +3045,26 @@
     });
 
     saveAssignments(assignments);
+
+    // Update contacts to follow new mod assignments
+    const contacts = getContacts();
+    let cChanged = false;
+    contacts.forEach(c => {
+      const newModId = assignments[c.chatId];
+      if (newModId && chatIds.includes(c.chatId)) {
+        const newModName = MODS.find(m => m.id === newModId)?.name || newModId;
+        c.assignedModId   = newModId;
+        c.assignedModName = newModName;
+        RF.updateContact(c.id, { assignedModId: newModId, assignedModName: newModName })
+          .catch(e => console.warn('[RF] bulk contact reassign', e));
+        cChanged = true;
+      }
+    });
+    if (cChanged) {
+      _contacts = contacts;
+      try { localStorage.setItem('rf_mod_contacts', JSON.stringify(contacts)); } catch {}
+    }
+
     closeReassignModal();
     const targetNames = selected.map(id => MODS.find(m => m.id === id)?.name || id).join(', ');
     showToast(`↺ ${chatIds.length} chat${chatIds.length!==1?'s':''} reassigned to ${targetNames}`, 'success');
