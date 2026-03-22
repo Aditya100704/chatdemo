@@ -439,7 +439,7 @@
   <div class="identity-switch">
     <button class="identity-btn active" id="btn-user-a" onclick="switchIdentity('A')">👤 You (Landlord)</button>
     <button class="identity-btn" id="btn-user-b" onclick="switchIdentity('B')">👤 Renter</button>
-    <button class="identity-btn mod-btn" id="btn-mod" onclick="switchIdentity('MOD')">🛡️ Moderator</button>
+    <button class="identity-btn mod-btn" id="btn-mod" onclick="switchIdentity('MOD')" style="display:none;">🛡️ Moderator</button>
   </div>
 </div>
 
@@ -934,7 +934,7 @@
     const avatarClass = isMod ? 'mod-av' : (isMe ? '' : 'other');
     const bubbleClass = isMod ? 'bubble mod-bubble' : 'bubble';
     const senderClass = isMod ? 'msg-sender mod-sender' : 'msg-sender';
-    const modReplyLabel = m.isModReply ? `<div style="font-size:10px;color:#a5b4fc;font-weight:600;letter-spacing:0.3px;margin-bottom:3px;">💬 Moderator reply to your request</div>` : '';
+    const modReplyLabel = m.isModReply ? `<div style="font-size:10px;color:#a5b4fc;font-weight:600;letter-spacing:0.3px;margin-bottom:3px;">💬 Moderator reply to your request</div>` : (isMod && !m.isModReply ? `<div style="font-size:10px;color:#c4b5fd;font-weight:600;letter-spacing:0.3px;margin-bottom:3px;">🛡️ Moderator message</div>` : '');
     const approvedHtml = m.moderatorApproved ? `<div class="approved-tag">✓ Moderator Approved</div>` : '';
 
     // Build bubble content — text or image
@@ -957,9 +957,10 @@
         <div class="${senderClass}">${isMe && !isMod ? 'You' : escH(user.name)}</div>
         <div class="${bubbleClass}">${bubbleContent}</div>
         ${approvedHtml}
-        <div style="display:flex;gap:6px;align-items:center;">
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
           <div class="msg-time">${time}</div>
           ${receiptHtml}
+          ${isMod && currentIdentity !== 'MOD' ? `<button onclick="openContactMod()" style="padding:2px 8px;border-radius:5px;border:1px solid rgba(99,102,241,0.3);background:rgba(99,102,241,0.08);color:#a5b4fc;font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;cursor:pointer;">↩ Reply to Mod</button>` : ''}
         </div>
       </div>`;
     container.appendChild(row);
@@ -1405,7 +1406,10 @@ Message: ${JSON.stringify(text)}`;
     const newCount = msgs.filter(m => m.isModReply).length;
     if (newCount > prevCount && currentIdentity !== 'MOD') {
       const banner = document.getElementById('mod-reply-banner');
-      if (banner) banner.style.display = 'flex';
+      if (banner) {
+        banner.style.display = 'flex';
+        setTimeout(() => { banner.style.display = 'none'; }, 8000);
+      }
       showModReplyToast();
       updateContactModModal(msgs);
     }
@@ -1425,7 +1429,9 @@ Message: ${JSON.stringify(text)}`;
         const joinerName = _joinSlots.mod?.name || _joinSlots.admin?.name || 'RenterFinder Moderator';
         const nameEl = document.getElementById('mod-joined-name');
         if (nameEl) nameEl.textContent = joinerName;
-        document.getElementById('mod-joined-banner').classList.add('show');
+        const _mjb = document.getElementById('mod-joined-banner');
+        _mjb.classList.add('show');
+        setTimeout(() => _mjb.classList.remove('show'), 5000);
       }
     }
     checkExpiry();
@@ -1442,6 +1448,7 @@ Message: ${JSON.stringify(text)}`;
     if (!myCalls.length) { banner.style.display = 'none'; return; }
     const latest = myCalls.sort((a,b) => (b.ts||0)-(a.ts||0))[0];
     banner.style.display = 'flex';
+    setTimeout(() => { if(banner) banner.style.display='none'; }, 8000);
     if (latest.status === 'answered') {
       bannerText.textContent = '✅ Your moderator has seen your message and replied in this chat.';
       banner.style.background = 'linear-gradient(135deg,rgba(16,185,129,0.12),rgba(16,185,129,0.06))';
@@ -2050,6 +2057,10 @@ Message: ${JSON.stringify(text)}`;
     if (URL_ROLE === 'admin' || URL_ROLE === 'mod') {
       USERS.MOD.name = URL_MOD_NAME || (URL_ROLE === 'admin' ? 'Admin' : 'RenterFinder Moderator');
       USERS.MOD.id   = URL_MOD_ID || 'rf-moderator';
+  if (URL_ROLE === 'mod' || URL_ROLE === 'admin') {
+    const modBtn = document.getElementById('btn-mod');
+    if (modBtn) modBtn.style.display = '';
+  }
       setTimeout(() => switchIdentity('MOD'), 100);
     }
 
