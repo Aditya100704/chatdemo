@@ -593,7 +593,7 @@
 
   <div class="dash-tabs">
     <div class="dash-tab active" data-tab="overview" onclick="switchTab('overview')">📊 Overview</div>
-    <div class="dash-tab" data-tab="chats" onclick="switchTab('chats')">💬 All Chats <span class="tab-count green" id="tab-chats-count">0</span></div>
+    <div class="dash-tab" data-tab="chats" onclick="switchTab('chats')">💬 Active Chats <span class="tab-count green" id="tab-chats-count">0</span></div>
     <div class="dash-tab" data-tab="flagged" onclick="switchTab('flagged')">🚩 Flagged <span class="tab-count" id="tab-flagged-count">0</span></div>
     <div class="dash-tab" data-tab="deals" onclick="switchTab('deals')">🤝 Deal Tracker <span class="tab-count green" id="tab-deals-count">0</span></div>
     <div class="dash-tab" data-tab="appeals" onclick="switchTab('appeals')">📝 Appeals <span class="tab-count purple" id="tab-appeals-count">0</span></div>
@@ -685,7 +685,7 @@
 
     <!-- ALL CHATS -->
     <div class="tab-panel" id="panel-chats">
-      <div class="section-header"><div class="section-title">All Chats</div><div class="section-sub" id="chat-count-sub">Loading…</div></div>
+      <div class="section-header"><div class="section-title">Active Chats</div><div class="section-sub" id="chat-count-sub">Loading…</div></div>
       <div class="tab-search-bar">
         <div class="tab-search-wrap"><span class="search-icon">🔍</span><input class="tab-search-input" id="search-chats" type="text" placeholder="Search by user name or chat ID…" oninput="filterChats()"></div>
         <span class="tab-search-count" id="search-chats-count"></span>
@@ -1168,8 +1168,12 @@
     const appeals = getAppeals();
 
     let totalMsgs = 0, suspended = 0;
-    chats.forEach(c => {
+    // Total msgs and suspended count from active chats only for suspended badge
+    // But stat cards show ALL chats (including archived) for true totals
+    allChats.forEach(c => {
       totalMsgs += getChatMsgs(c.chatId).length;
+    });
+    chats.forEach(c => {
       const v = getChatVio(c.chatId);
       if (Math.max(...Object.values(v).concat([0])) >= 3) suspended++;
     });
@@ -1178,21 +1182,21 @@
     const openAppeals  = appeals.filter(a => a.status === 'pending').length;
     const activeDeals  = getDeals().filter(d => d.stage !== 'Cancelled' && !d.stage_complete).length;
 
-    document.getElementById('stat-total-chats').textContent = chats.length;
-    document.getElementById('stat-total-msgs').textContent  = totalMsgs;
+    document.getElementById('stat-total-chats').textContent = allChats.length;  // ALL chats incl. archived
+    document.getElementById('stat-total-msgs').textContent  = totalMsgs;        // ALL messages incl. archived
     document.getElementById('stat-flagged').textContent     = pending;
     document.getElementById('stat-pending').textContent     = pending;
     document.getElementById('stat-appeals').textContent     = openAppeals;
     document.getElementById('stat-deals').textContent       = activeDeals;
     document.getElementById('stat-suspended').textContent   = suspended;
-    document.getElementById('tab-chats-count').textContent  = chats.length;
+    document.getElementById('tab-chats-count').textContent  = chats.length;  // active only for tab badge
     document.getElementById('tab-flagged-count').textContent = pending;
     document.getElementById('tab-appeals-count').textContent = openAppeals;
     document.getElementById('tab-deals-count').textContent  = activeDeals;
 
 
     renderChatsList(chats, document.getElementById('all-chats-list'));
-    document.getElementById('chat-count-sub').textContent = `${chats.length} chat${chats.length !== 1 ? 's' : ''} initiated`;
+    document.getElementById('chat-count-sub').textContent = `${chats.length} active · ${allChats.length} total`;
     renderFlaggedList(modLog.filter(e => e.status === 'pending'), document.getElementById('flagged-list'), modLog.filter(e => e.status !== 'pending').length);
     renderDealsList(getDeals(), document.getElementById('deals-list'));
     renderAppealsList(appeals, document.getElementById('appeals-list'));
@@ -1364,7 +1368,7 @@
     active.forEach(d => renderDealCard(d, container));
   }
 
-  function renderDealCard(d, container) {
+  function renderDealCard(d, container, isArchived) {
     const isCancelled = d.stage === 'Cancelled';
     const curIdx      = currentPipelineIdx(d);
     const activeIdx   = isCancelled ? -1 : (curIdx + 1 < PIPELINE.length ? curIdx + 1 : PIPELINE.length - 1);
@@ -1455,7 +1459,11 @@
       <div class="deal-card-actions">
         <button class="deal-save-notes-btn" onclick="saveDealNotes('${d.chatId}')">💾 Save Notes</button>
         <button class="btn-defaulter" onclick="openDefaulterModal('${d.chatId}')">🚫 Defaulter</button>
-        <button class="deal-cancel-deal-btn" onclick="cancelDeal('${d.chatId}')">✕ Cancel Deal</button>
+        ${isArchived
+          ? `<button class="btn-reinstate" onclick="reinstateDeal('${d.chatId}')">↩ Reinstate Deal</button>
+             <button onclick="permanentDeleteOneDeal('${d.chatId}')" style="padding:6px 14px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;background:rgba(239,68,68,0.08);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);">🗑 Delete</button>`
+          : `<button class="deal-cancel-deal-btn" onclick="cancelDeal('${d.chatId}')">✕ Cancel Deal</button>`
+        }
       </div>`;
     card.appendChild(footer);
     container.appendChild(card);
@@ -1716,8 +1724,36 @@
       container.innerHTML = `<div class="empty-state" style="text-align:center;padding:60px 20px;"><div class="empty-icon">🤝</div><h3>No archived deals</h3><p style="color:var(--muted);font-size:13px;margin-top:6px;">Cancelled and completed deals appear here.</p></div>`;
       return;
     }
+    // Permanent delete all button at top
+    const headerDiv = document.createElement('div');
+    headerDiv.style.cssText = 'display:flex;justify-content:flex-end;margin-bottom:12px;';
+    headerDiv.innerHTML = `<button onclick="permanentDeleteAllDeals()" style="padding:7px 16px;border:1px solid rgba(239,68,68,0.35);border-radius:8px;background:rgba(239,68,68,0.08);color:#fca5a5;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">🗑 Permanently Delete All Archived</button>`;
+    container.appendChild(headerDiv);
     const sorted = [...archivedDeals].sort((a,b) => (b.cancelledTs||b.completedTs||b.initiatedTs||0) - (a.cancelledTs||a.completedTs||a.initiatedTs||0));
-    sorted.forEach(d => renderDealCard(d, container));
+    sorted.forEach(d => renderDealCard(d, container, true));
+  }
+
+  function permanentDeleteAllDeals() {
+    if (!confirm('Permanently delete ALL archived/cancelled deals? This cannot be undone.')) return;
+    const deals = getDeals();
+    const remaining = deals.filter(d => d.stage !== 'Cancelled' && !d.stage_complete && d.stage !== 'Complete');
+    saveDeals(remaining);
+    // Also delete from Firestore
+    const archived = deals.filter(d => d.stage === 'Cancelled' || d.stage_complete || d.stage === 'Complete');
+    archived.forEach(d => {
+      db.collection('deals').doc(d.chatId).delete().catch(e => console.warn('[RF] permanentDelete deal', e));
+    });
+    showToast('🗑 All archived deals permanently deleted', 'error');
+    loadDashboard();
+  }
+
+  function permanentDeleteOneDeal(chatId) {
+    if (!confirm('Permanently delete this deal? This cannot be undone.')) return;
+    const deals = getDeals().filter(d => d.chatId !== chatId);
+    saveDeals(deals);
+    db.collection('deals').doc(chatId).delete().catch(e => console.warn('[RF] permanentDelete deal', e));
+    showToast('🗑 Deal permanently deleted', 'error');
+    loadDashboard();
   }
 
 

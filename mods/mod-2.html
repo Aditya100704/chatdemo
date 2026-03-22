@@ -580,7 +580,7 @@
 
   <div class="dash-tabs">
     <div class="dash-tab active" data-tab="overview" onclick="switchTab('overview')">📊 Overview</div>
-    <div class="dash-tab" data-tab="chats" onclick="switchTab('chats')">💬 All Chats <span class="tab-count green" id="tab-chats-count">0</span></div>
+    <div class="dash-tab" data-tab="chats" onclick="switchTab('chats')">💬 Active Chats <span class="tab-count green" id="tab-chats-count">0</span></div>
     <div class="dash-tab" data-tab="flagged" onclick="switchTab('flagged')">🚩 Flagged <span class="tab-count" id="tab-flagged-count">0</span></div>
     <div class="dash-tab" data-tab="deals" onclick="switchTab('deals')">🤝 Deal Tracker <span class="tab-count green" id="tab-deals-count">0</span></div>
     <div class="dash-tab" data-tab="appeals" onclick="switchTab('appeals')">📝 Appeals <span class="tab-count purple" id="tab-appeals-count">0</span></div>
@@ -669,7 +669,7 @@
 
     <!-- ALL CHATS -->
     <div class="tab-panel" id="panel-chats">
-      <div class="section-header"><div class="section-title">All Chats</div><div class="section-sub" id="chat-count-sub">Loading…</div></div>
+      <div class="section-header"><div class="section-title">Active Chats</div><div class="section-sub" id="chat-count-sub">Loading…</div></div>
       <div class="tab-search-bar">
         <div class="tab-search-wrap"><span class="search-icon">🔍</span><input class="tab-search-input" id="search-chats" type="text" placeholder="Search by user name or chat ID…" oninput="filterChats()"></div>
         <span class="tab-search-count" id="search-chats-count"></span>
@@ -722,7 +722,7 @@
       </div>
     </div>
 
-
+    <!-- ARCHIVED -->
     <div class="tab-panel" id="panel-archived">
       <!-- Sub-tab switcher -->
       <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px;overflow-x:auto;">
@@ -747,7 +747,7 @@
       </div>
     </div>
 
-
+    <!-- HISTORY -->
     <div class="tab-panel" id="panel-history">
       <div class="section-header"><div class="section-title">48hr History</div><div class="section-sub">Flagged messages &amp; appeals from the last 48 hours — auto-deleted after that</div></div>
       <div class="tab-search-bar">
@@ -757,7 +757,16 @@
       <div id="history-list"></div>
     </div>
 
+    <div class="tab-panel" id="panel-defaulters">
+      <div class="section-header"><div class="section-title">Defaulters List</div><div class="section-sub">Parties who defaulted on a deal — admin use only</div></div>
+      <div class="tab-search-bar">
+        <div class="tab-search-wrap"><span class="search-icon">🔍</span><input class="tab-search-input" id="search-defaulters" type="text" placeholder="Search by name or listing…" oninput="filterDefaulters()"></div>
+        <span class="tab-search-count" id="search-defaulters-count"></span>
+      </div>
+      <div id="defaulters-list" style="display:flex;flex-direction:column;gap:12px;"></div>
+    </div>
 
+    <!-- CONTACTS -->
     <div class="tab-panel" id="panel-contacts">
       <div class="section-header">
         <div><div class="section-title">User Contacts</div><div class="section-sub">Messages sent by users to their assigned moderator</div></div>
@@ -889,48 +898,67 @@
   const MOD_NAME = 'Mod 2';
   const AUTO_REFRESH_SECS = 30;
 
-  function toggleModPanel() {
-    const body    = document.getElementById('mod-mgmt-body');
-    const chevron = document.getElementById('mod-mgmt-chevron');
-    body.classList.toggle('open');
-    chevron.classList.toggle('open');
+  // ── MOD MANAGEMENT ───────────────────────────────────────────
+  const MODS = Array.from({length:10},(_,i)=>({ id:`mod-${i+1}`, name:`Mod ${i+1}`, path:`mods/mod-${i+1}.html` }));
+
+
+  function reassignChat(chatId, modId) {
+    const assignments = getAssignments();
+    if (modId) {
+      assignments[chatId] = modId;
+    } else {
+      delete assignments[chatId];
+    }
+    saveAssignments(assignments);
+    const modName = modId ? (MODS.find(m => m.id === modId)?.name || modId) : 'nobody';
+    showToast(`Chat reassigned to ${modName}`, 'success');
+    loadDashboard();
   }
 
-  function renderModPanel() {
-    const active      = getModeActive();
-    const assignments = getAssignments();
-    const activeCount = MODS.filter(m => active[m.id]).length;
-    const totalAssigned = Object.keys(assignments).length;
-    document.getElementById('mod-mgmt-meta').textContent = `${activeCount} active · ${totalAssigned} chats assigned`;
-    const grid = document.getElementById('mod-grid');
-    grid.innerHTML = '';
-    MODS.forEach(m => {
-      const isActive   = !!active[m.id];
-      const chatCount  = Object.values(assignments).filter(v => v === m.id).length;
-      const card       = document.createElement('div');
-      card.className   = `mod-card${isActive?' active-mod':''}`;
-      card.innerHTML   = `
-        <div class="mod-card-avatar">${m.name.replace('Mod ','M')}</div>
-        <div class="mod-card-info">
-          <div class="mod-card-name">${m.name}</div>
-          <div class="mod-card-count">${chatCount} chat${chatCount!==1?'s':''} assigned</div>
+  // Deterministic hash — same chatId always maps to same mod, no counter needed
+  function hashChatId(chatId) {
+    let h = 0;
+    for (let i = 0; i < chatId.length; i++) {
+      h = ((h << 5) - h) + chatId.charCodeAt(i);
+      h |= 0;
+    }
+    return Math.abs(h);
+  }
 
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;">
-          <label class="mod-toggle" title="${isActive?'Deactivate':'Activate'} ${m.name}">
-            <input type="checkbox" ${isActive?'checked':''} onchange="toggleMod('${m.id}')">
-            <span class="mod-toggle-slider"></span>
-          </label>
-          <details class="mod-card-menu" onclick="event.stopPropagation()">
-            <summary class="mod-card-menu-btn" title="More options">•••</summary>
-            <div class="mod-card-menu-panel">
-              <a class="mod-menu-item" href="${m.path}" target="_blank">↗ Open Dashboard</a>
-              ${chatCount > 0 ? `<button class="mod-menu-item" onclick="event.preventDefault();this.closest('details').removeAttribute('open');openReassignModal('${m.id}')">↺ Reassign Chats</button>` : `<span class="mod-menu-item" style="opacity:0.4;cursor:default;">↺ No chats</span>`}
-            </div>
-          </details>
-        </div>`;
-      grid.appendChild(card);
+  function assignNewChats() {
+    const active      = getModeActive();
+    const activeMods  = MODS.filter(m => active[m.id]);
+    const pool        = activeMods.length ? activeMods : [MODS[0]];
+    const assignments = getAssignments();
+    const chats       = getChatsIndex();
+    let changed       = false;
+    chats.filter(c => !c.archived && !c.autoArchived && !c.manualArchived).forEach(c => {
+      if (!assignments[c.chatId]) {
+        // Deterministic: hash the chatId so same chat always gets same mod
+        assignments[c.chatId] = pool[hashChatId(c.chatId) % pool.length].id;
+        changed = true;
+      }
     });
+    if (changed) saveAssignments(assignments);
+  }
+
+  async function toggleMod(modId) {
+    const active = getModeActive();
+    active[modId] = !active[modId];
+    saveModeActive(active);
+    // Re-assign any currently unassigned chats to include the newly activated mod
+    const assignments = getAssignments();
+    const unassigned  = _chatsIndex.filter(c => !assignments[c.chatId]);
+    for (const c of unassigned) {
+      const pool = Object.entries(active).filter(([,v]) => v).map(([k]) => k);
+      if (!pool.length) pool.push('mod-1');
+      let h = 0;
+      for (let i = 0; i < c.chatId.length; i++) { h = ((h<<5)-h)+c.chatId.charCodeAt(i); h|=0; }
+      const assigned = pool[Math.abs(h) % pool.length];
+      await RF.saveAssignment(c.chatId, assigned).catch(e => console.warn('[RF] toggleMod assign', e));
+    }
+    renderModPanel();
+    loadDashboard();
   }
 
   function attemptLogin() {
@@ -1084,8 +1112,12 @@
     const appeals = getAppeals();
 
     let totalMsgs = 0, suspended = 0;
-    chats.forEach(c => {
+    // Total msgs and suspended count from active chats only for suspended badge
+    // But stat cards show ALL chats (including archived) for true totals
+    allChats.forEach(c => {
       totalMsgs += getChatMsgs(c.chatId).length;
+    });
+    chats.forEach(c => {
       const v = getChatVio(c.chatId);
       if (Math.max(...Object.values(v).concat([0])) >= 3) suspended++;
     });
@@ -1094,21 +1126,21 @@
     const openAppeals  = appeals.filter(a => a.status === 'pending').length;
     const activeDeals  = getDeals().filter(d => d.stage !== 'Cancelled' && !d.stage_complete).length;
 
-    document.getElementById('stat-total-chats').textContent = chats.length;
-    document.getElementById('stat-total-msgs').textContent  = totalMsgs;
+    document.getElementById('stat-total-chats').textContent = allChats.length;  // ALL chats incl. archived
+    document.getElementById('stat-total-msgs').textContent  = totalMsgs;        // ALL messages incl. archived
     document.getElementById('stat-flagged').textContent     = pending;
     document.getElementById('stat-pending').textContent     = pending;
     document.getElementById('stat-appeals').textContent     = openAppeals;
     document.getElementById('stat-deals').textContent       = activeDeals;
     document.getElementById('stat-suspended').textContent   = suspended;
-    document.getElementById('tab-chats-count').textContent  = chats.length;
+    document.getElementById('tab-chats-count').textContent  = chats.length;  // active only for tab badge
     document.getElementById('tab-flagged-count').textContent = pending;
     document.getElementById('tab-appeals-count').textContent = openAppeals;
     document.getElementById('tab-deals-count').textContent  = activeDeals;
 
 
     renderChatsList(chats, document.getElementById('all-chats-list'));
-    document.getElementById('chat-count-sub').textContent = `${chats.length} chat${chats.length !== 1 ? 's' : ''} initiated`;
+    document.getElementById('chat-count-sub').textContent = `${chats.length} active · ${allChats.length} total`;
     renderFlaggedList(modLog.filter(e => e.status === 'pending'), document.getElementById('flagged-list'), modLog.filter(e => e.status !== 'pending').length);
     renderDealsList(getDeals(), document.getElementById('deals-list'));
     renderAppealsList(appeals, document.getElementById('appeals-list'));
@@ -1280,7 +1312,7 @@
     active.forEach(d => renderDealCard(d, container));
   }
 
-  function renderDealCard(d, container) {
+  function renderDealCard(d, container, isArchived) {
     const isCancelled = d.stage === 'Cancelled';
     const curIdx      = currentPipelineIdx(d);
     const activeIdx   = isCancelled ? -1 : (curIdx + 1 < PIPELINE.length ? curIdx + 1 : PIPELINE.length - 1);
@@ -1371,7 +1403,11 @@
       <div class="deal-card-actions">
         <button class="deal-save-notes-btn" onclick="saveDealNotes('${d.chatId}')">💾 Save Notes</button>
         <button class="btn-defaulter" onclick="openDefaulterModal('${d.chatId}')">🚫 Defaulter</button>
-
+        ${isArchived
+          ? `<button class="btn-reinstate" onclick="reinstateDeal('${d.chatId}')">↩ Reinstate Deal</button>
+             <button onclick="permanentDeleteOneDeal('${d.chatId}')" style="padding:6px 14px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;background:rgba(239,68,68,0.08);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);">🗑 Delete</button>`
+          : `<button class="deal-cancel-deal-btn" onclick="cancelDeal('${d.chatId}')">✕ Cancel Deal</button>`
+        }
       </div>`;
     card.appendChild(footer);
     container.appendChild(card);
@@ -1632,8 +1668,36 @@
       container.innerHTML = `<div class="empty-state" style="text-align:center;padding:60px 20px;"><div class="empty-icon">🤝</div><h3>No archived deals</h3><p style="color:var(--muted);font-size:13px;margin-top:6px;">Cancelled and completed deals appear here.</p></div>`;
       return;
     }
+    // Permanent delete all button at top
+    const headerDiv = document.createElement('div');
+    headerDiv.style.cssText = 'display:flex;justify-content:flex-end;margin-bottom:12px;';
+    headerDiv.innerHTML = `<button onclick="permanentDeleteAllDeals()" style="padding:7px 16px;border:1px solid rgba(239,68,68,0.35);border-radius:8px;background:rgba(239,68,68,0.08);color:#fca5a5;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">🗑 Permanently Delete All Archived</button>`;
+    container.appendChild(headerDiv);
     const sorted = [...archivedDeals].sort((a,b) => (b.cancelledTs||b.completedTs||b.initiatedTs||0) - (a.cancelledTs||a.completedTs||a.initiatedTs||0));
-    sorted.forEach(d => renderDealCard(d, container));
+    sorted.forEach(d => renderDealCard(d, container, true));
+  }
+
+  function permanentDeleteAllDeals() {
+    if (!confirm('Permanently delete ALL archived/cancelled deals? This cannot be undone.')) return;
+    const deals = getDeals();
+    const remaining = deals.filter(d => d.stage !== 'Cancelled' && !d.stage_complete && d.stage !== 'Complete');
+    saveDeals(remaining);
+    // Also delete from Firestore
+    const archived = deals.filter(d => d.stage === 'Cancelled' || d.stage_complete || d.stage === 'Complete');
+    archived.forEach(d => {
+      db.collection('deals').doc(d.chatId).delete().catch(e => console.warn('[RF] permanentDelete deal', e));
+    });
+    showToast('🗑 All archived deals permanently deleted', 'error');
+    loadDashboard();
+  }
+
+  function permanentDeleteOneDeal(chatId) {
+    if (!confirm('Permanently delete this deal? This cannot be undone.')) return;
+    const deals = getDeals().filter(d => d.chatId !== chatId);
+    saveDeals(deals);
+    db.collection('deals').doc(chatId).delete().catch(e => console.warn('[RF] permanentDelete deal', e));
+    showToast('🗑 Deal permanently deleted', 'error');
+    loadDashboard();
   }
 
 
