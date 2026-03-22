@@ -502,12 +502,12 @@
 
   <div class="dash-tabs">
     <div class="dash-tab active" data-tab="overview" onclick="switchTab('overview')">📊 Overview</div>
-    <div class="dash-tab" data-tab="chats" onclick="switchTab('chats')">💬 Active Chats <span class="tab-count green" id="tab-chats-count">0</span></div>
     <div class="dash-tab" data-tab="flagged" onclick="switchTab('flagged')">🚩 Flagged <span class="tab-count" id="tab-flagged-count">0</span></div>
     <div class="dash-tab" data-tab="deals" onclick="switchTab('deals')">🤝 Deal Tracker <span class="tab-count green" id="tab-deals-count">0</span></div>
+    <div class="dash-tab" data-tab="contacts" onclick="switchTab('contacts')">📩 Contacts <span class="tab-count purple" id="tab-contacts-count">0</span></div>
+    <div class="dash-tab" data-tab="chats" onclick="switchTab('chats')">💬 Active Chats <span class="tab-count green" id="tab-chats-count">0</span></div>
     <div class="dash-tab" data-tab="archived" onclick="switchTab('archived')">📁 Archived <span class="tab-count" id="tab-archived-count" style="background:rgba(255,255,255,0.06);color:var(--muted);">0</span></div>
     <div class="dash-tab" data-tab="users" onclick="switchTab('users')">👥 Users</div>
-    <div class="dash-tab" data-tab="contacts" onclick="switchTab('contacts')">📩 Contacts <span class="tab-count purple" id="tab-contacts-count">0</span></div>
   </div>
 
   <div class="dash-content">
@@ -875,7 +875,7 @@
     const _hl = document.getElementById('history-list'); if (_hl) renderHistoryList(_hl);
 
     // Contacts stats — filter to this mod's assigned chats
-    const myAssignedChats = new Set(allChats.filter(c => getAssignments()[c.chatId] === MOD_ID).map(c => c.chatId));
+    const myAssignedChats = new Set(myChats.map(c => c.chatId));
     const allContacts  = getContacts().filter(c => myAssignedChats.has(c.chatId));
     const openContacts = allContacts.filter(c => c.status === 'open').length;
     const ctTotal = document.getElementById('stat-contacts-total'); if (ctTotal) ctTotal.textContent = allContacts.length;

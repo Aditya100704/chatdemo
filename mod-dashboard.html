@@ -593,14 +593,14 @@
 
   <div class="dash-tabs">
     <div class="dash-tab active" data-tab="overview" onclick="switchTab('overview')">📊 Overview</div>
-    <div class="dash-tab" data-tab="chats" onclick="switchTab('chats')">💬 Active Chats <span class="tab-count green" id="tab-chats-count">0</span></div>
     <div class="dash-tab" data-tab="flagged" onclick="switchTab('flagged')">🚩 Flagged <span class="tab-count" id="tab-flagged-count">0</span></div>
-    <div class="dash-tab" data-tab="deals" onclick="switchTab('deals')">🤝 Deal Tracker <span class="tab-count green" id="tab-deals-count">0</span></div>
     <div class="dash-tab" data-tab="appeals" onclick="switchTab('appeals')">📝 Appeals <span class="tab-count purple" id="tab-appeals-count">0</span></div>
+    <div class="dash-tab" data-tab="deals" onclick="switchTab('deals')">🤝 Deal Tracker <span class="tab-count green" id="tab-deals-count">0</span></div>
+    <div class="dash-tab" data-tab="contacts" onclick="switchTab('contacts')">📩 Contacts <span class="tab-count purple" id="tab-contacts-count">0</span></div>
+    <div class="dash-tab" data-tab="chats" onclick="switchTab('chats')">💬 Active Chats <span class="tab-count green" id="tab-chats-count">0</span></div>
     <div class="dash-tab" data-tab="users" onclick="switchTab('users')">👥 Users</div>
     <div class="dash-tab" data-tab="archived" onclick="switchTab('archived')">📁 Archived <span class="tab-count" id="tab-archived-count" style="background:rgba(255,255,255,0.06);color:var(--muted);">0</span></div>
     <div class="dash-tab" data-tab="history" onclick="switchTab('history')">🕓 History <span class="tab-count" id="tab-history-count" style="background:rgba(255,255,255,0.06);color:var(--muted);">0</span></div>
-    <div class="dash-tab" data-tab="contacts" onclick="switchTab('contacts')">📩 Contacts <span class="tab-count purple" id="tab-contacts-count">0</span></div>
     <div class="dash-tab" data-tab="defaulters" onclick="switchTab('defaulters')">🚫 Defaulters <span class="tab-count" id="tab-defaulters-count" style="background:rgba(239,68,68,0.18);color:#fca5a5;">0</span></div>
   </div>
 
@@ -2027,9 +2027,19 @@
         const rateStr = approvalRate !== null
           ? `<span style="color:${approvalRate>=70?'#34d399':approvalRate>=40?'#fcd34d':'#f87171'};font-weight:700;">${approvalRate}%</span>`
           : '<span style="color:var(--muted);">—</span>';
+        // Match contacts by assignedModId, assignedModName, or chatId assignment
+        const modObj = MODS.find(m => m.name === name);
         const modContacts = getContacts().filter(c => {
-          if (name === 'Admin') return !c.assignedModName && !c.assignedModId;
-          return c.assignedModName === name || (c.assignedModId && MODS.find(m=>m.id===c.assignedModId&&m.name===name));
+          if (name === 'Admin') {
+            // Admin: contacts with no mod assignment
+            return !c.assignedModId && !c.assignedModName;
+          }
+          // Match by assignedModId (v100+), assignedModName (older), or chat assignment map
+          if (c.assignedModId && modObj && c.assignedModId === modObj.id) return true;
+          if (c.assignedModName === name) return true;
+          // Fallback: look up current chat assignment
+          const chatAssignments = getAssignments();
+          return modObj && chatAssignments[c.chatId] === modObj.id;
         });
         const contactsStr = modContacts.length ? `${modContacts.filter(c=>c.status==='answered').length}/${modContacts.length}` : '—';
         const tr = document.createElement('tr');
