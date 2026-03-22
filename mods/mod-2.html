@@ -6,7 +6,7 @@
 <title>Moderator Dashboard — RenterFinder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🏠</text></svg>">
-  <title>RenterFinder — Admin Dashboard</title>
+  <title>RenterFinder — Mod 2</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root{--gold:#d4a017;--gold-lt:#e8c060;--gold-dk:#b8860b;--dark:#040429;--dark2:#0d0d50;--bg:#0f0f1a;--card:#1a1a2e;--card2:#16213e;--border:rgba(255,255,255,0.08);--text:#e2e8f0;--muted:#94a3b8;--danger:#ef4444;--warn:#f59e0b;--success:#10b981;--info:#3b82f6;--mod:#7c3aed;}
@@ -298,9 +298,9 @@
   .modal-bubble img{max-width:180px;border-radius:8px;display:block;margin-top:4px;}
   .approved-badge-modal{display:inline-block;font-size:9px;font-weight:700;color:#059669;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:10px;padding:1px 7px;margin-top:2px;}
 
-  .confirm-box{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:1000;display:none;align-items:center;justify-content:center;overflow-y:auto;padding:16px;box-sizing:border-box;}
+  .confirm-box{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:1000;display:none;align-items:center;justify-content:center;}
   .confirm-box.show{display:flex;}
-  .confirm-inner{background:var(--card);border:1px solid rgba(239,68,68,0.3);border-radius:16px;padding:28px 32px;max-width:380px;width:100%;text-align:center;display:flex;flex-direction:column;gap:16px;margin:auto;}
+  .confirm-inner{background:var(--card);border:1px solid rgba(239,68,68,0.3);border-radius:16px;padding:28px 32px;max-width:380px;width:100%;text-align:center;display:flex;flex-direction:column;gap:16px;}
   .confirm-inner h3{font-size:18px;color:var(--text);}
   .confirm-inner p{font-size:13px;color:var(--muted);line-height:1.5;}
   .confirm-btns{display:flex;gap:10px;justify-content:center;}
@@ -472,84 +472,6 @@
     /* Section header sub-text: wrap */
     .section-header { flex-direction: column; align-items: flex-start; gap: 4px; }
   }
-
-  /* ── DEFAULTERS ── */
-  .defaulter-card{background:var(--card);border:1.5px solid rgba(239,68,68,0.35);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;}
-  .defaulter-card-header{display:flex;align-items:flex-start;gap:12px;}
-  .defaulter-icon{width:40px;height:40px;border-radius:50%;background:rgba(239,68,68,0.15);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
-  .defaulter-meta{flex:1;}
-  .defaulter-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px;}
-  .defaulter-sub{font-size:12px;color:var(--muted);}
-  .defaulter-parties{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
-  .defaulter-party-tag{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);}
-  .defaulter-notes{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--text);line-height:1.5;}
-  .defaulter-ts{font-size:11px;color:var(--muted);}
-  .btn-defaulter{padding:6px 14px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;background:rgba(239,68,68,0.1);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);transition:all 0.2s;}
-  .btn-defaulter:hover{background:rgba(239,68,68,0.22);}
-  .btn-remove-defaulter{padding:5px 10px;border-radius:6px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.1);transition:all 0.2s;}
-  .btn-remove-defaulter:hover{color:#fca5a5;border-color:rgba(239,68,68,0.4);}
-  .party-checkbox-row{display:flex;gap:10px;margin:8px 0;}
-  .party-cb-label{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;color:var(--text);transition:all 0.15s;user-select:none;}
-  .party-cb-label input{display:none;}
-  .party-cb-label.checked{border-color:rgba(239,68,68,0.6);background:rgba(239,68,68,0.1);color:#fca5a5;}
-
-
-  /* ── REASSIGN MODAL ── */
-  .reassign-mod-list{display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto;margin:4px 0;}
-  .reassign-mod-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;transition:all 0.15s;user-select:none;}
-  .reassign-mod-row:hover{border-color:rgba(212,160,23,0.4);}
-  .reassign-mod-row.selected{border-color:rgba(16,185,129,0.6);background:rgba(16,185,129,0.08);}
-  .reassign-mod-row input{display:none;}
-  .reassign-mod-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#374151,#4b5563);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
-  .reassign-mod-row.selected .reassign-mod-avatar{background:linear-gradient(135deg,#065f46,#059669);}
-  .reassign-mod-name{flex:1;font-size:13px;font-weight:600;color:var(--text);}
-  .reassign-mod-count{font-size:11px;color:var(--muted);}
-  .reassign-check{width:16px;height:16px;border-radius:4px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;}
-  .reassign-mod-row.selected .reassign-check{background:#10b981;border-color:#10b981;color:#fff;}
-
-
-  /* Chat row ••• details menu */
-  .chat-details-menu { position:relative; }
-  .chat-details-btn { list-style:none; padding:5px 9px; border-radius:6px; border:1px solid var(--border); background:rgba(255,255,255,0.04); cursor:pointer; font-size:13px; color:var(--muted); user-select:none; font-family:'Outfit',sans-serif; }
-  .chat-details-btn:hover, .chat-details-menu[open] .chat-details-btn { background:rgba(255,255,255,0.1); color:var(--text); }
-  .chat-details-panel { position:absolute; right:0; top:calc(100% + 4px); background:var(--card2,#1a1a2e); border:1px solid var(--border); border-radius:10px; padding:10px 14px; z-index:50; min-width:170px; box-shadow:0 8px 24px rgba(0,0,0,0.5); display:flex; flex-direction:column; gap:6px; }
-  .cdp-row { display:flex; justify-content:space-between; gap:12px; font-size:12px; }
-  .cdp-label { color:var(--muted); }
-  .cdp-row span:last-child { font-weight:600; color:var(--text); }
-
-  /* Reassign modal responsive */
-  @media (max-width: 600px) {
-    #reassign-modal { align-items:flex-start !important; padding:12px !important; overflow-y:auto !important; }
-    #reassign-modal .confirm-inner { max-width:100% !important; margin:auto; }
-    .reassign-mod-list { max-height:160px; }
-  }
-
-
-  /* Mod card ••• menu */
-  .mod-card-menu { position:relative; }
-  .mod-card-menu-btn { list-style:none; width:26px; height:20px; display:flex; align-items:center; justify-content:center; border-radius:5px; border:1px solid var(--border); background:rgba(255,255,255,0.04); cursor:pointer; font-size:12px; color:var(--muted); user-select:none; padding:0; }
-  .mod-card-menu-btn:hover { background:rgba(255,255,255,0.1); color:var(--text); }
-  .mod-card-menu[open] .mod-card-menu-btn { background:rgba(255,255,255,0.1); }
-  .mod-card-menu-panel { position:absolute; right:0; top:calc(100% + 4px); background:var(--card2,#1a1a2e); border:1px solid var(--border); border-radius:8px; padding:4px; z-index:200; min-width:150px; box-shadow:0 8px 24px rgba(0,0,0,0.5); display:flex; flex-direction:column; gap:2px; }
-  .mod-menu-item { display:block; width:100%; text-align:left; padding:7px 10px; border-radius:5px; font-family:'Outfit',sans-serif; font-size:12px; font-weight:600; color:var(--text); background:transparent; border:none; cursor:pointer; text-decoration:none; transition:background 0.1s; white-space:nowrap; }
-  .mod-menu-item:hover { background:rgba(255,255,255,0.08); }
-
-
-  /* Mod performance metrics */
-  .mod-metrics-table{width:100%;border-collapse:collapse;font-size:12px;}
-  .mod-metrics-table th{text-align:left;color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;padding:8px 12px;border-bottom:1px solid var(--border);}
-  .mod-metrics-table td{padding:9px 12px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--text);}
-  .mod-metrics-table tr:last-child td{border-bottom:none;}
-  .mod-metrics-table tr:hover td{background:rgba(255,255,255,0.02);}
-  .perf-bar-wrap{width:80px;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;display:inline-block;vertical-align:middle;}
-  .perf-bar{height:6px;border-radius:3px;background:var(--gold);}
-
-
-  /* Mod metrics period filter buttons */
-  .perf-period-btn{padding:4px 10px;border-radius:6px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;background:rgba(255,255,255,0.04);color:var(--muted);border:1px solid var(--border);transition:all 0.15s;}
-  .perf-period-btn:hover{background:rgba(255,255,255,0.08);color:var(--text);}
-  .perf-period-btn.active{background:rgba(212,160,23,0.15);color:var(--gold);border-color:rgba(212,160,23,0.4);}
-
 </style>
 </head>
 <body>
@@ -570,7 +492,7 @@
 <div id="dashboard">
   <div class="dash-topbar">
     <div class="dash-logo">RenterFinder</div>
-    <div class="dash-badge" style="background:rgba(212,160,23,0.15);border-color:rgba(212,160,23,0.4);color:var(--gold);">ADMIN</div>
+    <div class="dash-badge">MOD 2</div>
     <div class="dash-topbar-right">
       <div class="auto-refresh-badge"><div class="auto-refresh-dot"></div> Auto-refresh <span class="refresh-countdown" id="refresh-countdown"></span></div>
       <button class="refresh-btn" onclick="loadDashboard()">↻ Now</button>
@@ -583,7 +505,7 @@
     <div class="dash-tab" data-tab="chats" onclick="switchTab('chats')">💬 Active Chats <span class="tab-count green" id="tab-chats-count">0</span></div>
     <div class="dash-tab" data-tab="flagged" onclick="switchTab('flagged')">🚩 Flagged <span class="tab-count" id="tab-flagged-count">0</span></div>
     <div class="dash-tab" data-tab="deals" onclick="switchTab('deals')">🤝 Deal Tracker <span class="tab-count green" id="tab-deals-count">0</span></div>
-    <div class="dash-tab" data-tab="appeals" onclick="switchTab('appeals')">📝 Appeals <span class="tab-count purple" id="tab-appeals-count">0</span></div>
+    <div class="dash-tab" data-tab="archived" onclick="switchTab('archived')">📁 Archived <span class="tab-count" id="tab-archived-count" style="background:rgba(255,255,255,0.06);color:var(--muted);">0</span></div>
     <div class="dash-tab" data-tab="users" onclick="switchTab('users')">👥 Users</div>
     <div class="dash-tab" data-tab="contacts" onclick="switchTab('contacts')">📩 Contacts <span class="tab-count purple" id="tab-contacts-count">0</span></div>
   </div>
@@ -619,24 +541,10 @@
             <div class="stat-value green" id="stat-deals">0</div>
             <div class="stat-arrow">→ Deal Tracker</div>
           </div>
-          <div class="stat-card" onclick="switchTab('defaulters')" title="View defaulters list">
-            <div class="stat-label">Defaulters</div>
-            <div class="stat-value red" id="stat-defaulters">0</div>
-            <div class="stat-arrow">→ Defaulters</div>
-          </div>
-          <div class="stat-card" onclick="switchTab('appeals')" title="View open appeals">
-            <div class="stat-label">Open Appeals</div>
-            <div class="stat-value blue" id="stat-appeals">0</div>
-            <div class="stat-arrow">→ Appeals</div>
-          </div>
+
           <div class="stat-card" onclick="switchTab('contacts')" title="View user contacts">
             <div class="stat-label">Total Contacts</div>
             <div class="stat-value purple" id="stat-contacts-total">0</div>
-            <div class="stat-arrow">→ Contacts</div>
-          </div>
-          <div class="stat-card" onclick="switchTab('contacts')" title="View answered contacts">
-            <div class="stat-label">Contacts Answered</div>
-            <div class="stat-value green" id="stat-contacts-answered">0</div>
             <div class="stat-arrow">→ Contacts</div>
           </div>
           <div class="stat-card" onclick="switchTab('users')" title="View suspended chats">
@@ -646,25 +554,8 @@
           </div>
         </div>
       </div>
-      <div class="section-header" style="flex-wrap:wrap;gap:8px;">
-        <div><div class="section-title">Mod Performance</div><div class="section-sub">Flags reviewed · approval rate · avg response time</div></div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-left:auto;">
-          <button class="perf-period-btn"        data-days="1"    onclick="setModMetricsPeriod(1)">Today</button>
-          <button class="perf-period-btn"        data-days="7"    onclick="setModMetricsPeriod(7)">7 Days</button>
-          <button class="perf-period-btn active" data-days="30"   onclick="setModMetricsPeriod(30)">1 Month</button>
-          <button class="perf-period-btn"        data-days="90"   onclick="setModMetricsPeriod(90)">3 Months</button>
-          <button class="perf-period-btn"        data-days="180"  onclick="setModMetricsPeriod(180)">6 Months</button>
-          <button class="perf-period-btn"        data-days="365"  onclick="setModMetricsPeriod(365)">1 Year</button>
-          <button class="perf-period-btn"        data-days="0"    onclick="setModMetricsPeriod(0)">All Time</button>
-        </div>
-      </div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
-        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
-          <table class="mod-metrics-table" style="min-width:560px;"><thead><tr>
-            <th>Mod / Admin</th><th>Reviewed</th><th>Approved / Dismissed</th><th>Approval %</th><th>Avg Response</th><th>Contacts</th><th>Last Action</th>
-          </tr></thead><tbody id="mod-metrics-body"></tbody></table>
-        </div>
-      </div>
+      <div class="section-header"><div class="section-title">Pending Review</div><div class="section-sub">Flagged messages awaiting your decision</div></div>
+      <div id="pending-flagged-list" class="flag-list"></div>
     </div>
 
     <!-- ALL CHATS -->
@@ -697,15 +588,6 @@
       <div id="deals-list"></div>
     </div>
 
-    <!-- APPEALS -->
-    <div class="tab-panel" id="panel-appeals">
-      <div class="section-header"><div class="section-title">User Appeals</div><div class="section-sub">Suspension appeals submitted by users</div></div>
-      <div class="tab-search-bar">
-        <div class="tab-search-wrap"><span class="search-icon">🔍</span><input class="tab-search-input" id="search-appeals" type="text" placeholder="Search by user name or chat ID…" oninput="filterAppeals()"></div>
-        <span class="tab-search-count" id="search-appeals-count"></span>
-      </div>
-      <div id="appeals-list" class="appeal-list"></div>
-    </div>
 
     <!-- USERS -->
     <div class="tab-panel" id="panel-users">
@@ -722,33 +604,17 @@
       </div>
     </div>
 
-    <!-- ARCHIVED -->
+    <!-- ARCHIVED CHATS -->
     <div class="tab-panel" id="panel-archived">
-      <!-- Sub-tab switcher -->
-      <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px;overflow-x:auto;">
-        <div class="arch-sub-tab active" data-sub="chats" onclick="switchArchiveSub('chats')" style="padding:10px 20px;font-size:13px;font-weight:600;color:var(--gold);border-bottom:2px solid var(--gold);cursor:pointer;white-space:nowrap;">💬 Chats <span id="tab-archived-chats-count" style="background:rgba(255,255,255,0.06);color:var(--muted);border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;">0</span></div>
-        <div class="arch-sub-tab" data-sub="deals" onclick="switchArchiveSub('deals')" style="padding:10px 20px;font-size:13px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;">🤝 Deals <span id="tab-archived-deals-count" style="background:rgba(255,255,255,0.06);color:var(--muted);border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;">0</span></div>
+      <div class="section-header"><div class="section-title">Archived Chats</div><div class="section-sub">Inactive chats and completed deals</div></div>
+      <div class="tab-search-bar">
+        <div class="tab-search-wrap"><span class="search-icon">🔍</span><input class="tab-search-input" id="search-archived" type="text" placeholder="Search archived chats…" oninput="filterArchived()"></div>
+        <span class="tab-search-count" id="search-archived-count"></span>
       </div>
-      <!-- Chats sub-panel -->
-      <div id="arch-sub-chats">
-        <div class="tab-search-bar">
-          <div class="tab-search-wrap"><span class="search-icon">🔍</span><input class="tab-search-input" id="search-archived-chats" type="text" placeholder="Search by user name or listing…" oninput="filterArchivedChats()"></div>
-          <span class="tab-search-count" id="search-archived-chats-count"></span>
-        </div>
-        <div class="chat-list" id="archived-chats-list"></div>
-      </div>
-      <!-- Deals sub-panel -->
-      <div id="arch-sub-deals" style="display:none;">
-        <div class="tab-search-bar">
-          <div class="tab-search-wrap"><span class="search-icon">🔍</span><input class="tab-search-input" id="search-archived-deals" type="text" placeholder="Search by listing or user name…" oninput="filterArchivedDeals()"></div>
-          <span class="tab-search-count" id="search-archived-deals-count"></span>
-        </div>
-        <div id="archived-deals-list"></div>
-      </div>
+      <div id="archived-list"></div>
     </div>
 
-    <!-- CONTACTS -->
-    <div class="tab-panel" id="panel-contacts">
+  <div class="tab-panel" id="panel-contacts">
       <div class="section-header">
         <div><div class="section-title">User Contacts</div><div class="section-sub">Messages sent by users to their assigned moderator</div></div>
         <div style="display:flex;gap:8px;">
@@ -760,44 +626,6 @@
       <div id="contacts-list" style="display:flex;flex-direction:column;gap:12px;"></div>
     </div>
 
-    <!-- HISTORY -->
-    <div class="tab-panel" id="panel-history">
-      <div class="section-header"><div class="section-title">48hr History</div><div class="section-sub">Flagged messages &amp; appeals from the last 48 hours — auto-deleted after that</div></div>
-      <div class="tab-search-bar">
-        <div class="tab-search-wrap"><span class="search-icon">🔍</span><input class="tab-search-input" id="search-history" type="text" placeholder="Search history…" oninput="filterHistory()"></div>
-        <span class="tab-search-count" id="search-history-count"></span>
-      </div>
-      <div id="history-list"></div>
-    </div>
-
-    <div class="tab-panel" id="panel-defaulters">
-      <div class="section-header"><div class="section-title">Defaulters List</div><div class="section-sub">Parties who defaulted on a deal — admin use only</div></div>
-      <div class="tab-search-bar">
-        <div class="tab-search-wrap"><span class="search-icon">🔍</span><input class="tab-search-input" id="search-defaulters" type="text" placeholder="Search by name or listing…" oninput="filterDefaulters()"></div>
-        <span class="tab-search-count" id="search-defaulters-count"></span>
-      </div>
-      <div id="defaulters-list" style="display:flex;flex-direction:column;gap:12px;"></div>
-    </div>
-
-
-  </div>
-</div>
-
-<!-- CONTACT THREAD POPUP -->
-<div style="position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:600;display:none;align-items:center;justify-content:center;padding:16px;" id="contact-thread-overlay" onclick="if(event.target===this)closeContactThreadPopup()">
-  <div style="background:var(--card);border-radius:16px;width:100%;max-width:480px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.4);">
-    <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
-      <div>
-        <div style="font-size:15px;font-weight:700;color:var(--text);" id="ctp-title">Support Thread</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px;" id="ctp-sub"></div>
-      </div>
-      <button onclick="closeContactThreadPopup()" style="background:none;border:none;font-size:18px;color:var(--muted);cursor:pointer;">✕</button>
-    </div>
-    <div id="ctp-messages" style="flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:10px;"></div>
-    <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end;flex-shrink:0;">
-      <textarea id="ctp-reply-input" placeholder="Type a reply…" maxlength="500" style="flex:1;resize:none;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--text);background:rgba(255,255,255,0.04);outline:none;min-height:50px;max-height:100px;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendContactThreadReply();}"></textarea>
-      <button onclick="sendContactThreadReply()" style="padding:10px 20px;border:none;border-radius:8px;background:rgba(16,185,129,0.2);color:#6ee7b7;border:1px solid rgba(16,185,129,0.4);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Send</button>
-    </div>
   </div>
 </div>
 
@@ -827,12 +655,7 @@
   <div class="modal-card">
     <div class="modal-header">
       <div class="modal-title-text" id="modal-title">Chat Details</div>
-      <button onclick="exportChatTranscript()" style="padding:5px 12px;border-radius:6px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;background:rgba(212,160,23,0.1);color:var(--gold);border:1px solid rgba(212,160,23,0.25);" title="Export as text file">⬇ Export</button>
       <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-    <div style="position:relative;margin-bottom:14px;">
-      <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;opacity:0.4;">🔍</span>
-      <input id="modal-search" type="text" placeholder="Search messages…" oninput="filterModalMessages()" style="width:100%;padding:8px 12px 8px 32px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;box-sizing:border-box;">
     </div>
     <div class="modal-msgs" id="modal-messages"></div>
   </div>
@@ -849,57 +672,6 @@
   </div>
 </div>
 
-<div class="confirm-box" id="cancel-deal-confirm-box">
-  <div class="confirm-inner" style="max-width:420px;text-align:left;gap:12px;">
-    <h3>❌ Cancel This Deal?</h3>
-    <p id="cancel-deal-msg" style="font-size:13px;color:var(--muted);margin:0;"></p>
-    <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;margin-top:4px;">Reason for cancellation (optional)</div>
-    <textarea id="cancel-deal-notes-input" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--text);resize:vertical;min-height:64px;outline:none;box-sizing:border-box;" placeholder="e.g. Parties couldn't agree on terms, renter found another property…"></textarea>
-    <div class="confirm-btns" style="margin-top:4px;">
-      <button class="confirm-yes" style="background:linear-gradient(135deg,#991b1b,#ef4444);" onclick="executeCancelDeal()">Yes, Cancel Deal</button>
-      <button class="confirm-no" onclick="closeCancelDealConfirm()">Go Back</button>
-    </div>
-  </div>
-</div>
-
-<div class="confirm-box" id="defaulter-modal" style="z-index:1100;">
-  <div class="confirm-inner" style="max-width:440px;text-align:left;gap:14px;">
-    <h3>🚫 Add to Defaulters List</h3>
-    <p id="defaulter-modal-deal-info" style="font-size:13px;color:var(--muted);margin:0;"></p>
-    <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;margin-top:4px;">Who defaulted?</div>
-    <div class="party-checkbox-row">
-      <label class="party-cb-label" id="cb-label-a" onclick="toggleDefaulterParty('A');event.preventDefault();">
-        <input type="checkbox" id="cb-party-a"> <span id="cb-party-a-name">Party A</span>
-      </label>
-      <label class="party-cb-label" id="cb-label-b" onclick="toggleDefaulterParty('B');event.preventDefault();">
-        <input type="checkbox" id="cb-party-b"> <span id="cb-party-b-name">Party B</span>
-      </label>
-    </div>
-    <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;">Notes / Reason</div>
-    <textarea id="defaulter-notes-input" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--text);resize:vertical;min-height:72px;outline:none;box-sizing:border-box;" placeholder="Describe what happened — who didn't show up, payment issues, etc."></textarea>
-    <div class="confirm-btns" style="margin-top:4px;">
-      <button class="confirm-yes" style="background:linear-gradient(135deg,#991b1b,#ef4444);" onclick="executeAddDefaulter()">🚫 Confirm Defaulter</button>
-      <button class="confirm-no" onclick="closeDefaulterModal()">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<div class="confirm-box" id="reassign-modal" style="z-index:1100;">
-  <div class="confirm-inner" style="max-width:460px;text-align:left;gap:14px;">
-    <h3>↺ Reassign Chats</h3>
-    <p id="reassign-modal-info" style="font-size:13px;color:var(--muted);margin:0;"></p>
-    <div style="font-size:12px;font-weight:700;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;">Select mods to reassign to</div>
-    <div class="reassign-mod-list" id="reassign-mod-list"></div>
-    <div style="display:flex;gap:8px;align-items:center;">
-      <button onclick="selectAllReassignMods()" style="font-size:11px;color:var(--gold);background:transparent;border:none;cursor:pointer;padding:0;font-family:'Outfit',sans-serif;font-weight:600;">Select All</button>
-      <span style="color:var(--border);">·</span>
-      <button onclick="clearAllReassignMods()" style="font-size:11px;color:var(--muted);background:transparent;border:none;cursor:pointer;padding:0;font-family:'Outfit',sans-serif;font-weight:600;">Clear</button>
-    </div>
-    <div class="confirm-btns" style="margin-top:4px;">
-      <button class="confirm-yes" style="background:linear-gradient(135deg,#065f46,#059669);" onclick="executeReassign()">↺ Reassign All Chats</button>
-      <button class="confirm-no" onclick="closeReassignModal()">Cancel</button>
-    </div>
-  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -913,71 +685,9 @@
   const MOD_PASSWORD = 'Mod@RF2025';
   const SESSION_KEY  = 'rf_mod_session_mod-2';
   const MOD_ID = 'mod-2';
+  const MODS = Array.from({length:10},(_,i)=>({ id:`mod-${i+1}`, name:`Mod ${i+1}`, path:`mods/mod-${i+1}.html` }));
   const MOD_NAME = 'Mod 2';
   const AUTO_REFRESH_SECS = 30;
-
-  // ── MOD MANAGEMENT ───────────────────────────────────────────
-  const MODS = Array.from({length:10},(_,i)=>({ id:`mod-${i+1}`, name:`Mod ${i+1}`, path:`mods/mod-${i+1}.html` }));
-
-
-  function reassignChat(chatId, modId) {
-    const assignments = getAssignments();
-    if (modId) {
-      assignments[chatId] = modId;
-    } else {
-      delete assignments[chatId];
-    }
-    saveAssignments(assignments);
-    const modName = modId ? (MODS.find(m => m.id === modId)?.name || modId) : 'nobody';
-    showToast(`Chat reassigned to ${modName}`, 'success');
-    loadDashboard();
-  }
-
-  // Deterministic hash — same chatId always maps to same mod, no counter needed
-  function hashChatId(chatId) {
-    let h = 0;
-    for (let i = 0; i < chatId.length; i++) {
-      h = ((h << 5) - h) + chatId.charCodeAt(i);
-      h |= 0;
-    }
-    return Math.abs(h);
-  }
-
-  function assignNewChats() {
-    const active      = getModeActive();
-    const activeMods  = MODS.filter(m => active[m.id]);
-    const pool        = activeMods.length ? activeMods : [MODS[0]];
-    const assignments = getAssignments();
-    const chats       = getChatsIndex();
-    let changed       = false;
-    chats.filter(c => !c.archived && !c.autoArchived && !c.manualArchived).forEach(c => {
-      if (!assignments[c.chatId]) {
-        // Deterministic: hash the chatId so same chat always gets same mod
-        assignments[c.chatId] = pool[hashChatId(c.chatId) % pool.length].id;
-        changed = true;
-      }
-    });
-    if (changed) saveAssignments(assignments);
-  }
-
-  async function toggleMod(modId) {
-    const active = getModeActive();
-    active[modId] = !active[modId];
-    saveModeActive(active);
-    // Re-assign any currently unassigned chats to include the newly activated mod
-    const assignments = getAssignments();
-    const unassigned  = _chatsIndex.filter(c => !assignments[c.chatId]);
-    for (const c of unassigned) {
-      const pool = Object.entries(active).filter(([,v]) => v).map(([k]) => k);
-      if (!pool.length) pool.push('mod-1');
-      let h = 0;
-      for (let i = 0; i < c.chatId.length; i++) { h = ((h<<5)-h)+c.chatId.charCodeAt(i); h|=0; }
-      const assigned = pool[Math.abs(h) % pool.length];
-      await RF.saveAssignment(c.chatId, assigned).catch(e => console.warn('[RF] toggleMod assign', e));
-    }
-    renderModPanel();
-    loadDashboard();
-  }
 
   function toggleModPanel() { /* mod panel only on admin dashboard */ }
 
@@ -1033,7 +743,6 @@
   let _appeals         = [];
   let _banned          = {};
   let _modsActive      = { 'mod-1': true, 'mod-2': true };
-  let _defaulters      = [];
 
   // ── DATA ACCESSORS (read from in-memory, write to Firestore) ──
   const getModLog      = () => _modLog;
@@ -1045,8 +754,6 @@
   const getAppeals     = () => _appeals;
   const getModeActive  = () => _modsActive;
   const getAssignments = () => _assignments;
-  const getDefaulters  = () => _defaulters;
-  const saveDefaulters = d => { _defaulters = Array.isArray(d) ? d : [d]; _defaulters.forEach(x => RF.saveDefaulter(x).catch(e => console.warn('[RF] saveDefaulter', e))); };
 
   function getJoinSlots(chatId) {
     return _joinSlotsByChat[chatId] || { admin: null, mod: null };
@@ -1093,92 +800,66 @@
 
   // ── LOAD DASHBOARD ───────────────────────────────────────────
   function loadDashboard() {
-    // ── Auto-archive: chats inactive 7 days (no active deal) ────
-    const _now = Date.now();
-    const SEVEN_DAYS  = 7  * 24 * 60 * 60 * 1000;
-    const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
-    const _activeDealsSet = new Set(getDeals().filter(d => d.stage !== 'Cancelled' && !d.stage_complete).map(d => d.chatId));
-    const _anyDealSet = new Set(getDeals().map(d => d.chatId));
+    // ── Auto-archive: chats inactive 7 days (no deal started) ────
+    const _now7 = Date.now();
+    const _SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+    const _anyDealChatIds = new Set(getDeals().map(d => d.chatId));
     _chatsIndex.forEach(chat => {
-      if (chat.archived || _anyDealSet.has(chat.chatId)) return; // Never auto-archive if deal exists
+      if (chat.archived || _anyDealChatIds.has(chat.chatId)) return;
       const lastActivity = chat.lastTs || chat.started || 0;
-      if (_now - lastActivity > SEVEN_DAYS) {
-        chat.archived = true; chat.archivedTs = _now; chat.autoArchived = true;
-        RF.updateChatMeta(chat.chatId, { archived: true, archivedTs: _now, autoArchived: true }).catch(()=>{});
+      if (lastActivity && (_now7 - lastActivity) > _SEVEN_DAYS) {
+        chat.archived = true; chat.archivedTs = _now7; chat.autoArchived = true;
+        RF.updateChatMeta(chat.chatId, { archived: true, archivedTs: _now7, autoArchived: true }).catch(()=>{});
       }
     });
-    // ── Auto-archive: deals inactive 30 days ────────────────────
-    getDeals().forEach(deal => {
-      if (deal.stage === 'Cancelled' || deal.stage_complete || deal.stage === 'Complete') return;
-      const lastAct = deal.lastActionTs || deal.initiatedTs || 0;
-      if (_now - lastAct > THIRTY_DAYS) {
-        deal.stage = 'Cancelled'; deal.cancelledTs = _now; deal.lastActionTs = _now;
-        deal.cancelNotes = 'Auto-archived: no activity for 30 days.';
-        postDealSystemMsg(deal.chatId, '🕒 This deal has been auto-archived due to 30 days of inactivity.');
-        RF.saveDeal(deal.chatId, deal).catch(e => console.warn('[RF] auto-archive deal', e));
-      }
-    });
-
-    assignNewChats();
     renderModPanel();
     const modLog  = getModLog();
     const allChats = getChatsIndex();
-    const chats   = allChats.filter(c => !c.archived && !c.autoArchived && !c.manualArchived).filter(c => getAssignments()[c.chatId] === MOD_ID);
+    const assignments = getAssignments();
+    const chats = allChats.filter(c => assignments[c.chatId] === MOD_ID);
     const appeals = getAppeals();
 
     let totalMsgs = 0, suspended = 0;
-    // Stat cards show ALL chats (incl. archived) for true totals
-    allChats.forEach(c => { totalMsgs += getChatMsgs(c.chatId).length; });
-    chats.forEach(c => {
+    chats.filter(c => !c.archived && !c.autoArchived && !c.manualArchived).forEach(c => {
+      totalMsgs += getChatMsgs(c.chatId).length;
       const v = getChatVio(c.chatId);
       if (Math.max(...Object.values(v).concat([0])) >= 3) suspended++;
     });
 
     const pending      = modLog.filter(e => e.status === 'pending').length;
-    const openAppeals  = appeals.filter(a => a.status === 'pending').length;
     const activeDeals  = getDeals().filter(d => d.stage !== 'Cancelled' && !d.stage_complete).length;
 
-    document.getElementById('stat-total-chats').textContent = allChats.length;
+    document.getElementById('stat-total-chats').textContent = chats.length;
     document.getElementById('stat-total-msgs').textContent  = totalMsgs;
     document.getElementById('stat-flagged').textContent     = pending;
     document.getElementById('stat-pending').textContent     = pending;
-    document.getElementById('stat-appeals').textContent     = openAppeals;
     document.getElementById('stat-deals').textContent       = activeDeals;
     document.getElementById('stat-suspended').textContent   = suspended;
     document.getElementById('tab-chats-count').textContent  = chats.length;
     document.getElementById('tab-flagged-count').textContent = pending;
-    document.getElementById('tab-appeals-count').textContent = openAppeals;
     document.getElementById('tab-deals-count').textContent  = activeDeals;
 
 
+    renderFlaggedList(modLog.filter(e => e.status === 'pending'), document.getElementById('pending-flagged-list'));
     renderChatsList(chats, document.getElementById('all-chats-list'));
-    document.getElementById('chat-count-sub').textContent = `${chats.length} active · ${allChats.length} total`;
+    document.getElementById('chat-count-sub').textContent = `${chats.length} chat${chats.length !== 1 ? 's' : ''} initiated`;
     renderFlaggedList(modLog.filter(e => e.status === 'pending'), document.getElementById('flagged-list'), modLog.filter(e => e.status !== 'pending').length);
     renderDealsList(getDeals(), document.getElementById('deals-list'));
-    renderAppealsList(appeals, document.getElementById('appeals-list'));
-    renderUsersTable(allChats, modLog, getBanned());
-    const _acl = document.getElementById('archived-chats-list'); if (_acl) renderArchivedChats(_acl);
-    const _adl = document.getElementById('archived-deals-list'); if (_adl) renderArchivedDeals(_adl);
-    renderHistoryList(document.getElementById('history-list'));
-    renderDefaultersList(document.getElementById('defaulters-list'));
-    renderModMetrics();
-    const defCount = getDefaulters().length;
-    const defEl = document.getElementById('stat-defaulters'); if (defEl) defEl.textContent = defCount;
-    const defTab = document.getElementById('tab-defaulters-count'); if (defTab) defTab.textContent = defCount;
+    renderUsersTable(chats, modLog, getBanned());
+    const _al = document.getElementById('archived-list'); if (_al) renderArchivedList(_al);
+    const _hl = document.getElementById('history-list'); if (_hl) renderHistoryList(_hl);
 
     // Contacts stats
-    const allContacts    = getContacts();
-    const openContacts   = allContacts.filter(c => c.status === 'open').length;
-    const answeredConts  = allContacts.filter(c => c.status === 'answered').length;
+    const allContacts  = getContacts();
+    const openContacts = allContacts.filter(c => c.status === 'open').length;
     const ctTotal = document.getElementById('stat-contacts-total'); if (ctTotal) ctTotal.textContent = allContacts.length;
-    const ctAns   = document.getElementById('stat-contacts-answered'); if (ctAns) ctAns.textContent = answeredConts;
     const ctTab   = document.getElementById('tab-contacts-count'); if (ctTab) ctTab.textContent = openContacts;
     renderContactsList(allContacts, document.getElementById('contacts-list'));
   }
 
   // ── CHATS LIST ───────────────────────────────────────────────
   function renderChatsList(chats, container) {
-    if (!chats.length) { container.innerHTML = `<div class="empty-state"><div class="empty-icon">💬</div><h3>No chats yet</h3></div>`; return; }
+    if (!chats.length) { container.innerHTML = `<div class="empty-state"><div class="empty-icon">💬</div><h3>No chats assigned to Mod 2</h3><p style="color:var(--muted);font-size:13px;margin-top:6px;">Ensure Mod 2 is Active in Admin Dashboard.</p></div>`; return; }
     container.innerHTML = '';
     const modLog      = getModLog();
     const active      = getModeActive();
@@ -1213,10 +894,6 @@
           </div>
         </div>
         <div class="chat-actions" style="gap:6px;align-items:center;flex-shrink:0;">
-          <select class="assign-select" onchange="reassignChat('${c.chatId}',this.value)" title="Assigned to">
-            <option value="" ${!currentMod?'selected':''}>— Unassigned —</option>
-            ${modOptions}
-          </select>
           <button class="chat-action-btn btn-view" onclick="viewChat('${c.chatId}','${escH(c.listing)}','${escH(c.userA)}','${escH(c.userB)}')">View</button>
           ${adminJoined
             ? `<a href="${joinUrl}" target="_blank" class="chat-action-btn btn-join joined" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px;">✓ Joined ↗</a>
@@ -1324,7 +1001,7 @@
     active.forEach(d => renderDealCard(d, container));
   }
 
-  function renderDealCard(d, container, isArchived) {
+  function renderDealCard(d, container) {
     const isCancelled = d.stage === 'Cancelled';
     const curIdx      = currentPipelineIdx(d);
     const activeIdx   = isCancelled ? -1 : (curIdx + 1 < PIPELINE.length ? curIdx + 1 : PIPELINE.length - 1);
@@ -1414,12 +1091,7 @@
       </div>
       <div class="deal-card-actions">
         <button class="deal-save-notes-btn" onclick="saveDealNotes('${d.chatId}')">💾 Save Notes</button>
-        <button class="btn-defaulter" onclick="openDefaulterModal('${d.chatId}')">🚫 Defaulter</button>
-        ${isArchived
-          ? `<button class="btn-reinstate" onclick="reinstateDeal('${d.chatId}')">↩ Reinstate Deal</button>
-             <button onclick="permanentDeleteOneDeal('${d.chatId}')" style="padding:6px 14px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;background:rgba(239,68,68,0.08);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);">🗑 Delete</button>`
-          : `<button class="deal-cancel-deal-btn" onclick="cancelDeal('${d.chatId}')">✕ Cancel Deal</button>`
-        }
+
       </div>`;
     card.appendChild(footer);
     container.appendChild(card);
@@ -1458,8 +1130,6 @@
   }
 
   function proceedPaymentStage(chatId, stageKey) {
-    const label = PIPELINE.find(p => p.key === stageKey)?.label || stageKey;
-    if (!confirm(`Confirm "${label}" stage as complete? This cannot be undone.`)) return;
     const deals = getDeals();
     const deal  = deals.find(d => d.chatId === chatId);
     if (!deal) return;
@@ -1468,7 +1138,7 @@
     }
     deal[`stage_${stageKey}`]    = true;
     deal[`stage_${stageKey}_ts`] = Date.now();
-    deal.lastActionTs = Date.now();
+    const label = PIPELINE.find(p => p.key === stageKey)?.label || stageKey;
     postDealSystemMsg(chatId, `✅ ${label} confirmed by RenterFinder. Moving to next stage.`);
     saveDeals(deals);
     syncDealToChat(chatId, deal);
@@ -1477,14 +1147,12 @@
   }
 
   function proceedActionStage(chatId, stageKey) {
-    const label = PIPELINE.find(p => p.key === stageKey)?.label || stageKey;
-    if (!confirm(`Confirm "${label}" for this deal? This cannot be undone.`)) return;
     const deals = getDeals();
     const deal  = deals.find(d => d.chatId === chatId);
     if (!deal) return;
     deal[`stage_${stageKey}`]    = true;
     deal[`stage_${stageKey}_ts`] = Date.now();
-    deal.lastActionTs = Date.now();
+    const label = PIPELINE.find(p => p.key === stageKey)?.label || stageKey;
     postDealSystemMsg(chatId, `✅ ${label} confirmed by RenterFinder. Moving to next stage.`);
     saveDeals(deals);
     syncDealToChat(chatId, deal);
@@ -1493,17 +1161,13 @@
   }
 
   function completeAndArchive(chatId) {
-    if (!confirm('Mark this deal as fully complete and archive it? This cannot be undone.')) return;
     const deals = getDeals();
     const deal  = deals.find(d => d.chatId === chatId);
     if (!deal) return;
-    if (deal.stage === 'Cancelled') { showToast('This deal has already been cancelled.', 'error'); return; }
-    if (deal.stage_complete || deal.stage === 'Complete') { showToast('This deal is already marked complete.', ''); return; }
     deal.stage_complete    = true;
     deal.stage_complete_ts = Date.now();
     deal.stage             = 'Complete';
     deal.completedTs       = Date.now();
-    deal.lastActionTs      = Date.now();
     postDealSystemMsg(chatId, '🏆 Deal fully completed and archived by RenterFinder. Congratulations to both parties!');
     try {
       // Archive in Firestore; mod pages will see update via onAllChats listener
@@ -1524,9 +1188,9 @@
     const deal  = deals.find(d => d.chatId === chatId);
     if (!deal) return;
     pendingCancelChatId = chatId;
-    document.getElementById('cancel-deal-msg').textContent =
+    const _cdm = document.getElementById('cancel-deal-msg'); if (_cdm) _cdm.textContent =
       `Cancel the deal for "${deal.listing}" between ${deal.userA} and ${deal.userB}? This will notify both parties and cannot be undone.`;
-    document.getElementById('cancel-deal-confirm-box').classList.add('show');
+    const _cdb = document.getElementById('cancel-deal-confirm-box'); if (_cdb) _cdb.classList.add('show');
   }
 
   function closeCancelDealConfirm() {
@@ -1540,41 +1204,12 @@
     const deals  = getDeals();
     const deal   = deals.find(d => d.chatId === chatId);
     if (!deal) { closeCancelDealConfirm(); return; }
-    const cancelNotes = (document.getElementById('cancel-deal-notes-input')?.value || '').trim();
-    deal.stage = 'Cancelled'; deal.cancelledTs = Date.now(); deal.lastActionTs = Date.now();
-    if (cancelNotes) deal.cancelNotes = cancelNotes;
-    const cancelMsg = cancelNotes
-      ? `❌ Deal cancelled by RenterFinder. Reason: ${cancelNotes}`
-      : '❌ This deal has been cancelled by RenterFinder moderation.';
-    postDealSystemMsg(chatId, cancelMsg);
+    deal.stage = 'Cancelled'; deal.cancelledTs = Date.now();
+    postDealSystemMsg(chatId, '❌ This deal has been cancelled by RenterFinder moderation.');
     saveDeals(deals);
     syncDealToChat(chatId, deal);
     closeCancelDealConfirm();
     showToast('Deal cancelled', 'error');
-    loadDashboard();
-  }
-
-
-  function unarchiveChat(chatId) {
-    const chat = _chatsIndex.find(c => c.chatId === chatId);
-    if (chat) {
-      chat.archived = false;
-      chat.autoArchived = false;
-      chat.manualArchived = false;
-      delete chat.archivedTs;
-    }
-    RF.updateChatMeta(chatId, { archived: false, archivedTs: null, autoArchived: false, manualArchived: false }).catch(e => console.warn('[RF] unarchive', e));
-    showToast('↩ Chat restored to active', 'success');
-    loadDashboard();
-  }
-
-  function archiveChatManual(chatId) {
-    const activeDeal = getDeals().find(d => d.chatId === chatId && d.stage !== 'Cancelled' && !d.stage_complete);
-    if (activeDeal) { showToast('Cannot archive a chat with an active deal. Use Deal Tracker to cancel or complete first.', 'error'); return; }
-    const chat = _chatsIndex.find(c => c.chatId === chatId);
-    if (chat) { chat.archived = true; chat.archivedTs = Date.now(); chat.manualArchived = true; }
-    RF.updateChatMeta(chatId, { archived: true, archivedTs: Date.now(), manualArchived: true }).catch(e => console.warn('[RF] archiveManual', e));
-    showToast('📁 Chat archived', 'success');
     loadDashboard();
   }
 
@@ -1619,32 +1254,26 @@
   }
 
   // ── ARCHIVED TAB ─────────────────────────────────────────────
-  function renderArchivedChats(container) {
+  function renderArchivedList(container) {
     if (!container) return;
     const chats    = getChatsIndex();
     const deals    = getDeals();
     const modLog   = getModLog();
     const dealChatIds = new Set(deals.map(d => d.chatId));
-    // Archived chats = archived flag AND no deal was ever initiated for this chat
     const archivedChats = chats.filter(c => (c.archived || c.autoArchived || c.manualArchived) && !dealChatIds.has(c.chatId));
-    const tabEl = document.getElementById('tab-archived-chats-count');
-    if (tabEl) tabEl.textContent = archivedChats.length;
-    // Also update main archived tab count
-    const allArchiveDeals = deals.filter(d => d.stage === 'Cancelled' || d.stage_complete);
-    const mainTabEl = document.getElementById('tab-archived-count');
-    if (mainTabEl) mainTabEl.textContent = archivedChats.length + allArchiveDeals.length;
+    const _tacEl = document.getElementById('tab-archived-count'); if (_tacEl) _tacEl.textContent = archivedChats.length;
     container.innerHTML = '';
     if (!archivedChats.length) {
-      container.innerHTML = `<div class="empty-state"><div class="empty-icon">💬</div><h3>No archived chats</h3><p style="color:var(--muted);font-size:13px;margin-top:6px;">Chats idle for 7+ days (with no deal started) are auto-archived here.</p></div>`;
+      container.innerHTML = `<div class="empty-state"><div class="empty-icon">💬</div><h3>No archived chats</h3><p style="color:var(--muted);font-size:13px;margin-top:6px;">Chats inactive for 7+ days (with no deal started) appear here.</p></div>`;
       return;
     }
     archivedChats.forEach(c => {
-      const msgs      = getChatMsgs(c.chatId);
-      const v         = getChatVio(c.chatId);
-      const maxV      = Math.max(...Object.values(v).concat([0]));
-      const isSusp    = maxV >= 3;
-      const hasFlg    = modLog.some(m => m.chatId === c.chatId);
-      const lastTs    = c.lastTs ? new Date(c.lastTs).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : 'No messages';
+      const msgs   = getChatMsgs(c.chatId);
+      const v      = getChatVio(c.chatId);
+      const maxV   = Math.max(...Object.values(v).concat([0]));
+      const isSusp = maxV >= 3;
+      const hasFlg = modLog.some(m => m.chatId === c.chatId);
+      const lastTs = c.lastTs ? new Date(c.lastTs).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : 'No messages';
       const archiveReason = c.autoArchived ? '🕒 7-day inactivity' : '📁 Manually archived';
       const row = document.createElement('div');
       row.className = `chat-row${hasFlg?' flagged':''}${isSusp?' suspended':''}`;
@@ -1661,401 +1290,15 @@
         <div class="chat-actions" style="gap:6px;align-items:center;flex-shrink:0;">
           <button class="deal-stage-btn" style="background:rgba(59,130,246,0.12);color:#93c5fd;border:1px solid rgba(59,130,246,0.3);" onclick="unarchiveChat('${c.chatId}')">↩ Unarchive</button>
           <button class="chat-action-btn btn-view" onclick="viewChat('${c.chatId}','${escH(c.listing)}','${escH(c.userA)}','${escH(c.userB)}')">View</button>
-          <details class="chat-details-menu">
-            <summary class="chat-details-btn" title="More info">•••</summary>
-            <div class="chat-details-panel">
-              <div class="cdp-row"><span class="cdp-label">Messages</span><span>${msgs.length}</span></div>
-              <div class="cdp-row"><span class="cdp-label">Max violations</span><span>${maxV}</span></div>
-              <div class="cdp-row"><span class="cdp-label">Archived</span><span>${c.archivedTs?fmtTs(c.archivedTs):'—'}</span></div>
-            </div>
-          </details>
         </div>`;
       container.appendChild(row);
     });
   }
 
-  function renderArchivedDeals(container) {
-    if (!container) return;
-    const deals = getDeals();
-    const archivedDeals = deals.filter(d => d.stage === 'Cancelled' || d.stage_complete || d.stage === 'Complete');
-    const tabEl = document.getElementById('tab-archived-deals-count');
-    if (tabEl) tabEl.textContent = archivedDeals.length;
-    container.innerHTML = '';
-    if (!archivedDeals.length) {
-      container.innerHTML = `<div class="empty-state" style="text-align:center;padding:60px 20px;"><div class="empty-icon">🤝</div><h3>No archived deals</h3><p style="color:var(--muted);font-size:13px;margin-top:6px;">Cancelled and completed deals appear here.</p></div>`;
-      return;
-    }
-    // Header with delete all
-    const hdr = document.createElement('div');
-    hdr.style.cssText = 'display:flex;justify-content:flex-end;margin-bottom:12px;';
-    hdr.innerHTML = `<button onclick="permanentDeleteAllDeals()" style="padding:7px 16px;border:1px solid rgba(239,68,68,0.35);border-radius:8px;background:rgba(239,68,68,0.08);color:#fca5a5;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">🗑 Permanently Delete All</button>`;
-    container.appendChild(hdr);
-    // Compact accordion list
-    const sorted = [...archivedDeals].sort((a,b) => (b.cancelledTs||b.completedTs||b.initiatedTs||0) - (a.cancelledTs||a.completedTs||a.initiatedTs||0));
-    sorted.forEach(d => {
-      const statusLabel = d.stage === 'Complete' ? '✅ Completed' : d.stage_complete ? '✅ Completed' : '❌ Cancelled';
-      const statusColor = (d.stage === 'Complete' || d.stage_complete) ? '#6ee7b7' : '#fca5a5';
-      const ts = fmtTs(d.cancelledTs || d.completedTs || d.initiatedTs || 0);
-      const acc = document.createElement('details');
-      acc.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;';
-      acc.innerHTML = `
-        <summary style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;list-style:none;user-select:none;">
-          <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);">${escH(d.listing||'—')}</span>
-          <span style="font-size:11px;color:var(--muted);">${escH(d.userA)} ↔ ${escH(d.userB)}</span>
-          <span style="font-size:11px;font-weight:700;color:${statusColor};padding:2px 8px;border-radius:20px;background:${statusColor}22;border:1px solid ${statusColor}44;">${statusLabel}</span>
-          <span style="font-size:11px;color:var(--muted);">${ts}</span>
-          <span style="color:var(--muted);font-size:14px;transition:transform 0.2s;" class="acc-chevron">›</span>
-        </summary>
-        <div style="padding:0 16px 16px;border-top:1px solid var(--border);" class="acc-body">
-          <div id="acc-deal-${escH(d.chatId)}"></div>
-        </div>`;
-      acc.addEventListener('toggle', () => {
-        const chevron = acc.querySelector('.acc-chevron');
-        if (chevron) chevron.style.transform = acc.open ? 'rotate(90deg)' : '';
-        if (acc.open) {
-          const body = acc.querySelector(`#acc-deal-${CSS.escape(d.chatId)}`);
-          if (body && !body.innerHTML) renderDealCard(d, body, true);
-        }
-      });
-      container.appendChild(acc);
-    });
-  }
-
-  function permanentDeleteAllDeals() {
-    if (!confirm('Permanently delete ALL archived/cancelled deals? This cannot be undone.')) return;
-    const remaining = getDeals().filter(d => d.stage !== 'Cancelled' && !d.stage_complete && d.stage !== 'Complete');
-    const toDelete  = getDeals().filter(d => d.stage === 'Cancelled' || d.stage_complete || d.stage === 'Complete');
-    saveDeals(remaining);
-    toDelete.forEach(d => db.collection('deals').doc(d.chatId).delete().catch(()=>{}));
-    showToast('🗑 All archived deals deleted', '');
-    loadDashboard();
-  }
-
-  function permanentDeleteOneDeal(chatId) {
-    if (!confirm('Permanently delete this deal? This cannot be undone.')) return;
-    saveDeals(getDeals().filter(d => d.chatId !== chatId));
-    db.collection('deals').doc(chatId).delete().catch(()=>{});
-    showToast('🗑 Deal deleted', '');
-    loadDashboard();
-  }
-
-
-  // Kept for backward compat with mod-N pages which still call renderArchivedList
-  function renderArchivedList(container) { renderArchivedChats(container); }
-
-
-  function switchArchiveSub(sub) {
-    document.querySelectorAll('.arch-sub-tab').forEach(t => {
-      const isActive = t.dataset.sub === sub;
-      t.style.color = isActive ? 'var(--gold)' : 'var(--muted)';
-      t.style.borderBottom = isActive ? '2px solid var(--gold)' : '2px solid transparent';
-    });
-    document.getElementById('arch-sub-chats').style.display = sub === 'chats' ? '' : 'none';
-    document.getElementById('arch-sub-deals').style.display = sub === 'deals' ? '' : 'none';
-  }
-
-
-  let _modMetricsDays = 30; // default: 1 month
-
-  function setModMetricsPeriod(days) {
-    _modMetricsDays = days;
-    document.querySelectorAll('.perf-period-btn').forEach(b => {
-      b.classList.toggle('active', Number(b.dataset.days) === days);
-    });
-    renderModMetrics();
-  }
-
-  // ── CONTACTS ─────────────────────────────────────────────────
-  let _contacts = [];
-  try { _contacts = JSON.parse(localStorage.getItem('rf_mod_contacts') || '[]'); } catch {}
-  const getContacts = () => _contacts;
-  let _contactsFilter = 'all';
-
-  function filterContacts(filter) {
-    _contactsFilter = filter;
-    ['all','open','answered'].forEach(f => {
-      const btn = document.getElementById(`contacts-filter-${f}`);
-      if (btn) btn.classList.toggle('active', f === filter);
-    });
-    renderContactsList(getContacts(), document.getElementById('contacts-list'));
-  }
-
-  function renderContactsList(contacts, container) {
-    if (!container) return;
-    const filtered = _contactsFilter === 'all' ? contacts : contacts.filter(c => c.status === _contactsFilter);
-    if (!filtered.length) {
-      container.innerHTML = `<div class="empty-state"><div class="empty-icon">📩</div><h3>No ${_contactsFilter === 'all' ? '' : _contactsFilter + ' '}contacts yet</h3><p style="color:var(--muted);font-size:13px;margin-top:6px;">Users can reach out to their moderator from the chat.</p></div>`;
-      return;
-    }
-    container.innerHTML = '';
-    filtered.forEach(c => {
-      const ts = c.ts ? new Date(c.ts).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
-      const isOpen = c.status === 'open';
-      const replies = c.replies || (c.reply ? [{ text: c.reply, ts: c.repliedTs, author: 'Moderator' }] : []);
-      const card = document.createElement('div');
-      card.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:12px;';
-      card.innerHTML = `
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-          <div style="flex:1;min-width:0;">
-            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
-              <span style="font-size:13px;font-weight:700;color:var(--text);">${escH(c.userName)}</span>
-              <span style="font-size:10px;color:var(--muted);background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:20px;padding:1px 8px;">${escH(c.userRole)}</span>
-              <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;${isOpen ? 'background:rgba(251,146,60,0.15);color:#fb923c;border:1px solid rgba(251,146,60,0.3);' : 'background:rgba(16,185,129,0.12);color:#6ee7b7;border:1px solid rgba(16,185,129,0.3);'}">${isOpen ? 'Open' : '✓ Answered'}</span>
-            </div>
-            <div style="font-size:12px;color:var(--muted);margin-bottom:2px;">${escH(c.listing || '')} · ${ts}</div>
-            <div style="font-size:12px;font-weight:600;color:var(--gold);margin-bottom:6px;">Subject: ${escH(c.subject)}</div>
-            <div style="font-size:13px;color:var(--text);line-height:1.5;background:rgba(255,255,255,0.03);border-radius:8px;padding:10px 12px;">${escH(c.message)}</div>
-          </div>
-        </div>
-        ${replies.length ? replies.map(r => `
-          <div style="border-top:1px solid var(--border);padding-top:10px;">
-            <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;">MOD REPLY · ${r.ts ? new Date(r.ts).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : ''}</div>
-            <div style="font-size:13px;color:var(--text);line-height:1.5;">${escH(r.text)}</div>
-          </div>`).join('') : ''}
-        <div style="display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--border);padding-top:10px;">
-          <button onclick="openContactThreadPopup(${c.id})" style="padding:8px 16px;border:1px solid rgba(99,102,241,0.4);border-radius:8px;background:rgba(99,102,241,0.1);color:#a5b4fc;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;text-align:left;">💬 Open Thread</button>
-          <div style="display:flex;gap:8px;align-items:flex-end;">
-            <textarea id="contact-reply-${c.id}" placeholder="Quick reply…" maxlength="500" style="flex:1;resize:none;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--text);background:rgba(255,255,255,0.04);outline:none;min-height:50px;"></textarea>
-            <button onclick="replyToContact(${c.id})" style="padding:9px 18px;border:none;border-radius:8px;background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.3);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">Reply</button>
-          </div>
-        </div>`;
-      container.appendChild(card);
-    });
-  }
-
-  function replyToContact(contactId, replyText) {
-    let reply = replyText;
-    if (!reply) {
-      const textarea = document.getElementById(`contact-reply-${contactId}`);
-      if (!textarea) return;
-      reply = textarea.value.trim();
-      if (!reply) { textarea.style.borderColor = '#ef4444'; return; }
-    }
-
-    const newReply = { text: reply, ts: Date.now(), author: 'Moderator' };
-
-    // Update in-memory + localStorage
-    const c = _contacts.find(c => c.id === contactId);
-    if (c) {
-      if (!c.replies) c.replies = [];
-      c.replies.push(newReply);
-      c.reply = reply; // backward compat
-      c.repliedTs = Date.now();
-      c.status = 'answered';
-    }
-    try { localStorage.setItem('rf_mod_contacts', JSON.stringify(_contacts)); } catch {}
-
-    // Write reply to Firestore — store in replies array + also write system msg to chat
-    RF.updateContact(contactId, { replies: (c && c.replies) || [newReply], reply, repliedTs: Date.now(), status: 'answered' })
-      .catch(e => console.warn('[RF] updateContact', e));
-
-    // Post reply as a system message in the user's chat so they see it
-    if (c && c.chatId) {
-      const text = `📩 Moderator replied to your contact request: "${reply}"`;
-      RF.postSystemMsg(c.chatId, text).catch(e => console.warn('[RF] contact reply sys msg', e));
-    }
-
-    showToast('✓ Reply sent', 'success');
-    loadDashboard();
-  }
-
-  // ── CONTACT THREAD POPUP ─────────────────────────────────────
-  let _activeThreadContactId = null;
-
-  function openContactThreadPopup(contactId) {
-    _activeThreadContactId = contactId;
-    const c = getContacts().find(x => x.id === contactId);
-    if (!c) return;
-    document.getElementById('ctp-title').textContent = c.subject || 'Support Thread';
-    document.getElementById('ctp-sub').textContent = `${c.userName} · ${c.listing || ''}`;
-    _renderThreadMessages(c);
-    document.getElementById('contact-thread-overlay').style.display = 'flex';
-    setTimeout(() => document.getElementById('ctp-reply-input').focus(), 100);
-  }
-
-  function closeContactThreadPopup() {
-    document.getElementById('contact-thread-overlay').style.display = 'none';
-    _activeThreadContactId = null;
-  }
-
-  function _renderThreadMessages(c) {
-    const box = document.getElementById('ctp-messages');
-    if (!box) return;
-    box.innerHTML = '';
-    const allMsgs = [];
-    allMsgs.push({ text: c.message, ts: c.ts, author: c.userName, side: 'user' });
-    (c.followups || []).forEach(f => allMsgs.push({ text: f.text, ts: f.ts, author: c.userName, side: 'user' }));
-    (c.replies || (c.reply ? [{ text: c.reply, ts: c.repliedTs }] : [])).forEach(r =>
-      allMsgs.push({ text: r.text, ts: r.ts, author: 'Moderator', side: 'mod' })
-    );
-    allMsgs.sort((a,b) => (a.ts||0)-(b.ts||0));
-    allMsgs.forEach(m => {
-      const wrap = document.createElement('div');
-      wrap.style.cssText = `display:flex;flex-direction:column;align-items:${m.side==='mod'?'flex-end':'flex-start'};gap:3px;`;
-      const bubble = document.createElement('div');
-      bubble.style.cssText = `max-width:78%;padding:9px 13px;border-radius:10px;font-size:13px;line-height:1.5;word-break:break-word;${m.side==='mod'?'background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.25);':'background:rgba(255,255,255,0.06);color:var(--text);border:1px solid var(--border);'}`;
-      bubble.textContent = m.text;
-      const meta = document.createElement('div');
-      meta.style.cssText = 'font-size:10px;color:var(--muted);';
-      meta.textContent = `${m.author} · ${m.ts ? new Date(m.ts).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}) : ''}`;
-      wrap.appendChild(bubble);
-      wrap.appendChild(meta);
-      box.appendChild(wrap);
-    });
-    box.scrollTop = box.scrollHeight;
-  }
-
-  function sendContactThreadReply() {
-    const input = document.getElementById('ctp-reply-input');
-    const text = input.value.trim();
-    if (!text || !_activeThreadContactId) return;
-    replyToContact(_activeThreadContactId, text);
-    input.value = '';
-    // Re-render thread
-    setTimeout(() => {
-      const c = getContacts().find(x => x.id === _activeThreadContactId);
-      if (c) _renderThreadMessages(c);
-    }, 100);
-  }
-
-  function renderModMetrics() {
-    const container = document.getElementById('mod-metrics-body');
-    if (!container) return;
-    const now = Date.now();
-    const cutoff = _modMetricsDays > 0 ? (now - _modMetricsDays * 86400000) : 0;
-
-    const modLog = getModLog();
-    const inPeriod = modLog.filter(e => e.status !== 'pending' && e.actorName && (e.actorTs || e.ts || 0) >= cutoff);
-
-    // Build a full list of actors: all MODS + Admin, even if they have 0 actions
-    const allActors = ['Admin', ...MODS.map(m => m.name)];
-    const byMod = {};
-    allActors.forEach(name => { byMod[name] = { approved:0, dismissed:0, totalTime:0, count:0, lastTs:0 }; });
-
-    inPeriod.forEach(e => {
-      const name = e.actorName;
-      if (!byMod[name]) byMod[name] = { approved:0, dismissed:0, totalTime:0, count:0, lastTs:0 };
-      if (e.status === 'approved') byMod[name].approved++;
-      else byMod[name].dismissed++;
-      const ts = e.actorTs || e.ts || 0;
-      if (e.actorTs && e.ts) { byMod[name].totalTime += (e.actorTs - e.ts); byMod[name].count++; }
-      if (ts > byMod[name].lastTs) byMod[name].lastTs = ts;
-    });
-
-    container.innerHTML = '';
-    const maxTotal = Math.max(...Object.values(byMod).map(m => m.approved + m.dismissed), 1);
-
-    // Sort: most active first, then alphabetical
-    Object.entries(byMod)
-      .sort((a,b) => (b[1].approved+b[1].dismissed) - (a[1].approved+a[1].dismissed) || a[0].localeCompare(b[0]))
-      .forEach(([name, d]) => {
-        const total = d.approved + d.dismissed;
-        const approvalRate = total ? Math.round((d.approved / total) * 100) : null;
-        const avgMins = d.count ? Math.round(d.totalTime / d.count / 60000) : null;
-        const avgStr = avgMins !== null ? (avgMins < 60 ? `${avgMins}m` : `${Math.round(avgMins/60)}h`) : '—';
-        const barW = total ? Math.round((total / maxTotal) * 80) : 0;
-        const lastStr = d.lastTs ? fmtTs(d.lastTs) : '—';
-        const rateStr = approvalRate !== null
-          ? `<span style="color:${approvalRate>=70?'#34d399':approvalRate>=40?'#fcd34d':'#f87171'};font-weight:700;">${approvalRate}%</span>`
-          : '<span style="color:var(--muted);">—</span>';
-        const modContacts = getContacts().filter(c => c.assignedModName === name || name === 'Admin');
-        const contactsStr = modContacts.length ? `${modContacts.filter(c=>c.status==='answered').length}/${modContacts.length}` : '—';
-        const tr = document.createElement('tr');
-        tr.style.opacity = total === 0 ? '0.45' : '1';
-        tr.innerHTML = `
-          <td style="font-weight:600;">${escH(name)}</td>
-          <td><div class="perf-bar-wrap"><div class="perf-bar" style="width:${barW}px;"></div></div> <span style="margin-left:6px;">${total}</span></td>
-          <td><span style="color:#34d399;">${d.approved}</span> / <span style="color:#f87171;">${d.dismissed}</span></td>
-          <td>${rateStr}</td>
-          <td style="color:var(--muted);">${avgStr}</td>
-          <td style="color:var(--muted);">${contactsStr}</td>
-          <td style="color:var(--muted);font-size:11px;">${lastStr}</td>`;
-        container.appendChild(tr);
-      });
-  }
-  function filterArchivedChats() {
-    const q = document.getElementById('search-archived-chats')?.value.trim().toLowerCase()||'';
-    const rows = document.querySelectorAll('#archived-chats-list .archived-card');
-    let shown=0; rows.forEach(r=>{const m=!q||r.textContent.toLowerCase().includes(q);r.style.display=m?'':'none';if(m)shown++;});
-    const el=document.getElementById('search-archived-chats-count'); if(el)el.textContent=q?`${shown} result${shown!==1?'s':''}`:' ';
-  }
-
-  function filterArchivedDeals() {
-    const q = document.getElementById('search-archived-deals')?.value.trim().toLowerCase()||'';
-    const rows = document.querySelectorAll('#archived-deals-list .archived-card');
-    let shown=0; rows.forEach(r=>{const m=!q||r.textContent.toLowerCase().includes(q);r.style.display=m?'':'none';if(m)shown++;});
-    const el=document.getElementById('search-archived-deals-count'); if(el)el.textContent=q?`${shown} result${shown!==1?'s':''}`:' ';
-  }
-
-
-  // ── #14 APPEALS LIST ─────────────────────────────────────────
-  function renderAppealsList(appeals, container) {
-    const pending  = appeals.filter(a => a.status === 'pending');
-    const resolved = appeals.filter(a => a.status !== 'pending');
-    if (!pending.length && !resolved.length) {
-      container.innerHTML = `<div class="empty-state"><div class="empty-icon">📝</div><h3>No appeals</h3><p>No users have submitted appeals yet.</p></div>`;
-      return;
-    }
-    if (!pending.length) {
-      container.innerHTML = `<div class="empty-state"><div class="empty-icon">✅</div><h3>All caught up</h3><p>${resolved.length} appeal${resolved.length!==1?'s have':' has'} already been resolved.</p></div>`;
-      return;
-    }
-    container.innerHTML = '';
-    pending.forEach(a => {
-      const initials = String(a.userName||'').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-      const time     = new Date(a.ts).toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
-      const card     = document.createElement('div');
-      card.className = 'appeal-card';
-      card.innerHTML = `
-        <div class="appeal-header">
-          <div class="appeal-avatar">${initials}</div>
-          <div class="flag-info">
-            <div class="flag-who">${escH(a.userName)} <span style="color:var(--muted);font-weight:400;font-size:12px;">(${a.userRole})</span></div>
-            <div class="flag-when">${escH(a.listing)} · ${time}</div>
-          </div>
-          <span class="flag-count" style="background:rgba(124,58,237,0.15);color:#c4b5fd;border-color:rgba(124,58,237,0.3);">Pending Review</span>
-        </div>
-        <div class="appeal-msg-box"><div class="appeal-msg-label">User\'s Appeal</div><div class="appeal-msg-text">${escH(a.text)}</div></div>
-        <div class="appeal-actions">
-          <button class="btn-deny" onclick="resolveAppeal(${a.id},'denied')">Deny</button>
-          <button class="btn-reinstate" onclick="resolveAppeal(${a.id},'reinstated')">✓ Reinstate Chat</button>
-        </div>`;
-      container.appendChild(card);
-    });
-    if (resolved.length) {
-      const note = document.createElement('div');
-      note.style.cssText = 'text-align:center;font-size:12px;color:var(--muted);padding:12px 0 4px;';
-      note.textContent = `${resolved.length} resolved appeal${resolved.length!==1?'s':''} not shown`;
-      container.appendChild(note);
-    }
-  }
-  function resolveAppeal(id, status) {
-    const appeals = getAppeals();
-    const a = appeals.find(x => x.id === id);
-    if (!a) return;
-    a.status = status;
-    saveAppeals(appeals);
-
-    if (status === 'reinstated') {
-      // Reset violations for this chat
-      try {
-        const vio = {};
-        _vioByChat[a.chatId] = vio;
-        RF.saveViolations(a.chatId, vio).catch(e => console.warn("[RF] ban vio", e));
-      } catch {}
-      showToast('✓ Chat reinstated — violations cleared', 'success');
-    } else {
-      showToast('Appeal denied', '');
-    }
-    loadDashboard();
-  }
-
-  // ── APPROVE MESSAGE ──────────────────────────────────────────
   function approveMessage(logId) {
     const log   = getModLog();
     const entry = log.find(e => e.id === logId);
     if (!entry) return;
-    const payload = { originalId: logId, senderIdentity: entry.senderIdentity, senderId: entry.senderId, senderName: entry.senderName, text: entry.text };
     // Write approved message directly to Firestore — chat.html onMessages listener picks it up
     const approvedMsg = { id: logId, senderIdentity: entry.senderIdentity, senderId: entry.senderId, senderName: entry.senderName, text: entry.text, ts: Date.now(), moderatorApproved: true, chatId: entry.chatId };
     RF.saveMessage(entry.chatId, approvedMsg).catch(e => console.warn('[RF] approveMessage msg', e));
@@ -2064,31 +1307,31 @@
     vio[entry.senderIdentity] = Math.max(0, (vio[entry.senderIdentity] || 0) - 1);
     _vioByChat[entry.chatId] = vio;
     RF.saveViolations(entry.chatId, vio).catch(e => console.warn('[RF] approveMessage vio', e));
-    updateLogEntry(logId, { status: 'approved', actorName: 'Admin', actorTs: Date.now() });
+    updateLogEntry(logId, { status: 'approved', actorName: MOD_NAME, actorTs: Date.now() });
     showToast('✓ Message approved and delivered', 'success');
     loadDashboard();
   }
 
-  function dismissFlag(logId) { updateLogEntry(logId, { status: 'dismissed', actorName: 'Admin', actorTs: Date.now() }); showToast('Flag dismissed', ''); loadDashboard(); }
+  function dismissFlag(logId) { updateLogEntry(logId, { status: 'dismissed', actorName: MOD_NAME, actorTs: Date.now() }); showToast('Flag dismissed', ''); loadDashboard(); }
 
   // ── JOIN CHAT ────────────────────────────────────────────────
   function joinChat(chatId) {
     const slots = getJoinSlots(chatId);
-    if (slots.admin) {
-      // Already joined as admin — just open the chat
+    if (slots.mod && slots.mod.id === 'mod-2') {
+      // Already joined — just re-open
       window.open(getJoinUrl(chatId), '_blank');
       return;
     }
     slots.mod = { id: 'mod-2', name: 'Mod 2', ts: Date.now() };
     saveJoinSlots(chatId, slots);
     RF.updateChatMeta(chatId, { lastTs: Date.now() }).catch(()=>{});
-    showToast('🛡️ Joined chat as Admin', 'info');
+    showToast('🛡️ Joined chat as Mod 2', 'info');
     window.open(getJoinUrl(chatId), '_blank');
     setTimeout(loadDashboard, 400);
   }
   function leaveChat(chatId) {
     const slots = getJoinSlots(chatId);
-    slots.admin = null;
+    slots.mod = null;
     saveJoinSlots(chatId, slots);
     RF.updateChatMeta(chatId, { lastTs: Date.now() }).catch(()=>{});
     showToast('Left chat', '');
@@ -2096,7 +1339,6 @@
   }
 
   function viewChat(chatId, listing, userA, userB) {
-    _currentChatExport = { chatId, listing, userA, userB };
     const msgs = getChatMsgs(chatId);
     document.getElementById('modal-title').textContent = `${listing}: ${userA} ↔ ${userB}`;
     const modMsgs = document.getElementById('modal-messages');
@@ -2114,42 +1356,7 @@
     });
     document.getElementById('chat-modal').classList.add('show');
   }
-  function closeModal() {
-    document.getElementById('chat-modal').classList.remove('show');
-    const s = document.getElementById('modal-search'); if (s) s.value = '';
-    filterModalMessages();
-  }
-
-  function filterModalMessages() {
-    const q = (document.getElementById('modal-search')?.value || '').toLowerCase().trim();
-    document.querySelectorAll('#modal-messages .modal-bubble').forEach(el => {
-      el.style.display = (!q || el.textContent.toLowerCase().normalize('NFC').includes(q)) ? '' : 'none';
-    });
-  }
-
-  let _currentChatExport = { chatId:'', listing:'', userA:'', userB:'' };
-  function exportChatTranscript() {
-    const msgs = getChatMsgs(_currentChatExport.chatId);
-    if (!msgs.length) { showToast('No messages to export', ''); return; }
-    const lines = [
-      `Chat Transcript — ${_currentChatExport.listing}`,
-      `${_currentChatExport.userA} ↔ ${_currentChatExport.userB}`,
-      `Exported: ${new Date().toLocaleString('en-IN')}`,
-      '─'.repeat(50),
-      ''
-    ];
-    msgs.forEach(m => {
-      const time = new Date(m.ts).toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
-      const approved = m.moderatorApproved ? ' [MOD APPROVED]' : '';
-      lines.push(`[${time}] ${m.senderName}${approved}: ${m.text || '[Image]'}`);
-    });
-    const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `transcript_${_currentChatExport.chatId}_${Date.now()}.txt`;
-    a.click(); URL.revokeObjectURL(a.href);
-    showToast('Transcript downloaded', 'success');
-  }
+  function closeModal() { document.getElementById('chat-modal').classList.remove('show'); }
 
   let pendingBanId = null, pendingBanName = null;
   function confirmBan(userId, userName) { pendingBanId = userId; pendingBanName = userName; document.getElementById('confirm-msg').textContent = `Ban ${userName}? They will be unable to send further messages.`; document.getElementById('confirm-box').classList.add('show'); }
@@ -2309,32 +1516,6 @@
       body.appendChild(appSection);
     }
 
-    // ── Defaulters section
-    const userDefaulters = getDefaulters().filter(d => d.name === u.name);
-    if (userDefaulters.length) {
-      const defSection = document.createElement('div');
-      defSection.style.marginTop = '16px';
-      defSection.innerHTML = `<div class="upm-section-title" style="color:#f87171;">🚫 Defaulter History (${userDefaulters.length})</div>`;
-      userDefaulters.sort((a,b) => (b.ts||0)-(a.ts||0)).forEach(d => {
-        const row = document.createElement('div');
-        row.className = 'upm-flag-row';
-        row.style.borderColor = 'rgba(239,68,68,0.3)';
-        row.style.background  = 'rgba(239,68,68,0.05)';
-        row.innerHTML = `
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
-            <div style="flex:1;">
-              <div class="upm-flag-type" style="color:#fca5a5;">Defaulted on deal · ${escH(d.role)}</div>
-              <div class="upm-flag-text">${escH(d.listing)}</div>
-              ${d.notes ? `<div class="upm-flag-text" style="color:var(--muted);font-size:11px;">${escH(d.notes)}</div>` : ''}
-              <div class="upm-flag-when">${fmtTs(d.ts)}</div>
-            </div>
-            <button onclick="removeDefaulter('${d.id}');openUserProfile('${uid}');" style="padding:3px 8px;border-radius:5px;font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;cursor:pointer;background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.1);white-space:nowrap;flex-shrink:0;" title="Remove from defaulters list">✕ Remove</button>
-          </div>`;
-        defSection.appendChild(row);
-      });
-      body.appendChild(defSection);
-    }
-
     document.getElementById('user-profile-overlay').classList.add('show');
   }
 
@@ -2373,7 +1554,7 @@
   }
 
   function filterDeals() {
-    const q = document.getElementById('search-deals').value.trim().toLowerCase().normalize('NFC');
+    const q = document.getElementById('search-deals').value.trim().toLowerCase();
     const rows = document.querySelectorAll('#deals-list .deal-card');
     let shown = 0;
     rows.forEach(row => {
@@ -2385,18 +1566,6 @@
     if (el) el.textContent = q ? `${shown} result${shown!==1?'s':''}` : '';
   }
 
-  function filterAppeals() {
-    const q = document.getElementById('search-appeals').value.trim().toLowerCase();
-    const rows = document.querySelectorAll('#appeals-list .appeal-card, #appeals-list > div');
-    let shown = 0;
-    rows.forEach(row => {
-      const match = !q || row.textContent.toLowerCase().normalize('NFC').includes(q);
-      row.style.display = match ? '' : 'none';
-      if (match) shown++;
-    });
-    const el = document.getElementById('search-appeals-count');
-    if (el) el.textContent = q ? `${shown} result${shown!==1?'s':''}` : '';
-  }
 
   function filterUsers() {
     const q = document.getElementById('search-users').value.trim().toLowerCase();
@@ -2412,7 +1581,8 @@
   }
 
   function filterArchived() {
-    const q = document.getElementById('search-archived').value.trim().toLowerCase();
+    const _sa = document.getElementById('search-archived'); if (!_sa) return;
+    const q = _sa.value.trim().toLowerCase();
     const rows = document.querySelectorAll('#archived-list .deal-card, #archived-list .chat-row, #archived-list > div');
     let shown = 0;
     rows.forEach(row => {
@@ -2420,7 +1590,7 @@
       row.style.display = match ? '' : 'none';
       if (match) shown++;
     });
-    const el = document.getElementById('search-archived-count');
+    const el = document.getElementById('search-archived-count') || {};
     if (el) el.textContent = q ? `${shown} result${shown!==1?'s':''}` : '';
   }
 
@@ -2439,7 +1609,7 @@
     if (freshAppeals.length !== appeals.length){ _appeals = freshAppeals; }
 
     const total = freshLog.length + freshAppeals.length;
-    document.getElementById('tab-history-count').textContent = total;
+    const _thc = document.getElementById('tab-history-count'); if (_thc) _thc.textContent = total;
 
     if (!total) {
       container.innerHTML = `<div class="empty-state"><div class="empty-icon">🕓</div><h3>No recent history</h3><p style="color:var(--muted);font-size:13px;margin-top:6px;">Flagged messages and appeals from the last 48 hours appear here, then auto-delete.</p></div>`;
@@ -2475,7 +1645,7 @@
             <div class="flag-badges"><span class="vt-badge ${vtClass}">${vtLabel}</span>${statusTag}</div>
           </div>
           <div class="flag-msg-box"><div class="flag-msg-label">Blocked Message</div><div class="flag-msg-text">${escH(item.text||'')}</div></div>
-          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;margin-top:6px;">${expiryNote}${item.actorName?`<span style="font-size:11px;color:var(--muted);">Actioned by <strong style="color:var(--text);">${escH(item.actorName)}</strong>${item.actorTs?" · "+new Date(item.actorTs).toLocaleString("en-IN",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}):""}</span>`:""}</div>`;
+          <div style="text-align:right;margin-top:6px;">${expiryNote}</div>`;
       } else {
         const statusTag = item.status==='reinstated'?'<span class="flag-status-tag status-approved">✓ Reinstated</span>':item.status==='denied'?'<span class="flag-status-tag status-dismissed">Denied</span>':'<span class="flag-count" style="background:rgba(124,58,237,0.15);color:#c4b5fd;border-color:rgba(124,58,237,0.3);">Pending</span>';
         card.innerHTML = `
@@ -2488,243 +1658,34 @@
             <div class="flag-badges">${statusTag}</div>
           </div>
           <div class="flag-msg-box"><div class="flag-msg-label" style="color:#a78bfa;">Appeal Text</div><div class="flag-msg-text">${escH(item.text||'')}</div></div>
-          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;margin-top:6px;">${expiryNote}${item.actorName?`<span style="font-size:11px;color:var(--muted);">Actioned by <strong style="color:var(--text);">${escH(item.actorName)}</strong>${item.actorTs?" · "+new Date(item.actorTs).toLocaleString("en-IN",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}):""}</span>`:""}</div>`;
+          <div style="text-align:right;margin-top:6px;">${expiryNote}</div>`;
       }
       container.appendChild(card);
     });
   }
 
 
-  // ── DEFAULTERS ───────────────────────────────────────────────
-  let pendingDefaulterChatId = null;
-
-  function openDefaulterModal(chatId) {
-    const deals = getDeals();
-    const deal  = deals.find(d => d.chatId === chatId);
-    if (!deal) return;
-    pendingDefaulterChatId = chatId;
-    document.getElementById('defaulter-modal-deal-info').textContent =
-      `"${deal.listing}" · ${deal.userA || 'Party A'} ↔ ${deal.userB || 'Party B'}`;
-    document.getElementById('cb-party-a-name').textContent = deal.userA || 'Party A (Landlord)';
-    document.getElementById('cb-party-b-name').textContent = deal.userB || 'Party B (Renter)';
-    document.getElementById('cb-party-a').checked = false;
-    document.getElementById('cb-party-b').checked = false;
-    document.getElementById('cb-label-a').classList.remove('checked');
-    document.getElementById('cb-label-b').classList.remove('checked');
-    document.getElementById('defaulter-notes-input').value = '';
-    document.getElementById('defaulter-modal').classList.add('show');
-  }
-
-  function toggleDefaulterParty(party) {
-    const cb    = document.getElementById(`cb-party-${party.toLowerCase()}`);
-    const label = document.getElementById(`cb-label-${party.toLowerCase()}`);
-    cb.checked = !cb.checked;
-    label.classList.toggle('checked', cb.checked);
-  }
-
-  function closeDefaulterModal() {
-    document.getElementById('defaulter-modal').classList.remove('show');
-    pendingDefaulterChatId = null;
-  }
-
-  function executeAddDefaulter() {
-    if (!pendingDefaulterChatId) return;
-    const chatId  = pendingDefaulterChatId;
-    const deals   = getDeals();
-    const deal    = deals.find(d => d.chatId === chatId);
-    if (!deal) { closeDefaulterModal(); return; }
-
-    const partyA = document.getElementById('cb-party-a').checked;
-    const partyB = document.getElementById('cb-party-b').checked;
-    if (!partyA && !partyB) { showToast('Select at least one defaulting party.', 'error'); return; }
-
-    const notes = document.getElementById('defaulter-notes-input').value.trim();
-    const defaulters = getDefaulters();
-    let added = 0;
-
-    if (partyA) {
-      const alreadyIn = defaulters.some(d => d.chatId === chatId && d.name === (deal.userA || 'Party A'));
-      if (alreadyIn) {
-        showToast(`${deal.userA || 'Party A'} is already in the defaulters list for this deal.`, 'error');
-      } else {
-        defaulters.push({
-          id: Date.now() + Math.random(),
-          chatId, listing: deal.listing,
-          name: deal.userA || 'Party A', role: 'Landlord',
-          otherParty: deal.userB || 'Party B',
-          notes, ts: Date.now()
-        });
-        added++;
-      }
-    }
-    if (partyB) {
-      const alreadyIn = defaulters.some(d => d.chatId === chatId && d.name === (deal.userB || 'Party B'));
-      if (alreadyIn) {
-        showToast(`${deal.userB || 'Party B'} is already in the defaulters list for this deal.`, 'error');
-      } else {
-        defaulters.push({
-          id: Date.now() + Math.random() + 1,
-          chatId, listing: deal.listing,
-          name: deal.userB || 'Party B', role: 'Renter',
-          otherParty: deal.userA || 'Party A',
-          notes, ts: Date.now()
-        });
-        added++;
-      }
-    }
-    if (!added) { closeDefaulterModal(); return; }
-    saveDefaulters(defaulters);
-
-    // Mark deal as having a defaulter
-    deal.hasDefaulter = true;
-    saveDeals(deals);
-
-    closeDefaulterModal();
-    showToast('🚫 Added to defaulters list', 'error');
+  function unarchiveChat(chatId) {
+    const chat = _chatsIndex.find(c => c.chatId === chatId);
+    if (chat) { chat.archived = false; chat.autoArchived = false; chat.manualArchived = false; delete chat.archivedTs; }
+    RF.updateChatMeta(chatId, { archived: false, archivedTs: null, autoArchived: false, manualArchived: false }).catch(e => console.warn('[RF] unarchive', e));
+    showToast('↩ Chat restored to active', 'success');
     loadDashboard();
   }
 
-  function removeDefaulter(id) {
-    const defaulters = getDefaulters().filter(d => String(d.id) !== String(id));
-    saveDefaulters(defaulters);
-    loadDashboard();
-    showToast('Removed from defaulters list', '');
-  }
-
-  function renderDefaultersList(container) {
-    if (!container) return;
-    const defaulters = getDefaulters();
-    const defTab = document.getElementById('tab-defaulters-count');
-    if (defTab) defTab.textContent = defaulters.length;
-    if (!defaulters.length) {
-      container.innerHTML = `<div class="empty-state"><div class="empty-icon">✅</div><h3>No defaulters</h3><p style="color:var(--muted);font-size:13px;margin-top:6px;">No parties have been added to the defaulters list yet.</p></div>`;
-      return;
-    }
-    const sorted = [...defaulters].sort((a,b) => (b.ts||0)-(a.ts||0));
-    container.innerHTML = '';
-    sorted.forEach(d => {
-      const card = document.createElement('div');
-      card.className = 'defaulter-card';
-      card.innerHTML = `
-        <div class="defaulter-card-header">
-          <div class="defaulter-icon">🚫</div>
-          <div class="defaulter-meta">
-            <div class="defaulter-title">${escH(d.name)}</div>
-            <div class="defaulter-sub">${escH(d.role)} · ${escH(d.listing)}</div>
-            <div class="defaulter-parties"><span class="defaulter-party-tag">${escH(d.name)}</span><span style="font-size:11px;color:var(--muted);align-self:center;">defaulted on deal with</span><span class="defaulter-party-tag" style="background:rgba(255,255,255,0.06);color:var(--muted);border-color:rgba(255,255,255,0.1);">${escH(d.otherParty)}</span></div>
-          </div>
-          <button class="btn-remove-defaulter" onclick="removeDefaulter('${d.id}')">✕ Remove</button>
-        </div>
-        ${d.notes ? `<div class="defaulter-notes">${escH(d.notes)}</div>` : ''}
-        <div class="defaulter-ts">Added ${fmtTs(d.ts)}</div>`;
-      container.appendChild(card);
-    });
-  }
-
-  function filterDefaulters() {
-    const q    = document.getElementById('search-defaulters')?.value.trim().toLowerCase() || '';
-    const rows = document.querySelectorAll('#defaulters-list .defaulter-card');
-    let shown  = 0;
-    rows.forEach(r => {
-      const match = !q || r.textContent.toLowerCase().includes(q);
-      r.style.display = match ? '' : 'none';
-      if (match) shown++;
-    });
-    const el = document.getElementById('search-defaulters-count');
-    if (el) el.textContent = q ? `${shown} result${shown!==1?'s':''}` : '';
-  }
-
-
-  // ── REASSIGN ALL CHATS FROM A MOD ────────────────────────────
-  let pendingReassignModId = null;
-
-  function openReassignModal(fromModId) {
-    const active      = getModeActive();
-    const assignments = getAssignments();
-    const chatCount   = Object.values(assignments).filter(v => v === fromModId).length;
-    const fromMod     = MODS.find(m => m.id === fromModId);
-    pendingReassignModId = fromModId;
-
-    document.getElementById('reassign-modal-info').textContent =
-      `${fromMod?.name || fromModId} has ${chatCount} active chat${chatCount !== 1 ? 's' : ''}. Select which mods to distribute them to.`;
-
-    const list = document.getElementById('reassign-mod-list');
-    list.innerHTML = '';
-    MODS.filter(m => m.id !== fromModId).forEach(m => {
-      const isActive  = !!active[m.id];
-      const modChats  = Object.values(assignments).filter(v => v === m.id).length;
-      const row       = document.createElement('div');
-      row.className   = `reassign-mod-row${isActive ? ' selected' : ''}`;
-      row.id          = `rr-row-${m.id}`;
-      row.onclick     = () => toggleReassignMod(m.id);
-      row.innerHTML   = `
-        <div class="reassign-mod-avatar">${m.name.replace('Mod ','M')}</div>
-        <span class="reassign-mod-name">${m.name}</span>
-        <span class="reassign-mod-count">${modChats} chat${modChats!==1?'s':''}</span>
-        <div class="reassign-check">${isActive ? '✓' : ''}</div>`;
-      list.appendChild(row);
-    });
-
-    document.getElementById('reassign-modal').classList.add('show');
-  }
-
-  function toggleReassignMod(modId) {
-    const row = document.getElementById(`rr-row-${modId}`);
-    if (!row) return;
-    row.classList.toggle('selected');
-    row.querySelector('.reassign-check').textContent = row.classList.contains('selected') ? '✓' : '';
-  }
-
-  function selectAllReassignMods() {
-    document.querySelectorAll('.reassign-mod-row').forEach(row => {
-      row.classList.add('selected');
-      row.querySelector('.reassign-check').textContent = '✓';
-    });
-  }
-
-  function clearAllReassignMods() {
-    document.querySelectorAll('.reassign-mod-row').forEach(row => {
-      row.classList.remove('selected');
-      row.querySelector('.reassign-check').textContent = '';
-    });
-  }
-
-  function closeReassignModal() {
-    document.getElementById('reassign-modal').classList.remove('show');
-    pendingReassignModId = null;
-  }
-
-  function executeReassign() {
-    if (!pendingReassignModId) return;
-    const fromModId = pendingReassignModId;
-
-    // Get selected target mods
-    const selected = [...document.querySelectorAll('.reassign-mod-row.selected')]
-      .map(row => row.id.replace('rr-row-', ''));
-    if (!selected.length) { showToast('Select at least one mod to reassign to.', 'error'); return; }
-
-    const assignments = getAssignments();
-    // Get all chats currently assigned to this mod
-    const chatIds = Object.entries(assignments)
-      .filter(([, v]) => v === fromModId)
-      .map(([k]) => k);
-
-    if (!chatIds.length) { closeReassignModal(); showToast('No chats to reassign.', ''); return; }
-
-    // Distribute round-robin across selected mods
-    chatIds.forEach((chatId, i) => {
-      assignments[chatId] = selected[i % selected.length];
-    });
-
-    saveAssignments(assignments);
-    closeReassignModal();
-    const targetNames = selected.map(id => MODS.find(m => m.id === id)?.name || id).join(', ');
-    showToast(`↺ ${chatIds.length} chat${chatIds.length!==1?'s':''} reassigned to ${targetNames}`, 'success');
+  function archiveChatManual(chatId) {
+    const activeDeal = getDeals().find(d => d.chatId === chatId && d.stage !== 'Cancelled' && !d.stage_complete);
+    if (activeDeal) { showToast('Cannot archive a chat with an active deal.', 'error'); return; }
+    const chat = _chatsIndex.find(c => c.chatId === chatId);
+    if (chat) { chat.archived = true; chat.archivedTs = Date.now(); chat.manualArchived = true; }
+    RF.updateChatMeta(chatId, { archived: true, archivedTs: Date.now(), manualArchived: true }).catch(e => console.warn('[RF] archiveManual', e));
+    showToast('📁 Chat archived', 'success');
     loadDashboard();
   }
 
   function filterHistory() {
-    const q    = document.getElementById('search-history').value.trim().toLowerCase();
+    const _sh = document.getElementById('search-history'); if (!_sh) return;
+    const q = _sh.value.trim().toLowerCase();
     const rows = document.querySelectorAll('#history-list .flag-card');
     let shown  = 0;
     rows.forEach(row => {
@@ -2732,14 +1693,16 @@
       row.style.display = match ? '' : 'none';
       if (match) shown++;
     });
-    const el = document.getElementById('search-history-count');
+    const el = document.getElementById('search-history-count') || {};
     if (el) el.textContent = q ? `${shown} result${shown!==1?'s':''}` : '';
   }
 
   function permanentDeleteDeal(chatId) {
     if (!confirm(`Permanently delete this deal record? This cannot be undone.`)) return;
-    _deals = _deals.filter(d => d.chatId !== chatId);
-    RF.deleteDeal(chatId).catch(e => console.warn('[RF] deleteDeal', e));
+    try {
+      const deals = getDeals().filter(d => d.chatId !== chatId);
+      _deals = deals;
+    } catch {}
     showToast('Deal record permanently deleted', 'error');
     loadDashboard();
   }
@@ -2748,7 +1711,7 @@
     document.querySelectorAll('.dash-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === `panel-${tab}`));
     // Clear search on tab switch
-    ['chats','flagged','deals','appeals','users','archived','history','defaulters'].forEach(id => {
+    ['chats','flagged','deals','users','archived','history'].forEach(id => {
       const el = document.getElementById(`search-${id}`);
       const ct = document.getElementById(`search-${id}-count`);
       if (el) el.value = '';
@@ -2761,7 +1724,7 @@
 if (_sess) {
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('dashboard').classList.add('show');
-    document.title = 'RenterFinder — Admin Dashboard';
+    document.title = 'RenterFinder — Mod 2';
     startAutoRefresh();
     loadDashboard();
     startFirestoreSync();
@@ -2782,8 +1745,9 @@ if (_sess) {
       const existing = {};
       _chatsIndex.forEach(c => { existing[c.chatId] = c; });
       const merged = chats.map(c => ({ ...existing[c.chatId], ...c }));
-      _chatsIndex = merged;
-      chats.forEach(c => {
+      // Only keep chats assigned to this mod to prevent data leakage
+      _chatsIndex = merged.filter(c => !_assignments || !Object.keys(_assignments).length || _assignments[c.chatId] === MOD_ID || !_assignments[c.chatId]);
+      _chatsIndex.forEach(c => {
         if (c.violations) _vioByChat[c.chatId]      = c.violations;
         if (c.deal)       _dealByChat[c.chatId]     = c.deal;
         if (c.meeting)    _meetingByChat[c.chatId]  = c.meeting;
@@ -2793,7 +1757,14 @@ if (_sess) {
           _msgListeners.add(c.chatId);
           db.collection('chats').doc(c.chatId).collection('messages')
             .orderBy('ts','asc').onSnapshot(snap => {
-              _msgsByChat[c.chatId] = snap.docs.map(d => d.data());
+              const assignments = getAssignments();
+              if (assignments[c.chatId] === MOD_ID) {
+                // Only store full messages for assigned chats
+                _msgsByChat[c.chatId] = snap.docs.map(d => d.data());
+              } else {
+                // Store only count for unassigned chats (no message content exposed)
+                _msgsByChat[c.chatId] = snap.docs.map(() => ({ text:'', senderName:'', ts:0, _redacted:true }));
+              }
               loadDashboard();
             });
         }
@@ -2823,12 +1794,6 @@ if (_sess) {
       _appeals = appeals;
     });
 
-    // Defaulters
-    db.collection('defaulters').onSnapshot(snap => {
-      _defaulters = snap.docs.map(d => d.data());
-      loadDashboard();
-    }, e => console.warn('[RF] defaulters', e));
-
     // Banned → write to rf_banned_users localStorage
     RF.onBanned(banned => {
       _banned = banned;
@@ -2840,12 +1805,153 @@ if (_sess) {
       renderModPanel();
     });
 
-    // Contacts listener
+    // Contacts — only show contacts for chats assigned to this mod
     RF.onContacts(contacts => {
-      _contacts = contacts;
-      try { localStorage.setItem('rf_mod_contacts', JSON.stringify(contacts)); } catch {}
+      const myChats = new Set(getChatsIndex().map(c => c.chatId));
+      _contacts = contacts.filter(c => myChats.has(c.chatId));
+      try { localStorage.setItem('rf_mod_contacts', JSON.stringify(_contacts)); } catch {}
       loadDashboard();
     });
+  }
+
+  // ── CONTACTS ─────────────────────────────────────────────────
+  let _contacts = [];
+  try { _contacts = JSON.parse(localStorage.getItem('rf_mod_contacts') || '[]'); } catch {}
+  const getContacts = () => _contacts;
+  let _contactsFilter = 'all';
+
+  function filterContacts(filter) {
+    _contactsFilter = filter;
+    ['all','open','answered'].forEach(f => {
+      const btn = document.getElementById(`contacts-filter-${f}`);
+      if (btn) btn.classList.toggle('active', f === filter);
+    });
+    renderContactsList(getContacts(), document.getElementById('contacts-list'));
+  }
+
+  function renderContactsList(contacts, container) {
+    if (!container) return;
+    const filtered = _contactsFilter === 'all' ? contacts : contacts.filter(c => c.status === _contactsFilter);
+    if (!filtered.length) {
+      container.innerHTML = `<div class="empty-state"><div class="empty-icon">📩</div><h3>No ${_contactsFilter === 'all' ? '' : _contactsFilter + ' '}contacts yet</h3><p style="color:var(--muted);font-size:13px;margin-top:6px;">Users can reach out to their moderator from the chat.</p></div>`;
+      return;
+    }
+    container.innerHTML = '';
+    filtered.forEach(c => {
+      const ts = c.ts ? new Date(c.ts).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
+      const isOpen = c.status === 'open';
+      const replies = c.replies || (c.reply ? [{ text: c.reply, ts: c.repliedTs }] : []);
+      const card = document.createElement('div');
+      card.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:12px;';
+      card.innerHTML = `
+        <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
+              <span style="font-size:13px;font-weight:700;color:var(--text);">${escH(c.userName)}</span>
+              <span style="font-size:10px;color:var(--muted);background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:20px;padding:1px 8px;">${escH(c.userRole)}</span>
+              <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;${isOpen?'background:rgba(251,146,60,0.15);color:#fb923c;border:1px solid rgba(251,146,60,0.3);':'background:rgba(16,185,129,0.12);color:#6ee7b7;border:1px solid rgba(16,185,129,0.3);'}">${isOpen?'Open':'✓ Answered'}</span>
+            </div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:2px;">${escH(c.listing||'')} · ${ts}</div>
+            <div style="font-size:12px;font-weight:600;color:var(--gold);margin-bottom:6px;">Subject: ${escH(c.subject)}</div>
+            <div style="font-size:13px;color:var(--text);line-height:1.5;background:rgba(255,255,255,0.03);border-radius:8px;padding:10px 12px;">${escH(c.message)}</div>
+          </div>
+        </div>
+        ${replies.map(r => `<div style="border-top:1px solid var(--border);padding-top:10px;">
+          <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;">YOUR REPLY · ${r.ts?new Date(r.ts).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):''}</div>
+          <div style="font-size:13px;color:var(--text);line-height:1.5;">${escH(r.text)}</div>
+        </div>`).join('')}
+        <div style="display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--border);padding-top:10px;">
+          <button onclick="openContactThreadPopup(${c.id})" style="padding:8px 16px;border:1px solid rgba(99,102,241,0.4);border-radius:8px;background:rgba(99,102,241,0.1);color:#a5b4fc;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;text-align:left;">💬 Open Thread</button>
+          <div style="display:flex;gap:8px;align-items:flex-end;">
+            <textarea id="contact-reply-${c.id}" placeholder="Quick reply…" maxlength="500" style="flex:1;resize:none;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--text);background:rgba(255,255,255,0.04);outline:none;min-height:50px;"></textarea>
+            <button onclick="replyToContact(${c.id})" style="padding:9px 18px;border:none;border-radius:8px;background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.3);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">Reply</button>
+          </div>
+        </div>`;
+      container.appendChild(card);
+    });
+  }
+
+  function replyToContact(contactId, replyText) {
+    let reply = replyText;
+    if (!reply) {
+      const ta = document.getElementById(`contact-reply-${contactId}`);
+      if (!ta) return;
+      reply = ta.value.trim();
+      if (!reply) { ta.style.borderColor = '#ef4444'; return; }
+    }
+    const newReply = { text: reply, ts: Date.now() };
+    const c = _contacts.find(c => c.id === contactId);
+    if (c) {
+      if (!c.replies) c.replies = [];
+      c.replies.push(newReply);
+      c.reply = reply; c.repliedTs = Date.now(); c.status = 'answered';
+    }
+    try { localStorage.setItem('rf_mod_contacts', JSON.stringify(_contacts)); } catch {}
+    RF.updateContact(contactId, { replies: (c&&c.replies)||[newReply], reply, repliedTs:Date.now(), status:'answered' })
+      .catch(e => console.warn('[RF] updateContact', e));
+    if (c && c.chatId) {
+      RF.postSystemMsg(c.chatId, `📩 Moderator replied to your contact request: "${reply}"`)
+        .catch(e => console.warn('[RF] contact reply msg', e));
+    }
+    showToast('✓ Reply sent', 'success');
+    loadDashboard();
+  }
+
+  // ── CONTACT THREAD POPUP ─────────────────────────────────────
+  let _activeThreadContactId = null;
+
+  function openContactThreadPopup(contactId) {
+    _activeThreadContactId = contactId;
+    const c = getContacts().find(x => x.id === contactId);
+    if (!c) return;
+    document.getElementById('ctp-title').textContent = c.subject || 'Support Thread';
+    document.getElementById('ctp-sub').textContent = `${c.userName} · ${c.listing||''}`;
+    _renderThreadMessages(c);
+    document.getElementById('contact-thread-overlay').style.display = 'flex';
+    setTimeout(() => document.getElementById('ctp-reply-input').focus(), 100);
+  }
+
+  function closeContactThreadPopup() {
+    document.getElementById('contact-thread-overlay').style.display = 'none';
+    _activeThreadContactId = null;
+  }
+
+  function _renderThreadMessages(c) {
+    const box = document.getElementById('ctp-messages');
+    if (!box) return;
+    box.innerHTML = '';
+    const allMsgs = [];
+    allMsgs.push({ text: c.message, ts: c.ts, author: c.userName, side: 'user' });
+    (c.followups||[]).forEach(f => allMsgs.push({ text:f.text, ts:f.ts, author:c.userName, side:'user' }));
+    (c.replies||(c.reply?[{text:c.reply,ts:c.repliedTs}]:[])).forEach(r =>
+      allMsgs.push({ text:r.text, ts:r.ts, author:'You', side:'mod' })
+    );
+    allMsgs.sort((a,b) => (a.ts||0)-(b.ts||0));
+    allMsgs.forEach(m => {
+      const wrap = document.createElement('div');
+      wrap.style.cssText = `display:flex;flex-direction:column;align-items:${m.side==='mod'?'flex-end':'flex-start'};gap:3px;`;
+      const bubble = document.createElement('div');
+      bubble.style.cssText = `max-width:78%;padding:9px 13px;border-radius:10px;font-size:13px;line-height:1.5;word-break:break-word;${m.side==='mod'?'background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.25);':'background:rgba(255,255,255,0.06);color:var(--text);border:1px solid var(--border);'}`;
+      bubble.textContent = m.text;
+      const meta = document.createElement('div');
+      meta.style.cssText = 'font-size:10px;color:var(--muted);';
+      meta.textContent = `${m.author} · ${m.ts?new Date(m.ts).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):''}`;
+      wrap.appendChild(bubble); wrap.appendChild(meta);
+      box.appendChild(wrap);
+    });
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function sendContactThreadReply() {
+    const input = document.getElementById('ctp-reply-input');
+    const text = input.value.trim();
+    if (!text || !_activeThreadContactId) return;
+    replyToContact(_activeThreadContactId, text);
+    input.value = '';
+    setTimeout(() => {
+      const c = getContacts().find(x => x.id === _activeThreadContactId);
+      if (c) _renderThreadMessages(c);
+    }, 100);
   }
 
   // ── FIRESTORE WRITE-THROUGHS (v38 functions that need to also write to Firestore) ──
