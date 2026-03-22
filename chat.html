@@ -1279,7 +1279,7 @@ Message: ${JSON.stringify(text)}`;
     // Merge everything into in-memory state
     _chatMeta = data;
     if (data.violations !== undefined) _violations = data.violations;
-    if (data.deal       !== undefined) { _deal    = data.deal;    updateDealBar();    checkDealCancelledBanner(); }
+    if (data.deal       !== undefined) { _deal    = data.deal;    updateDealBar();    checkDealCancelledBanner(); updatePayBtn(); updateCalendarBtn(); }
     if (data.meeting    !== undefined) { _meeting = data.meeting; updateCalendarBtn(); updatePayBtn(); }
     if (data.joinSlots  !== undefined) {
       const wasJoined = isModJoined();

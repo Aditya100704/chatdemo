@@ -1412,6 +1412,9 @@
     return -1;
   }
 
+  // Track which deal accordions are currently open — persists across loadDashboard rebuilds
+  const _openDealIds = new Set();
+
   function renderDealsList(deals, container) {
     if (!deals.length) {
       container.innerHTML = `<div class="empty-state" style="text-align:center;padding:60px 20px;"><div class="empty-icon">🤝</div><h3>No deals yet</h3><p style="color:var(--muted);font-size:13px;margin-top:6px;">Deals appear here once both parties confirm interest in a chat.</p></div>`;
@@ -1442,13 +1445,39 @@
       const bdy = document.createElement('div');
       bdy.id = safeId(d.chatId);
       bdy.style.cssText = 'display:none;padding:0 18px 18px;border-top:1px solid rgba(16,185,129,0.15);';
-      hdr.addEventListener('click', () => {
-        const isOpen = bdy.style.display !== 'none';
+      // Add close button inside header (right side)
+      const closeBtn = document.createElement('button');
+      closeBtn.innerHTML = '✕';
+      closeBtn.title = 'Close';
+      closeBtn.style.cssText = 'display:none;background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;padding:0 4px;margin-left:4px;line-height:1;flex-shrink:0;';
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        bdy.style.display = 'none';
+        closeBtn.style.display = 'none';
         const chev = hdr.querySelector('.acc-chev');
-        bdy.style.display = isOpen ? 'none' : 'block';
-        if (chev) chev.style.transform = isOpen ? '' : 'rotate(90deg)';
-        if (!isOpen && !bdy.innerHTML) renderDealCard(d, bdy, false);
+        if (chev) chev.style.transform = '';
+        _openDealIds.delete(d.chatId);
       });
+      hdr.appendChild(closeBtn);
+
+      // Header click — open only, never closes
+      hdr.addEventListener('click', () => {
+        if (bdy.style.display !== 'none') return; // already open, do nothing
+        const chev = hdr.querySelector('.acc-chev');
+        bdy.style.display = 'block';
+        closeBtn.style.display = 'inline';
+        if (chev) chev.style.transform = 'rotate(90deg)';
+        _openDealIds.add(d.chatId);
+        if (!bdy.innerHTML) renderDealCard(d, bdy, false);
+      });
+      // Restore open state
+      if (_openDealIds.has(d.chatId)) {
+        bdy.style.display = 'block';
+        closeBtn.style.display = 'inline';
+        const chev = hdr.querySelector('.acc-chev');
+        if (chev) chev.style.transform = 'rotate(90deg)';
+        renderDealCard(d, bdy, false);
+      }
       acc.appendChild(hdr);
       acc.appendChild(bdy);
       container.appendChild(acc);
@@ -1569,7 +1598,9 @@
       </div>
       <div class="deal-card-actions">
         <button class="deal-save-notes-btn" onclick="saveDealNotes('${d.chatId}')">💾 Save Notes</button>
+        <button onclick="reverseLastStep('${d.chatId}')" style="padding:6px 14px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;background:rgba(251,146,60,0.1);color:#fb923c;border:1px solid rgba(251,146,60,0.3);">↩ Reverse Step</button>
         <button class="btn-defaulter" onclick="openDefaulterModal('${d.chatId}')">🚫 Defaulter</button>
+        ${!isArchived && curIdx >= 0 ? `<button class="deal-cancel-deal-btn" style="background:rgba(251,146,60,0.1);color:#fb923c;border:1px solid rgba(251,146,60,0.3);" onclick="reverseLastStep('${d.chatId}')">↩ Reverse Step</button>` : ''}
         ${isArchived
           ? `<button class="btn-reinstate" onclick="reinstateDeal('${d.chatId}')">↩ Reinstate Deal</button>
              <button onclick="permanentDeleteOneDeal('${d.chatId}')" style="padding:6px 14px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;background:rgba(239,68,68,0.08);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);">🗑 Delete</button>`
@@ -1600,6 +1631,7 @@
   }
 
   function _removeDealAccordion(chatId) {
+    _openDealIds.delete(chatId);
     // Remove this deal's accordion from the DOM, then do a lightweight stats update
     const activeBody = document.getElementById(safeId(chatId));
     if (activeBody) {
@@ -1756,6 +1788,39 @@
 
   let pendingCancelChatId = null;
 
+  function reverseLastStep(chatId) {
+    const deals = getDeals();
+    const deal  = deals.find(d => d.chatId === chatId);
+    if (!deal) return;
+    let lastDoneIdx = -1;
+    for (let i = 0; i < PIPELINE.length; i++) {
+      if (deal[`stage_${PIPELINE[i].key}`]) lastDoneIdx = i;
+    }
+    if (lastDoneIdx < 0) { showToast('No completed steps to reverse.', ''); return; }
+    const stage = PIPELINE[lastDoneIdx];
+    if (!confirm(`Reverse "${stage.label}"? The deal returns to this step and parties are notified.`)) return;
+    delete deal[`stage_${stage.key}`];
+    delete deal[`stage_${stage.key}_ts`];
+    if (stage.gateType === 'payment') {
+      delete deal[`pay_${stage.key}_A`]; delete deal[`pay_${stage.key}_A_ts`];
+      delete deal[`pay_${stage.key}_B`]; delete deal[`pay_${stage.key}_B_ts`];
+    }
+    if (stage.gateType === 'select') {
+      delete deal[`${stage.key}_days`];
+      delete deal[`${stage.key}_days_A`];
+      delete deal[`${stage.key}_days_B`];
+    }
+    if (stage.key === 'meeting') {
+      delete deal.meeting; delete deal.stage_meeting; delete deal.stage_meeting_ts;
+    }
+    deal.lastActionTs = Date.now();
+    postDealSystemMsg(chatId, `↩ "${stage.label}" has been reversed by RenterFinder. Returning to this step.`);
+    saveDeals(deals);
+    syncDealToChat(chatId, deal);
+    showToast(`↩ "${stage.label}" reversed`, 'success');
+    _refreshDealCard(chatId, deal);
+  }
+
   function cancelDeal(chatId) {
     const deals = getDeals();
     const deal  = deals.find(d => d.chatId === chatId);
@@ -1844,11 +1909,42 @@
   function syncDealToChat(chatId, deal) {
     _dealByChat[chatId] = deal;
     RF.saveDeal(chatId, deal).catch(e => console.warn('[RF] syncDealToChat', e));
+    // Also write deal into chatMeta so chat.html onChatMeta fires immediately
+    RF.updateChatMeta(chatId, { deal }).catch(e => console.warn('[RF] syncDealMeta', e));
   }
 
   function postDealSystemMsg(chatId, text) {
     const msg = { id: Date.now(), senderIdentity:'SYS', senderId:'system', senderName:'System', text, ts:Date.now(), isSystem:true, chatId };
     RF.saveMessage(chatId, msg).catch(e => console.warn('[RF] postDealSystemMsg', e));
+  }
+
+  function reverseLastStep(chatId) {
+    if (!confirm('Reverse the last completed step? The deal will go back one stage.')) return;
+    const deals = getDeals();
+    const deal  = deals.find(d => d.chatId === chatId);
+    if (!deal) return;
+    // Find the last completed stage (from end of pipeline backwards)
+    const doneStages = PIPELINE.filter(s => deal[`stage_${s.key}`] && s.gateType !== 'terminal');
+    if (!doneStages.length) { showToast('No completed steps to reverse.', ''); return; }
+    const last = doneStages[doneStages.length - 1];
+    // Clear that stage's data
+    delete deal[`stage_${last.key}`];
+    delete deal[`stage_${last.key}_ts`];
+    // Also clear associated payment ticks if it was a payment stage
+    if (last.gateType === 'payment') {
+      delete deal[`pay_${last.key}_A`]; delete deal[`pay_${last.key}_A_ts`];
+      delete deal[`pay_${last.key}_B`]; delete deal[`pay_${last.key}_B_ts`];
+    }
+    // If reversing a select stage, notify chat
+    if (last.gateType === 'select') {
+      postDealSystemMsg(chatId, `↩ ${last.label} has been reversed by RenterFinder. Please await updated instructions.`);
+    }
+    deal.lastActionTs = Date.now();
+    deal.stage = 'Initiated'; // reset stage label
+    saveDeals(deals);
+    syncDealToChat(chatId, deal);
+    showToast(`↩ Reversed: ${last.label}`, 'success');
+    _refreshDealCard(chatId, deal);
   }
 
   function fmtTs(ts) {

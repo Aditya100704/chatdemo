@@ -1037,12 +1037,24 @@
       const bdy = document.createElement('div');
       bdy.id = safeId(d.chatId);
       bdy.style.cssText = 'display:none;padding:0 16px 16px;border-top:1px solid rgba(16,185,129,0.15);';
-      hdr.addEventListener('click', () => {
-        const isOpen = bdy.style.display !== 'none';
+      const closeBtn = document.createElement('button');
+      closeBtn.innerHTML = '✕';
+      closeBtn.style.cssText = 'display:none;background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;padding:0 4px;margin-left:4px;flex-shrink:0;';
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        bdy.style.display = 'none';
+        closeBtn.style.display = 'none';
         const chev = hdr.querySelector('.acc-chev');
-        bdy.style.display = isOpen ? 'none' : 'block';
-        if (chev) chev.style.transform = isOpen ? '' : 'rotate(90deg)';
-        if (!isOpen && !bdy.innerHTML) renderDealCard(d, bdy, false);
+        if (chev) chev.style.transform = '';
+      });
+      hdr.appendChild(closeBtn);
+      hdr.addEventListener('click', () => {
+        if (bdy.style.display !== 'none') return;
+        const chev = hdr.querySelector('.acc-chev');
+        bdy.style.display = 'block';
+        closeBtn.style.display = 'inline';
+        if (chev) chev.style.transform = 'rotate(90deg)';
+        if (!bdy.innerHTML) renderDealCard(d, bdy, false);
       });
       acc.appendChild(hdr);
       acc.appendChild(bdy);
@@ -1355,11 +1367,32 @@
   function syncDealToChat(chatId, deal) {
     _dealByChat[chatId] = deal;
     RF.saveDeal(chatId, deal).catch(e => console.warn('[RF] syncDealToChat', e));
+    RF.updateChatMeta(chatId, { deal }).catch(e => console.warn('[RF] syncDealMeta', e));
   }
 
   function postDealSystemMsg(chatId, text) {
     const msg = { id: Date.now(), senderIdentity:'SYS', senderId:'system', senderName:'System', text, ts:Date.now(), isSystem:true, chatId };
     RF.saveMessage(chatId, msg).catch(e => console.warn('[RF] postDealSystemMsg', e));
+  }
+
+  function reverseLastStep(chatId) {
+    if (!confirm('Reverse the last completed step?')) return;
+    const deals = getDeals();
+    const deal  = deals.find(d => d.chatId === chatId);
+    if (!deal) return;
+    const doneStages = PIPELINE.filter(s => deal[`stage_${s.key}`] && s.gateType !== 'terminal');
+    if (!doneStages.length) { showToast('No completed steps to reverse.', ''); return; }
+    const last = doneStages[doneStages.length - 1];
+    delete deal[`stage_${last.key}`]; delete deal[`stage_${last.key}_ts`];
+    if (last.gateType === 'payment') {
+      delete deal[`pay_${last.key}_A`]; delete deal[`pay_${last.key}_A_ts`];
+      delete deal[`pay_${last.key}_B`]; delete deal[`pay_${last.key}_B_ts`];
+    }
+    if (last.gateType === 'select') postDealSystemMsg(chatId, `↩ ${last.label} reversed. Awaiting updated instructions.`);
+    deal.lastActionTs = Date.now(); deal.stage = 'Initiated';
+    saveDeals(deals); syncDealToChat(chatId, deal);
+    showToast(`↩ Reversed: ${last.label}`, 'success');
+    _refreshDealCard(chatId, deal);
   }
 
   function fmtTs(ts) {
