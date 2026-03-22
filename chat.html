@@ -1461,23 +1461,33 @@ Message: ${JSON.stringify(text)}`;
 
   function openDealConfirm() {
     const deal = loadDeal();
-    const otherIdentity = currentIdentity === 'A' ? 'B' : 'A';
+    const otherIdentity  = currentIdentity === 'A' ? 'B' : 'A';
     const otherConfirmed = deal?.[`confirmed${otherIdentity}`];
     const myConfirmed    = deal?.[`confirmed${currentIdentity}`];
+    const bothConfirmed  = deal?.confirmedA && deal?.confirmedB;
 
     document.getElementById('deal-modal-listing').textContent = LISTING;
     const rejectListing = document.getElementById('deal-reject-listing');
     if (rejectListing) rejectListing.textContent = LISTING;
+    // Hide all views first
     document.getElementById('deal-form-view').style.display    = 'none';
     document.getElementById('deal-waiting-view').style.display = 'none';
     document.getElementById('deal-done-view').style.display    = 'none';
     const rv = document.getElementById('deal-reject-view');
     if (rv) rv.style.display = 'none';
 
-    if (!myConfirmed && otherConfirmed) {
-      // Party 2 sees accept/decline view
+    if (bothConfirmed) {
+      // Deal already active — button is disabled so this shouldn't fire,
+      // but if it does just do nothing (no popup)
+      return;
+    } else if (myConfirmed && !otherConfirmed) {
+      // Already confirmed, waiting for other party
+      document.getElementById('deal-waiting-view').style.display = 'flex';
+    } else if (!myConfirmed && otherConfirmed) {
+      // Other party confirmed — show accept/decline
       if (rv) rv.style.display = 'flex';
     } else {
+      // Neither confirmed — show the proposal form
       document.getElementById('deal-form-view').style.display = 'flex';
     }
     document.getElementById('deal-modal').classList.add('show');
@@ -1536,8 +1546,8 @@ Message: ${JSON.stringify(text)}`;
       msgs.push({ id: Date.now(), senderIdentity: 'SYS', senderId: 'system', senderName: 'System', text: '🤝 Both parties have agreed to move forward with this deal. RenterFinder has been notified.', ts: Date.now(), isSystem: true });
       saveMessages(msgs);
       saveDeal(deal);
-      document.getElementById('deal-form-view').style.display    = 'none';
-      document.getElementById('deal-done-view').style.display    = 'flex';
+      // Close modal immediately — no extra popup when deal activates
+      closeDealConfirm();
     } else {
       saveDeal(deal);
       document.getElementById('deal-form-view').style.display    = 'none';

@@ -1460,22 +1460,32 @@
       });
       hdr.appendChild(closeBtn);
 
-      // Header click — open only, never closes
+      // Header click — toggles open/close; clicks inside bdy don't propagate here
       hdr.addEventListener('click', () => {
-        if (bdy.style.display !== 'none') return; // already open, do nothing
+        const isOpen = bdy.style.display !== 'none';
         const chev = hdr.querySelector('.acc-chev');
-        bdy.style.display = 'block';
-        closeBtn.style.display = 'inline';
-        if (chev) chev.style.transform = 'rotate(90deg)';
-        _openDealIds.add(d.chatId);
-        if (!bdy.innerHTML) renderDealCard(d, bdy, false);
+        if (isOpen) {
+          bdy.style.display = 'none';
+          closeBtn.style.display = 'none';
+          if (chev) chev.style.transform = '';
+          _openDealIds.delete(d.chatId);
+        } else {
+          bdy.style.display = 'block';
+          closeBtn.style.display = 'inline';
+          if (chev) chev.style.transform = 'rotate(90deg)';
+          _openDealIds.add(d.chatId);
+          if (!bdy.innerHTML) renderDealCard(d, bdy, false);
+        }
       });
-      // Restore open state
+      // Stop all clicks inside body from bubbling to header
+      bdy.addEventListener('click', e => e.stopPropagation());
+      // Restore open state — always clear first to prevent duplicate content
       if (_openDealIds.has(d.chatId)) {
         bdy.style.display = 'block';
         closeBtn.style.display = 'inline';
         const chev = hdr.querySelector('.acc-chev');
         if (chev) chev.style.transform = 'rotate(90deg)';
+        bdy.innerHTML = '';
         renderDealCard(d, bdy, false);
       }
       acc.appendChild(hdr);
@@ -1598,9 +1608,9 @@
       </div>
       <div class="deal-card-actions">
         <button class="deal-save-notes-btn" onclick="saveDealNotes('${d.chatId}')">💾 Save Notes</button>
-        <button onclick="reverseLastStep('${d.chatId}')" style="padding:6px 14px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;background:rgba(251,146,60,0.1);color:#fb923c;border:1px solid rgba(251,146,60,0.3);">↩ Reverse Step</button>
+        ${!isArchived ? `<button onclick="reverseLastStep('${d.chatId}')" style="padding:6px 14px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;background:rgba(251,146,60,0.1);color:#fb923c;border:1px solid rgba(251,146,60,0.3);">↩ Reverse Step</button>` : ''}
         <button class="btn-defaulter" onclick="openDefaulterModal('${d.chatId}')">🚫 Defaulter</button>
-        ${!isArchived && curIdx >= 0 ? `<button class="deal-cancel-deal-btn" style="background:rgba(251,146,60,0.1);color:#fb923c;border:1px solid rgba(251,146,60,0.3);" onclick="reverseLastStep('${d.chatId}')">↩ Reverse Step</button>` : ''}
+
         ${isArchived
           ? `<button class="btn-reinstate" onclick="reinstateDeal('${d.chatId}')">↩ Reinstate Deal</button>
              <button onclick="permanentDeleteOneDeal('${d.chatId}')" style="padding:6px 14px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;background:rgba(239,68,68,0.08);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);">🗑 Delete</button>`
@@ -1814,7 +1824,13 @@
       delete deal.meeting; delete deal.stage_meeting; delete deal.stage_meeting_ts;
     }
     deal.lastActionTs = Date.now();
+    // Recalculate stage label so accordion header shows correct current step
+    const newLastDoneIdx = (() => { let idx = -1; for (let i = 0; i < PIPELINE.length; i++) { if (deal[`stage_${PIPELINE[i].key}`]) idx = i; } return idx; })();
+    deal.stage = newLastDoneIdx >= 0 ? PIPELINE[newLastDoneIdx].label : 'Initiated';
     postDealSystemMsg(chatId, `↩ "${stage.label}" has been reversed by RenterFinder. Returning to this step.`);
+    // Update in-memory _deals immediately so renderDealCard gets fresh data
+    const dealIdx = _deals.findIndex(x => x.chatId === chatId);
+    if (dealIdx !== -1) _deals[dealIdx] = deal;
     saveDeals(deals);
     syncDealToChat(chatId, deal);
     showToast(`↩ "${stage.label}" reversed`, 'success');
@@ -1918,34 +1934,7 @@
     RF.saveMessage(chatId, msg).catch(e => console.warn('[RF] postDealSystemMsg', e));
   }
 
-  function reverseLastStep(chatId) {
-    if (!confirm('Reverse the last completed step? The deal will go back one stage.')) return;
-    const deals = getDeals();
-    const deal  = deals.find(d => d.chatId === chatId);
-    if (!deal) return;
-    // Find the last completed stage (from end of pipeline backwards)
-    const doneStages = PIPELINE.filter(s => deal[`stage_${s.key}`] && s.gateType !== 'terminal');
-    if (!doneStages.length) { showToast('No completed steps to reverse.', ''); return; }
-    const last = doneStages[doneStages.length - 1];
-    // Clear that stage's data
-    delete deal[`stage_${last.key}`];
-    delete deal[`stage_${last.key}_ts`];
-    // Also clear associated payment ticks if it was a payment stage
-    if (last.gateType === 'payment') {
-      delete deal[`pay_${last.key}_A`]; delete deal[`pay_${last.key}_A_ts`];
-      delete deal[`pay_${last.key}_B`]; delete deal[`pay_${last.key}_B_ts`];
-    }
-    // If reversing a select stage, notify chat
-    if (last.gateType === 'select') {
-      postDealSystemMsg(chatId, `↩ ${last.label} has been reversed by RenterFinder. Please await updated instructions.`);
-    }
-    deal.lastActionTs = Date.now();
-    deal.stage = 'Initiated'; // reset stage label
-    saveDeals(deals);
-    syncDealToChat(chatId, deal);
-    showToast(`↩ Reversed: ${last.label}`, 'success');
-    _refreshDealCard(chatId, deal);
-  }
+
 
   function fmtTs(ts) {
     return new Date(ts).toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});

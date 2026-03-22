@@ -1049,13 +1049,31 @@
       });
       hdr.appendChild(closeBtn);
       hdr.addEventListener('click', () => {
-        if (bdy.style.display !== 'none') return;
+        const isOpen = bdy.style.display !== 'none';
         const chev = hdr.querySelector('.acc-chev');
+        if (isOpen) {
+          bdy.style.display = 'none';
+          closeBtn.style.display = 'none';
+          if (chev) chev.style.transform = '';
+          _openDealIds.delete(d.chatId);
+        } else {
+          bdy.style.display = 'block';
+          closeBtn.style.display = 'inline';
+          if (chev) chev.style.transform = 'rotate(90deg)';
+          _openDealIds.add(d.chatId);
+          if (!bdy.innerHTML) renderDealCard(d, bdy, false);
+        }
+      });
+      bdy.addEventListener('click', e => e.stopPropagation());
+      // Restore open state — clear first to prevent duplicates
+      if (_openDealIds.has(d.chatId)) {
         bdy.style.display = 'block';
         closeBtn.style.display = 'inline';
+        const chev = hdr.querySelector('.acc-chev');
         if (chev) chev.style.transform = 'rotate(90deg)';
-        if (!bdy.innerHTML) renderDealCard(d, bdy, false);
-      });
+        bdy.innerHTML = '';
+        renderDealCard(d, bdy, false);
+      }
       acc.appendChild(hdr);
       acc.appendChild(bdy);
       container.appendChild(acc);
@@ -1224,13 +1242,18 @@
     _refreshDealCard(chatId, deal);
   }
 
+  const _openDealIds = new Set();
+
   function safeId(chatId) {
     return 'did-' + chatId.replace(/[^a-zA-Z0-9]/g, c => '_' + c.charCodeAt(0) + '_');
   }
 
   function _refreshDealCard(chatId, deal) {
     const bodyEl = document.getElementById(safeId(chatId));
-    if (bodyEl && bodyEl.style.display !== 'none') { bodyEl.innerHTML = ''; renderDealCard(deal, bodyEl, false); }
+    if (bodyEl && bodyEl.style.display !== 'none') {
+      bodyEl.innerHTML = '';
+      renderDealCard(deal, bodyEl, false);
+    }
   }
 
   function proceedSelectStage(chatId, stageKey) {
@@ -1390,6 +1413,8 @@
     }
     if (last.gateType === 'select') postDealSystemMsg(chatId, `↩ ${last.label} reversed. Awaiting updated instructions.`);
     deal.lastActionTs = Date.now(); deal.stage = 'Initiated';
+    const didx = _deals.findIndex(x => x.chatId === chatId);
+    if (didx !== -1) _deals[didx] = deal;
     saveDeals(deals); syncDealToChat(chatId, deal);
     showToast(`↩ Reversed: ${last.label}`, 'success');
     _refreshDealCard(chatId, deal);
