@@ -154,11 +154,6 @@
 
   /* INPUT BAR */
   .chat-inputbar{background:linear-gradient(135deg,var(--dark),var(--dark2));border-top:1px solid rgba(212,160,23,0.2);padding:10px 16px;display:flex;gap:8px;align-items:flex-end;flex-shrink:0;box-shadow:0 -2px 16px rgba(0,0,0,0.4);}
-  .attach-btn{width:38px;height:38px;border-radius:50%;border:1.5px solid rgba(212,160,23,0.3);background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all 0.2s;color:rgba(255,255,255,0.6);font-size:17px;}
-  .attach-btn:hover{background:rgba(212,160,23,0.12);border-color:rgba(212,160,23,0.5);}
-  .attach-btn:hover{border-color:var(--gold);color:var(--gold);}
-  .attach-btn:disabled{opacity:0.35;cursor:not-allowed;}
-  #img-file-input{display:none;}
   .chat-textarea{flex:1;resize:none;border:1.5px solid rgba(212,160,23,0.25);border-radius:22px;padding:10px 16px;font-family:'Outfit',sans-serif;font-size:14px;line-height:1.5;outline:none;max-height:100px;overflow-y:auto;transition:border-color 0.2s;color:#e8e8ff;background:rgba(255,255,255,0.07);}
   .chat-textarea::placeholder{color:rgba(255,255,255,0.3);}
   .chat-textarea:focus{border-color:rgba(212,160,23,0.55);}
@@ -172,10 +167,6 @@
   .send-btn svg{width:18px;height:18px;fill:white;}
 
   /* Image preview */
-  .img-preview-bar{background:var(--white);border-top:1px solid var(--border);padding:8px 16px;display:none;align-items:center;gap:10px;flex-shrink:0;}
-  .img-preview-bar.show{display:flex;}
-  .img-preview-thumb{width:48px;height:48px;border-radius:8px;object-fit:cover;border:1.5px solid var(--border);}
-  .img-preview-name{font-size:12px;color:var(--mid);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .img-preview-remove{width:24px;height:24px;border-radius:50%;border:none;background:var(--danger);color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 
   /* Calendar button */
@@ -332,14 +323,10 @@
     .date-divider{font-size:10px;}
 
     .chat-inputbar{padding:8px 10px;gap:6px;}
-    .attach-btn{width:34px;height:34px;font-size:15px;}
     .chat-textarea{font-size:13px;padding:9px 13px;border-radius:20px;}
     .send-btn{width:36px;height:36px;}
     .chat-disclaimer{font-size:9.5px;padding:5px 12px;}
 
-    .img-preview-bar{padding:6px 12px;}
-    .img-preview-thumb{width:40px;height:40px;}
-    .img-preview-name{font-size:11px;}
 
     .violation-banner{margin:0 10px 6px;font-size:11px;padding:8px 12px;}
     .blocked-overlay{margin:0 10px 6px;font-size:12px;padding:12px;}
@@ -690,8 +677,6 @@
   };
 
   let currentIdentity = 'A';
-  let pendingImageB64 = null;
-  let pendingImageName = '';
   let isSending = false;
   let lastSendTime = 0;
   // _isLocal declared in firebase-config.js
@@ -810,8 +795,7 @@
         banner.classList.add('show');
         document.getElementById('msg-input').disabled = true;
         document.getElementById('send-btn').disabled = true;
-        document.getElementById('attach-btn').disabled = true;
-      }
+        }
     } catch {}
   }
 
@@ -995,7 +979,6 @@
       document.getElementById('blocked-overlay').classList.add('show');
       document.getElementById('msg-input').disabled = true;
       document.getElementById('send-btn').disabled = true;
-      document.getElementById('attach-btn').disabled = true;
     } else {
       document.getElementById('blocked-overlay').classList.remove('show');
       document.getElementById('msg-input').disabled = false;
@@ -1109,9 +1092,8 @@ Message: ${JSON.stringify(text)}`;
     const input   = document.getElementById('msg-input');
     const sendBtn = document.getElementById('send-btn');
     const text    = input.value.trim();
-    const hasImg  = !!pendingImageB64;
 
-    if (!text && !hasImg) return;
+    if (!text) return;
     if (isSending) return;
 
     // #9 Rate limiting
@@ -1142,8 +1124,6 @@ Message: ${JSON.stringify(text)}`;
       cooldownBar.classList.add('active');
     }
 
-    const imageB64 = pendingImageB64;
-    clearImagePreview();
 
     // Moderator bypass
     if (currentIdentity === 'MOD') {
@@ -1228,7 +1208,7 @@ Message: ${JSON.stringify(text)}`;
     }
 
     isSending = false;
-    sendBtn.disabled = input.value.trim() === '' && !pendingImageB64;
+    sendBtn.disabled = input.value.trim() === '';
   }
 
   // ── #13 FLAG FOR MONITORING ───────────────────────────────────
@@ -1237,32 +1217,6 @@ Message: ${JSON.stringify(text)}`;
   }
 
   // ── #7 IMAGE HANDLING ─────────────────────────────────────────
-  document.getElementById('img-file-input').addEventListener('change', function() {
-    const file = this.files[0];
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { alert('Image must be under 5MB.'); this.value = ''; return; }
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      pendingImageB64 = e.target.result;
-      pendingImageName = file.name;
-      document.getElementById('img-preview-thumb').src = pendingImageB64;
-      document.getElementById('img-preview-name').textContent = file.name;
-      document.getElementById('img-preview-bar').classList.add('show');
-      document.getElementById('send-btn').disabled = false;
-    };
-    reader.readAsDataURL(file);
-    this.value = '';
-  });
-
-  function clearImagePreview() {
-    pendingImageB64 = null; pendingImageName = '';
-    document.getElementById('img-preview-bar').classList.remove('show');
-    document.getElementById('img-preview-thumb').src = '';
-    document.getElementById('img-preview-name').textContent = '';
-    const input = document.getElementById('msg-input');
-    document.getElementById('send-btn').disabled = input.value.trim() === '';
-  }
-
   // ── LIGHTBOX ──────────────────────────────────────────────────
   function openLightbox(src) { document.getElementById('lightbox-img').src = src; document.getElementById('lightbox').classList.add('show'); }
   function closeLightbox()   { document.getElementById('lightbox').classList.remove('show'); }
@@ -1410,7 +1364,7 @@ Message: ${JSON.stringify(text)}`;
   document.getElementById('msg-input').addEventListener('input', function() {
     this.style.height = 'auto';
     this.style.height = Math.min(this.scrollHeight, 100) + 'px';
-    document.getElementById('send-btn').disabled = this.value.trim() === '' && !pendingImageB64;
+    document.getElementById('send-btn').disabled = this.value.trim() === '';
 
     // #12 broadcast typing
     if (currentIdentity !== 'MOD') {
@@ -1433,8 +1387,7 @@ Message: ${JSON.stringify(text)}`;
       if (_chatMeta && _chatMeta.archived) {
         document.getElementById('msg-input').disabled = true;
         document.getElementById('send-btn').disabled  = true;
-        document.getElementById('attach-btn').disabled = true;
-        document.getElementById('deal-btn').disabled   = true;
+          document.getElementById('deal-btn').disabled   = true;
         var banner = document.getElementById('expiry-banner');
         document.getElementById('expiry-text').textContent = 'This chat has been ended and archived. You can read the history but cannot send new messages.';
         banner.classList.add('show');
