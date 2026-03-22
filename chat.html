@@ -10,79 +10,79 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --gold:#d4a017;--gold-lt:#e8c060;--gold-dk:#b8860b;
-    --dark:#040429;--dark2:#0d0d50;
-    --bg:#0a0a2e;--white:#ffffff;
+    --gold:#b8a88a;--gold-lt:#d4c5a9;--gold-dk:#8a7a62;
+    --dark:#1a1a1f;--dark2:#222228;
+    --bg:#16161a;--white:#ffffff;
 
   /* Welcome modal */
   .welcome-overlay{position:fixed;inset:0;background:rgba(4,4,41,0.88);z-index:900;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px);}
-  .welcome-card{background:linear-gradient(160deg,var(--dark2),#0a0a3a);border:1.5px solid rgba(212,160,23,0.4);border-radius:20px;padding:24px 24px 20px;max-width:400px;width:100%;max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow-y:auto;display:flex;flex-direction:column;gap:14px;box-shadow:0 24px 60px rgba(0,0,0,0.5);}
+  .welcome-card{background:#1e1e26;border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:24px 24px 20px;max-width:400px;width:100%;max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow-y:auto;display:flex;flex-direction:column;gap:14px;box-shadow:0 24px 60px rgba(0,0,0,0.5);}
   .welcome-icon{font-size:32px;text-align:center;}
-  .welcome-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--gold);text-align:center;line-height:1.2;}
+  .welcome-title{font-family:'Outfit',sans-serif;font-size:20px;font-weight:600;color:rgba(255,255,255,0.9);text-align:center;line-height:1.2;}
   .welcome-body{font-size:13px;color:rgba(255,255,255,0.72);line-height:1.7;text-align:center;}
-  .welcome-body strong{color:var(--gold-lt);font-weight:700;}
-  .welcome-rules{display:flex;flex-direction:column;gap:8px;background:rgba(212,160,23,0.06);border:1px solid rgba(212,160,23,0.18);border-radius:12px;padding:14px 16px;}
+  .welcome-body strong{color:rgba(255,255,255,0.8);font-weight:600;}
+  .welcome-rules{display:flex;flex-direction:column;gap:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px 16px;}
   .welcome-rule{display:flex;align-items:flex-start;gap:9px;font-size:12px;color:rgba(255,255,255,0.65);line-height:1.5;}
   .welcome-rule-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
-  .welcome-agree-btn{padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--gold-dk),var(--gold));color:var(--dark);font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity 0.2s;letter-spacing:0.3px;}
+  .welcome-agree-btn{padding:12px;border:none;border-radius:8px;background:#2d5a8e;color:#e8f0fb;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:opacity 0.2s;letter-spacing:0.2px;}
   .welcome-agree-btn:hover{opacity:0.9;}
     --mid:#6b7280;--border:#e5e7eb;
     --danger:#ef4444;--warn:#f59e0b;--success:#10b981;
-    --mod-color:#7c3aed;
+    --mod-color:#4f46e5;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:'Outfit',sans-serif;background:var(--bg);height:100vh;height:100dvh;overflow:hidden;}
   #chat-wrap{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden;}
 
   /* TOP BAR */
-  .chat-topbar{background:linear-gradient(135deg,var(--dark),var(--dark2));border-bottom:1.5px solid var(--gold-dk);padding:0 20px;height:64px;display:flex;align-items:center;gap:14px;flex-shrink:0;box-shadow:0 2px 20px rgba(4,4,41,0.3);}
-  .topbar-back{width:36px;height:36px;border-radius:50%;border:1px solid rgba(212,160,23,0.3);background:transparent;color:var(--gold);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:background 0.2s;text-decoration:none;}
-  .topbar-back:hover{background:rgba(212,160,23,0.1);}
-  .topbar-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--gold-dk),var(--gold));display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--dark);font-size:16px;flex-shrink:0;border:2px solid rgba(212,160,23,0.4);}
+  .chat-topbar{background:#1e1e24;border-bottom:1px solid rgba(255,255,255,0.08);padding:0 20px;height:60px;display:flex;align-items:center;gap:14px;flex-shrink:0;box-shadow:0 1px 0 rgba(0,0,0,0.4);}
+  .topbar-back{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,0.12);background:transparent;color:rgba(255,255,255,0.55);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:background 0.2s;text-decoration:none;}
+  .topbar-back:hover{background:rgba(255,255,255,0.07);}
+  .topbar-avatar{width:38px;height:38px;border-radius:10px;background:#2e2e38;display:flex;align-items:center;justify-content:center;font-weight:700;color:rgba(255,255,255,0.85);font-size:15px;flex-shrink:0;border:1px solid rgba(255,255,255,0.1);}
   .topbar-info{flex:1;min-width:0;}
-  .topbar-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .topbar-sub{font-size:11px;color:rgba(212,160,23,0.75);letter-spacing:0.3px;}
-  .topbar-shield{background:rgba(212,160,23,0.12);border:1px solid rgba(212,160,23,0.3);border-radius:20px;padding:4px 10px;font-size:10px;font-weight:600;color:var(--gold-lt);letter-spacing:0.5px;display:flex;align-items:center;gap:5px;}
+  .topbar-name{font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;color:rgba(255,255,255,0.92);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .topbar-sub{font-size:11px;color:rgba(255,255,255,0.38);letter-spacing:0.2px;}
+  .topbar-shield{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:3px 9px;font-size:10px;font-weight:500;color:rgba(255,255,255,0.35);letter-spacing:0.3px;display:flex;align-items:center;gap:4px;}
 
   /* IDENTITY BAR */
-  .identity-bar{background:var(--dark);padding:8px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid rgba(212,160,23,0.15);flex-shrink:0;}
+  .identity-bar{background:#1c1c22;padding:6px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;}
   .identity-bar>span{font-size:12px;color:rgba(255,255,255,0.5);}
   .identity-switch{display:flex;gap:6px;flex-wrap:wrap;}
-  .identity-btn{padding:4px 12px;border-radius:20px;border:1px solid rgba(212,160,23,0.3);background:transparent;color:rgba(255,255,255,0.5);font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:'Outfit',sans-serif;}
-  .identity-btn.active{background:var(--gold);color:var(--dark);border-color:var(--gold);}
-  .identity-btn.mod-btn{border-color:rgba(124,58,237,0.5);color:rgba(167,139,250,0.8);}
-  .identity-btn.mod-btn.active{background:var(--mod-color);color:#fff;border-color:var(--mod-color);}
+  .identity-btn{padding:3px 10px;border-radius:5px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.4);font-size:10px;font-weight:500;cursor:pointer;transition:all 0.2s;font-family:'Outfit',sans-serif;}
+  .identity-btn.active{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.85);border-color:rgba(255,255,255,0.2);}
+  .identity-btn.mod-btn{border-color:rgba(99,102,241,0.4);color:rgba(165,180,252,0.7);}
+  .identity-btn.mod-btn.active{background:rgba(79,70,229,0.3);color:#a5b4fc;border-color:rgba(99,102,241,0.5);}
 
   /* BANNERS */
-  .mod-joined-banner{background:rgba(124,58,237,0.1);border-bottom:1px solid rgba(124,58,237,0.3);padding:6px 20px;font-size:11px;color:#a78bfa;display:none;align-items:center;gap:8px;flex-shrink:0;}
+  .mod-joined-banner{background:rgba(79,70,229,0.08);border-bottom:1px solid rgba(79,70,229,0.18);padding:5px 20px;font-size:11px;color:#a5b4fc;display:none;align-items:center;gap:8px;flex-shrink:0;}
   .mod-joined-banner.show{display:flex;}
   .expiry-banner{background:#fff7ed;border-bottom:1px solid #fed7aa;padding:6px 20px;font-size:11px;color:#9a3412;display:none;align-items:center;gap:8px;flex-shrink:0;}
   .expiry-banner.show{display:flex;}
 
   /* MESSAGES */
-  .chat-messages{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth;background:linear-gradient(180deg,#06062a 0%,#080830 100%);}
+  .chat-messages{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:8px;scroll-behavior:smooth;background:#18181d;}
   .chat-messages::-webkit-scrollbar{width:4px;}
-  .chat-messages::-webkit-scrollbar-thumb{background:rgba(212,160,23,0.25);border-radius:4px;}
+  .chat-messages::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:4px;}
 
   .msg-row{display:flex;gap:8px;align-items:flex-end;animation:msgIn 0.2s ease;}
   @keyframes msgIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
   .msg-row.me{flex-direction:row-reverse;}
-  .msg-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--gold-dk),var(--gold));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--dark);flex-shrink:0;}
-  .msg-avatar.other{background:linear-gradient(135deg,#374151,#4b5563);color:#fff;}
-  .msg-avatar.mod-av{background:linear-gradient(135deg,#5b21b6,#7c3aed);color:#fff;font-size:13px;}
+  .msg-avatar{width:28px;height:28px;border-radius:8px;background:#2e2e38;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:rgba(255,255,255,0.7);flex-shrink:0;}
+  .msg-avatar.other{background:#353540;color:rgba(255,255,255,0.65);}
+  .msg-avatar.mod-av{background:#312e81;color:#a5b4fc;font-size:13px;border-radius:8px;}
   .msg-content{max-width:72%;display:flex;flex-direction:column;gap:3px;}
   .msg-row.me .msg-content{align-items:flex-end;}
-  .msg-sender{font-size:10px;font-weight:600;color:rgba(255,255,255,0.45);letter-spacing:0.3px;padding:0 4px;}
-  .msg-sender.mod-sender{color:#a78bfa;}
+  .msg-sender{font-size:10px;font-weight:500;color:rgba(255,255,255,0.3);letter-spacing:0.2px;padding:0 4px;}
+  .msg-sender.mod-sender{color:#818cf8;}
   .msg-time{font-size:10px;color:rgba(255,255,255,0.35);padding:0 4px;}
-  .bubble{padding:10px 14px;border-radius:18px;font-size:14px;line-height:1.5;word-break:break-word;}
-  .msg-row.me .bubble{background:linear-gradient(135deg,#b8860b,#d4a017);color:#fff;border-bottom-right-radius:4px;}
-  .msg-row:not(.me) .bubble{background:linear-gradient(135deg,var(--dark2),#131360);color:#e8e8ff;border-bottom-left-radius:4px;box-shadow:0 1px 6px rgba(0,0,0,0.35);border:1px solid rgba(212,160,23,0.12);}
-  .bubble.mod-bubble{background:linear-gradient(135deg,#5b21b6,#7c3aed)!important;color:#fff!important;border-radius:18px!important;border:none!important;}
-  .sys-msg{text-align:center;font-size:11px;color:rgba(212,160,23,0.75);background:rgba(212,160,23,0.07);border:1px solid rgba(212,160,23,0.15);border-radius:20px;padding:5px 14px;align-self:center;}
-  .sys-msg.mod-sys{background:rgba(124,58,237,0.12);color:#c4b5fd;border:1px solid rgba(124,58,237,0.25);}
+  .bubble{padding:9px 13px;border-radius:12px;font-size:13.5px;line-height:1.55;word-break:break-word;}
+  .msg-row.me .bubble{background:#2d5a8e;color:#e8f0fb;border-bottom-right-radius:4px;font-weight:400;}
+  .msg-row:not(.me) .bubble{background:#26262e;color:rgba(255,255,255,0.88);border-bottom-left-radius:4px;border:1px solid rgba(255,255,255,0.07);}
+  .bubble.mod-bubble{background:#312e81!important;color:#c7d2fe!important;border-radius:12px!important;border:1px solid rgba(99,102,241,0.25)!important;}
+  .sys-msg{text-align:center;font-size:11px;color:rgba(255,255,255,0.38);background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:4px 12px;align-self:center;}
+  .sys-msg.mod-sys{background:rgba(79,70,229,0.08);color:#a5b4fc;border:1px solid rgba(79,70,229,0.18);}
   .date-divider{text-align:center;font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.5px;margin:6px 0;position:relative;}
-  .date-divider::before,.date-divider::after{content:'';position:absolute;top:50%;width:calc(50% - 50px);height:1px;background:rgba(255,255,255,0.1);}
+  .date-divider::before,.date-divider::after{content:'';position:absolute;top:50%;width:calc(50% - 50px);height:1px;background:rgba(255,255,255,0.07);}
   .date-divider::before{left:0;}
   .date-divider::after{right:0;}
 
@@ -149,22 +149,22 @@
   @keyframes typingPulse{0%,60%,100%{transform:translateY(0);opacity:0.4;}30%{transform:translateY(-4px);opacity:1;}}
 
   /* INPUT BAR */
-  .chat-inputbar{background:linear-gradient(135deg,var(--dark),var(--dark2));border-top:1px solid rgba(212,160,23,0.2);padding:10px 16px;display:flex;gap:8px;align-items:flex-end;flex-shrink:0;box-shadow:0 -2px 16px rgba(0,0,0,0.4);}
-  .attach-btn{width:38px;height:38px;border-radius:50%;border:1.5px solid rgba(212,160,23,0.3);background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all 0.2s;color:rgba(255,255,255,0.6);font-size:17px;}
-  .attach-btn:hover{background:rgba(212,160,23,0.12);border-color:rgba(212,160,23,0.5);}
-  .attach-btn:hover{border-color:var(--gold);color:var(--gold);}
+  .chat-inputbar{background:#1e1e24;border-top:1px solid rgba(255,255,255,0.07);padding:10px 16px;display:flex;gap:8px;align-items:flex-end;flex-shrink:0;}
+  .attach-btn{width:36px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all 0.2s;color:rgba(255,255,255,0.45);font-size:16px;}
+  .attach-btn:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.18);}
+  
   .attach-btn:disabled{opacity:0.35;cursor:not-allowed;}
   #img-file-input{display:none;}
-  .chat-textarea{flex:1;resize:none;border:1.5px solid rgba(212,160,23,0.25);border-radius:22px;padding:10px 16px;font-family:'Outfit',sans-serif;font-size:14px;line-height:1.5;outline:none;max-height:100px;overflow-y:auto;transition:border-color 0.2s;color:#e8e8ff;background:rgba(255,255,255,0.07);}
-  .chat-textarea::placeholder{color:rgba(255,255,255,0.3);}
-  .chat-textarea:focus{border-color:rgba(212,160,23,0.55);}
-  .chat-textarea:focus{border-color:var(--gold);}
-  .chat-textarea.mod-input:focus{border-color:var(--mod-color);}
+  .chat-textarea{flex:1;resize:none;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:9px 14px;font-family:'Outfit',sans-serif;font-size:13.5px;line-height:1.5;outline:none;max-height:100px;overflow-y:auto;transition:border-color 0.2s;color:rgba(255,255,255,0.88);background:rgba(255,255,255,0.06);}
+  .chat-textarea::placeholder{color:rgba(255,255,255,0.22);}
+  .chat-textarea:focus{border-color:rgba(255,255,255,0.2);}
+  
+  .chat-textarea.mod-input:focus{border-color:#6366f1;}
   .chat-textarea:disabled{background:#f9fafb;cursor:not-allowed;}
-  .send-btn{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--gold-dk),var(--gold));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 2px 10px rgba(184,134,11,0.35);}
-  .send-btn:hover:not(:disabled){transform:scale(1.07);}
+  .send-btn{width:36px;height:36px;border-radius:8px;background:#2d5a8e;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity 0.2s;}
+  .send-btn:hover:not(:disabled){opacity:0.85;}
   .send-btn:disabled{opacity:0.45;cursor:not-allowed;transform:none;}
-  .send-btn.mod-send{background:linear-gradient(135deg,#5b21b6,#7c3aed);box-shadow:0 2px 10px rgba(124,58,237,0.35);}
+  .send-btn.mod-send{background:#312e81;}
   .send-btn svg{width:18px;height:18px;fill:white;}
 
   /* Image preview */
@@ -253,17 +253,23 @@
 
   /* Cooldown indicator */
   .cooldown-bar{height:2px;background:rgba(212,160,23,0.2);position:relative;overflow:hidden;flex-shrink:0;}
-  .cooldown-bar.active::after{content:'';position:absolute;left:0;top:0;height:100%;background:var(--gold);animation:cooldownShrink 2s linear forwards;}
+  .cooldown-bar.active::after{content:'';position:absolute;left:0;top:0;height:100%;background:#4f8bc9;animation:cooldownShrink 2s linear forwards;}
   @keyframes cooldownShrink{from{width:100%;}to{width:0%;}}
 
   .mod-status{text-align:center;font-size:11px;color:var(--mid);padding:4px 0 0;min-height:18px;flex-shrink:0;}
-  .chat-disclaimer{background:rgba(212,160,23,0.06);border-top:1px solid rgba(212,160,23,0.15);padding:7px 16px;font-size:10.5px;color:rgba(212,160,23,0.65);text-align:center;flex-shrink:0;line-height:1.4;}
+  .chat-disclaimer{background:#1a1a1f;border-top:1px solid rgba(255,255,255,0.06);padding:6px 16px;font-size:10px;color:rgba(255,255,255,0.22);text-align:center;flex-shrink:0;line-height:1.4;}
+
+  /* Contact Mod FAB */
+  .contact-mod-fab{position:fixed;bottom:80px;right:16px;width:44px;height:44px;border-radius:10px;background:#26262e;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.55);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:300;transition:all 0.2s;box-shadow:0 4px 16px rgba(0,0,0,0.4);}
+  .contact-mod-fab:hover{background:#2e2e3a;border-color:rgba(255,255,255,0.18);color:rgba(255,255,255,0.8);}
+  .contact-mod-fab svg{width:18px;height:18px;}
+  .contact-mod-fab.hidden{display:none;}
 
   /* LOADING */
   #loading-screen{position:fixed;inset:0;background:var(--dark);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;z-index:999;transition:opacity 0.4s;}
   #loading-screen.fade{opacity:0;pointer-events:none;}
-  .loading-logo{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--gold);}
-  .loading-spinner{width:36px;height:36px;border:3px solid rgba(212,160,23,0.2);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;}
+  .loading-logo{font-family:'Outfit',sans-serif;font-size:24px;font-weight:600;color:rgba(255,255,255,0.7);}
+  .loading-spinner{width:32px;height:32px;border:2px solid rgba(255,255,255,0.08);border-top-color:rgba(255,255,255,0.4);border-radius:50%;animation:spin 0.8s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
   .loading-text{font-size:13px;color:rgba(255,255,255,0.4);}
 
@@ -389,14 +395,6 @@
   @media(min-width:3200px){
     #chat-wrap { zoom: 2.2; height: calc(100vh / 2.2); height: calc(100dvh / 2.2); }
   }
-
-  /* Contact Mod */
-  .contact-mod-btn{padding:6px 14px;border-radius:8px;border:1px solid rgba(99,102,241,0.4);background:rgba(99,102,241,0.08);color:#a5b4fc;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:5px;}
-  .contact-mod-btn:hover{background:rgba(99,102,241,0.18);border-color:rgba(99,102,241,0.6);}
-  .contact-mod-reply{background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:10px;padding:10px 14px;margin-top:6px;}
-  .contact-mod-reply-label{font-size:10px;font-weight:700;color:#a5b4fc;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;}
-  .contact-mod-reply-text{font-size:13px;color:var(--text,#e2e8f0);line-height:1.5;}
-
 </style>
 </head>
 <body>
@@ -439,17 +437,12 @@
   <div class="identity-switch">
     <button class="identity-btn active" id="btn-user-a" onclick="switchIdentity('A')">👤 You (Landlord)</button>
     <button class="identity-btn" id="btn-user-b" onclick="switchIdentity('B')">👤 Renter</button>
-    <button class="identity-btn mod-btn" id="btn-mod" onclick="switchIdentity('MOD')" style="display:none;">🛡️ Moderator</button>
+    <button class="identity-btn mod-btn" id="btn-mod" onclick="switchIdentity('MOD')">🛡️ Moderator</button>
   </div>
 </div>
 
 <div class="mod-joined-banner" id="mod-joined-banner">🛡️ <strong style="margin-right:4px;" id="mod-joined-name">RenterFinder Moderator</strong> has joined this chat.</div>
 <div class="expiry-banner" id="expiry-banner">⏳ <span id="expiry-text"></span></div>
-
-<div id="mod-call-banner" style="background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(99,102,241,0.06));border-bottom:1px solid rgba(99,102,241,0.3);padding:8px 20px;font-size:12px;color:#a5b4fc;display:none;align-items:center;gap:8px;flex-shrink:0;">
-  <span id="mod-call-banner-text">💬 Your message has been sent to the moderator. They will reply here in the chat.</span>
-</div>
-<div class="expiry-banner" id="mod-reply-banner" style="background:#1e1b4b;border-bottom-color:rgba(99,102,241,0.4);display:none;cursor:pointer;" onclick="scrollToModReply()">💬 <span id="mod-reply-banner-text">Your moderator has replied — tap to view</span></div>
 <div class="expiry-banner" id="deal-cancelled-banner" style="background:#fff1f2;border-bottom-color:#fecdd3;display:none;">❌ <span id="deal-cancelled-text">This deal has been cancelled by RenterFinder moderation.</span></div>
 <div class="chat-messages" id="chat-messages"></div>
 
@@ -458,7 +451,6 @@
   <strong>🚫 This chat has been suspended</strong>
   <span>You have exceeded the maximum number of policy violations.</span>
   <button class="appeal-btn" onclick="openAppeal()">📝 Submit an Appeal</button>
-  <button class="appeal-btn contact-mod-btn" style="margin-top:4px;" onclick="openContactMod()">💬 Contact Moderator</button>
 </div>
 
 <div class="mod-status" id="mod-status"></div>
@@ -480,7 +472,7 @@
     <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
   </button>
 </div>
-<div class="chat-disclaimer" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px;">🛡️ AI-moderated · No phone numbers, emails, addresses or meeting details allowed · Images are scanned before delivery<button onclick="openContactMod()" style="background:transparent;border:none;color:rgba(99,102,241,0.7);font-size:11px;font-family:'Outfit',sans-serif;cursor:pointer;padding:0;white-space:nowrap;">💬 Contact Mod</button></div>
+<div class="chat-disclaimer">🛡️ AI-moderated · No phone numbers, emails, addresses or meeting details allowed · Images are scanned before delivery</div>
 
 <!-- Calendar Modal (Party 1: Propose dates) -->
 <div class="modal-overlay" id="cal-modal" onclick="if(event.target===this)closeCalendarModal()">
@@ -609,42 +601,53 @@
   </div>
 </div>
 
-
-<!-- Contact Mod Modal -->
-<div class="modal-overlay" id="contact-mod-modal" onclick="if(event.target===this)closeContactMod()">
-  <div class="modal-card">
-    <div id="contact-mod-form-view">
-      <div class="modal-title">💬 Contact Your Moderator</div>
-      <div class="modal-sub">Your assigned moderator will be notified and will respond as soon as possible. This conversation is also visible to RenterFinder admin.</div>
-      <textarea class="modal-textarea" id="contact-mod-text" placeholder="Describe your concern or question…" maxlength="300" oninput="document.getElementById('contact-mod-counter').textContent=(this.value.length)+' / 300'"></textarea>
-      <div style="font-size:11px;color:var(--mid);text-align:right;margin-top:-8px;" id="contact-mod-counter">0 / 300</div>
-      <div class="modal-btns">
-        <button class="modal-cancel" onclick="closeContactMod()">Cancel</button>
-        <button class="modal-submit" id="contact-mod-submit-btn" onclick="submitContactMod()">Send to Moderator</button>
-      </div>
-    </div>
-    <div id="contact-mod-success-view" style="display:none;">
-      <div class="modal-success">
-        <div class="check">✅</div>
-        <div class="modal-title" style="margin-bottom:8px;">Message Sent</div>
-        <p id="contact-mod-sent-sub">Your moderator has been notified. They will reply directly in this chat — look out for a purple message bubble.</p>
-      </div>
-      <div id="contact-mod-mod-reply" style="display:none;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.25);border-radius:10px;padding:12px 14px;margin-top:4px;">
-        <div style="font-size:10px;font-weight:700;color:#a5b4fc;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px;">Moderator replied</div>
-        <div id="contact-mod-reply-text" style="font-size:13px;color:#e2e8f0;line-height:1.5;"></div>
-        <div id="contact-mod-reply-name" style="font-size:11px;color:rgba(99,102,241,0.7);margin-top:4px;"></div>
-      </div>
-      <div class="modal-btns" style="margin-top:8px;">
-        <button class="modal-cancel" onclick="scrollToModReply();closeContactMod()">View in Chat</button>
-        <button class="modal-submit" onclick="closeContactMod()">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- Image Lightbox -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
   <img id="lightbox-img" src="" alt="">
+</div>
+
+<!-- Contact Mod Button + Modal -->
+<button class="contact-mod-fab" id="contact-mod-fab" onclick="openContactMod()" title="Contact your moderator">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+</button>
+
+<div class="modal-overlay" id="contact-modal" onclick="if(event.target===this)closeContactMod()">
+  <div class="modal-card" style="max-width:400px;">
+    <div id="contact-form-view">
+      <div class="modal-title" style="font-size:18px;font-weight:600;color:#1f2937;">Contact Your Moderator</div>
+      <div class="modal-sub">Your assigned moderator will respond to your message. Please allow up to a few hours.</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#6b7280;display:block;margin-bottom:5px;">SUBJECT</label>
+          <select id="contact-subject" style="width:100%;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;color:#1f2937;background:#fff;outline:none;">
+            <option value="">Select a subject…</option>
+            <option>General help</option>
+            <option>Issue with chat / messages</option>
+            <option>Question about the deal</option>
+            <option>Report a problem</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#6b7280;display:block;margin-bottom:5px;">MESSAGE</label>
+          <textarea class="modal-textarea" id="contact-message" placeholder="Describe your issue or question…" maxlength="600" oninput="document.getElementById('contact-counter').textContent=this.value.length+' / 600'"></textarea>
+          <div style="font-size:11px;color:#9ca3af;text-align:right;margin-top:3px;" id="contact-counter">0 / 600</div>
+        </div>
+      </div>
+      <div class="modal-btns">
+        <button class="modal-cancel" onclick="closeContactMod()">Cancel</button>
+        <button class="modal-submit" onclick="submitContactMod()">Send Message</button>
+      </div>
+    </div>
+    <div id="contact-success-view" style="display:none;">
+      <div class="modal-success">
+        <div class="check">✅</div>
+        <div class="modal-title" style="font-size:18px;margin-bottom:8px;">Message Sent</div>
+        <p>Your moderator has been notified and will get back to you shortly.</p>
+      </div>
+      <div class="modal-btns"><button class="modal-submit" onclick="closeContactMod()">Close</button></div>
+    </div>
+  </div>
 </div>
 
 <!-- Firebase SDK (compat) -->
@@ -934,7 +937,6 @@
     const avatarClass = isMod ? 'mod-av' : (isMe ? '' : 'other');
     const bubbleClass = isMod ? 'bubble mod-bubble' : 'bubble';
     const senderClass = isMod ? 'msg-sender mod-sender' : 'msg-sender';
-    const modReplyLabel = m.isModReply ? `<div style="font-size:10px;color:#a5b4fc;font-weight:600;letter-spacing:0.3px;margin-bottom:3px;">💬 Moderator reply to your request</div>` : (isMod && !m.isModReply ? `<div style="font-size:10px;color:#c4b5fd;font-weight:600;letter-spacing:0.3px;margin-bottom:3px;">🛡️ Moderator message</div>` : '');
     const approvedHtml = m.moderatorApproved ? `<div class="approved-tag">✓ Moderator Approved</div>` : '';
 
     // Build bubble content — text or image
@@ -943,7 +945,7 @@
       bubbleContent = `<img src="${m.imageB64}" alt="image" onclick="openLightbox(this.src)">`;
       if (m.text) bubbleContent += `<div style="margin-top:6px;">${escH(m.text)}</div>`;
     } else {
-      bubbleContent = (m.isModReply ? modReplyLabel : '') + escH(m.text);
+      bubbleContent = escH(m.text);
     }
 
     // #6 Read receipt — only show on your own last message
@@ -957,10 +959,9 @@
         <div class="${senderClass}">${isMe && !isMod ? 'You' : escH(user.name)}</div>
         <div class="${bubbleClass}">${bubbleContent}</div>
         ${approvedHtml}
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+        <div style="display:flex;gap:6px;align-items:center;">
           <div class="msg-time">${time}</div>
           ${receiptHtml}
-          ${isMod && currentIdentity !== 'MOD' ? `<button onclick="openContactMod()" style="padding:2px 8px;border-radius:5px;border:1px solid rgba(99,102,241,0.3);background:rgba(99,102,241,0.08);color:#a5b4fc;font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;cursor:pointer;">↩ Reply to Mod</button>` : ''}
         </div>
       </div>`;
     container.appendChild(row);
@@ -1280,117 +1281,6 @@ Message: ${JSON.stringify(text)}`;
     document.getElementById('appeal-success-view').style.display = 'block';
   }
 
-
-
-  // ── MOD REPLY NOTIFICATIONS ────────────────────────────────
-  function scrollToModReply() {
-    const msgs = document.querySelectorAll('#chat-messages .msg-row');
-    // Find the last mod-reply bubble and scroll to it
-    let lastMod = null;
-    msgs.forEach(el => { if (el.querySelector('.mod-bubble')) lastMod = el; });
-    if (lastMod) {
-      lastMod.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      lastMod.style.transition = 'box-shadow 0.3s';
-      lastMod.style.boxShadow = '0 0 0 2px rgba(99,102,241,0.6)';
-      setTimeout(() => { lastMod.style.boxShadow = ''; }, 2000);
-    }
-    const banner = document.getElementById('mod-reply-banner');
-    if (banner) banner.style.display = 'none';
-  }
-
-  function showModReplyToast() {
-    const toast = document.getElementById('mod-toast');
-    if (!toast) return;
-    toast.style.display = 'flex';
-    setTimeout(() => { toast.style.display = 'none'; }, 4000);
-  }
-
-  function updateContactModModal(msgs) {
-    // Update the contact modal to show the latest mod reply
-    const replies = msgs.filter(m => m.isModReply).sort((a,b) => b.ts - a.ts);
-    const latestReply = replies[0];
-    if (!latestReply) return;
-    const replyEl = document.getElementById('contact-mod-mod-reply');
-    if (replyEl) {
-      replyEl.style.display = '';
-      document.getElementById('contact-mod-reply-text').textContent = latestReply.text;
-      document.getElementById('contact-mod-reply-name').textContent =
-        latestReply.senderName + ' · ' + new Date(latestReply.ts).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
-    }
-    // Switch success view text
-    const subEl = document.getElementById('contact-mod-sent-sub');
-    if (subEl) subEl.textContent = 'Your moderator has replied. You can see their message in the chat.';
-  }
-
-  // ── CONTACT MOD ──────────────────────────────────────────────
-  function openContactMod() {
-    document.getElementById('contact-mod-text').value = '';
-    document.getElementById('contact-mod-counter').textContent = '0 / 300';
-    document.getElementById('contact-mod-text').style.borderColor = '';
-    // Check if there's already a mod reply — show that view instead of the form
-    const existingReplies = _messages.filter(m => m.isModReply);
-    if (existingReplies.length) {
-      document.getElementById('contact-mod-form-view').style.display = 'none';
-      document.getElementById('contact-mod-success-view').style.display = 'block';
-      updateContactModModal(_messages);
-    } else {
-      document.getElementById('contact-mod-form-view').style.display = '';
-      document.getElementById('contact-mod-success-view').style.display = 'none';
-    }
-    document.getElementById('contact-mod-modal').classList.add('show');
-  }
-
-  function closeContactMod() {
-    document.getElementById('contact-mod-modal').classList.remove('show');
-  }
-
-  async function submitContactMod() {
-    const text = document.getElementById('contact-mod-text').value.trim();
-    if (!text || text.length < 5) {
-      document.getElementById('contact-mod-text').style.borderColor = '#ef4444';
-      return;
-    }
-    const btn = document.getElementById('contact-mod-submit-btn');
-    btn.disabled = true; btn.textContent = 'Sending…';
-    try {
-      // Look up assigned mod from Firestore
-      const assignedModId = await RF.getAssignment(CHAT_ID).catch(() => null);
-      const call = {
-        id: Date.now(),
-        chatId: CHAT_ID,
-        listing: LISTING,
-        userId: USERS[currentIdentity].id,
-        userName: USERS[currentIdentity].name,
-        userRole: USERS[currentIdentity].role,
-        assignedModId: assignedModId || 'unassigned',
-        message: text,
-        ts: Date.now(),
-        status: 'open'
-      };
-      await RF.saveModCall(call);
-      // Also post a visible message in the chat so both parties see the request
-      const sysMsg = {
-        id: Date.now() + 1,
-        chatId: CHAT_ID,
-        senderIdentity: 'SYS',
-        senderId: 'system',
-        senderName: 'System',
-        text: `💬 ${USERS[currentIdentity].name} (${USERS[currentIdentity].role}) contacted the moderator: "${text}"`,
-        ts: Date.now(),
-        isSystem: true,
-        isModContact: true
-      };
-      RF.saveMessage(CHAT_ID, sysMsg).catch(() => {});
-      document.getElementById('contact-mod-form-view').style.display = 'none';
-      document.getElementById('contact-mod-success-view').style.display = 'block';
-    } catch(e) {
-      console.error('[RF] submitContactMod', e);
-      btn.textContent = 'Error — try again';
-    } finally {
-      btn.disabled = false;
-    }
-  }
-
   // ── CROSS-TAB EVENTS ─────────────────────────────────────────
   // ── FIREBASE REAL-TIME LISTENERS ─────────────────────────────
   // These replace all localStorage storage-event cross-device signalling.
@@ -1398,21 +1288,9 @@ Message: ${JSON.stringify(text)}`;
 
   // 1. Messages — receives new msgs from other party AND mod-approved msgs
   RF.onMessages(CHAT_ID, function(msgs) {
-    const prevCount = _messages.filter(m => m.isModReply).length;
     _messages = msgs;
     renderMessages();
     markRead();
-    // Notify user if a new mod reply arrived
-    const newCount = msgs.filter(m => m.isModReply).length;
-    if (newCount > prevCount && currentIdentity !== 'MOD') {
-      const banner = document.getElementById('mod-reply-banner');
-      if (banner) {
-        banner.style.display = 'flex';
-        setTimeout(() => { banner.style.display = 'none'; }, 8000);
-      }
-      showModReplyToast();
-      updateContactModModal(msgs);
-    }
   });
 
   // 2. Chat meta — meeting, deal, joinSlots, violations, expiry
@@ -1429,37 +1307,11 @@ Message: ${JSON.stringify(text)}`;
         const joinerName = _joinSlots.mod?.name || _joinSlots.admin?.name || 'RenterFinder Moderator';
         const nameEl = document.getElementById('mod-joined-name');
         if (nameEl) nameEl.textContent = joinerName;
-        const _mjb = document.getElementById('mod-joined-banner');
-        _mjb.classList.add('show');
-        setTimeout(() => _mjb.classList.remove('show'), 5000);
+        document.getElementById('mod-joined-banner').classList.add('show');
       }
     }
     checkExpiry();
     renderMessages();
-  });
-
-
-  // Mod call status — show banner when mod acknowledges the call
-  RF.onChatModCalls(CHAT_ID, function(calls) {
-    const myCalls = calls.filter(c => c.userId === MY_ID || c.userId === currentIdentity);
-    const banner = document.getElementById('mod-call-banner');
-    const bannerText = document.getElementById('mod-call-banner-text');
-    if (!banner) return;
-    if (!myCalls.length) { banner.style.display = 'none'; return; }
-    const latest = myCalls.sort((a,b) => (b.ts||0)-(a.ts||0))[0];
-    banner.style.display = 'flex';
-    setTimeout(() => { if(banner) banner.style.display='none'; }, 8000);
-    if (latest.status === 'answered') {
-      bannerText.textContent = '✅ Your moderator has seen your message and replied in this chat.';
-      banner.style.background = 'linear-gradient(135deg,rgba(16,185,129,0.12),rgba(16,185,129,0.06))';
-      banner.style.borderBottomColor = 'rgba(16,185,129,0.3)';
-      bannerText.style.color = '#6ee7b7';
-    } else {
-      bannerText.textContent = '💬 Your message has been sent to the moderator. They will reply here in this chat.';
-      banner.style.background = 'linear-gradient(135deg,rgba(99,102,241,0.12),rgba(99,102,241,0.06))';
-      banner.style.borderBottomColor = 'rgba(99,102,241,0.3)';
-      bannerText.style.color = '#a5b4fc';
-    }
   });
 
   // Typing indicator stays localStorage (ephemeral same-device)
@@ -2057,10 +1909,6 @@ Message: ${JSON.stringify(text)}`;
     if (URL_ROLE === 'admin' || URL_ROLE === 'mod') {
       USERS.MOD.name = URL_MOD_NAME || (URL_ROLE === 'admin' ? 'Admin' : 'RenterFinder Moderator');
       USERS.MOD.id   = URL_MOD_ID || 'rf-moderator';
-  if (URL_ROLE === 'mod' || URL_ROLE === 'admin') {
-    const modBtn = document.getElementById('btn-mod');
-    if (modBtn) modBtn.style.display = '';
-  }
       setTimeout(() => switchIdentity('MOD'), 100);
     }
 
@@ -2078,6 +1926,68 @@ Message: ${JSON.stringify(text)}`;
     }, 600);
 
   }
+
+  // ── CONTACT MOD ──────────────────────────────────────────────
+  const CONTACTS_KEY = 'rf_mod_contacts';
+
+  function openContactMod() {
+    if (currentIdentity === 'MOD') return;
+    document.getElementById('contact-form-view').style.display = 'flex';
+    document.getElementById('contact-form-view').style.flexDirection = 'column';
+    document.getElementById('contact-form-view').style.gap = '14px';
+    document.getElementById('contact-success-view').style.display = 'none';
+    document.getElementById('contact-subject').value = '';
+    document.getElementById('contact-message').value = '';
+    document.getElementById('contact-counter').textContent = '0 / 600';
+    document.getElementById('contact-modal').classList.add('show');
+  }
+  function closeContactMod() {
+    document.getElementById('contact-modal').classList.remove('show');
+  }
+  function submitContactMod() {
+    const subject = document.getElementById('contact-subject').value;
+    const message = document.getElementById('contact-message').value.trim();
+    if (!subject) { document.getElementById('contact-subject').style.borderColor='#ef4444'; return; }
+    if (!message || message.length < 5) { document.getElementById('contact-message').style.borderColor='#ef4444'; return; }
+
+    const contact = {
+      id: Date.now(),
+      chatId: CHAT_ID,
+      listing: LISTING,
+      userId: USERS[currentIdentity].id,
+      userName: USERS[currentIdentity].name,
+      userRole: USERS[currentIdentity].role,
+      subject,
+      message,
+      ts: Date.now(),
+      status: 'open',
+      modId: null,
+      reply: null,
+      repliedTs: null
+    };
+
+    // Write to localStorage
+    try {
+      const contacts = JSON.parse(localStorage.getItem(CONTACTS_KEY)) || [];
+      contacts.unshift(contact);
+      localStorage.setItem(CONTACTS_KEY, JSON.stringify(contacts));
+    } catch {}
+
+    // Write to Firestore
+    if (!_isLocal) RF.saveContact(contact).catch(e => console.warn('[RF] saveContact', e));
+
+    document.getElementById('contact-form-view').style.display = 'none';
+    document.getElementById('contact-success-view').style.display = 'block';
+  }
+
+  // Hide contact fab when in MOD identity
+  const _origSwitchIdentity = switchIdentity;
+  switchIdentity = function(id) {
+    _origSwitchIdentity(id);
+    const fab = document.getElementById('contact-mod-fab');
+    if (fab) fab.classList.toggle('hidden', id === 'MOD');
+  };
+
   init();
 </script>
 </div><!-- #chat-wrap -->

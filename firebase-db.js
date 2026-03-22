@@ -219,52 +219,33 @@ const RF = (function() {
     catch(e) { console.error('[RF] saveUserChats', e); }
   }
 
+  // ── CONTACTS ─────────────────────────────────────────────────
+  async function saveContact(contact) {
+    try { await db.collection('contacts').doc(String(contact.id)).set(contact); }
+    catch(e) { console.error('[RF] saveContact', e); }
+  }
+
+  async function updateContact(id, patch) {
+    try { await db.collection('contacts').doc(String(id)).update(patch); }
+    catch(e) { console.error('[RF] updateContact', e); }
+  }
+
+  function onContacts(cb) {
+    return db.collection('contacts').onSnapshot(
+      snap => {
+        const data = snap.docs.map(d => d.data());
+        data.sort((a,b) => (b.ts||0)-(a.ts||0));
+        cb(data);
+      },
+      e => console.error('[RF] onContacts', e)
+    );
+  }
+
   // ── SYSTEM MESSAGE ───────────────────────────────────────────
   async function postSystemMsg(chatId, text, extra) {
     const msg = { id: Date.now(), senderIdentity:'SYS', senderId:'system', senderName:'System', text, ts: Date.now(), isSystem: true, chatId, ...(extra||{}) };
     await saveMessage(chatId, msg);
     return msg;
-  }
-
-
-  async function saveModCall(call) {
-    try { await db.collection('modcalls').doc(String(call.id)).set(call); }
-    catch(e) { console.error('[RF] saveModCall', e); }
-  }
-
-  async function updateModCall(id, patch) {
-    try { await db.collection('modcalls').doc(String(id)).update(patch); }
-    catch(e) { console.error('[RF] updateModCall', e); }
-  }
-
-  function onModCalls(modId, cb) {
-    try {
-      const col = db.collection('modcalls');
-      const q = col.where ? col.where('assignedModId', '==', modId) : col;
-      return q.onSnapshot(
-        snap => cb(snap.docs.map(d => d.data()).filter(d => !modId || d.assignedModId === modId)),
-        e => console.error('[RF] onModCalls', e)
-      );
-    } catch(e) { console.error('[RF] onModCalls setup', e); return () => {}; }
-  }
-
-  function onChatModCalls(chatId, cb) {
-    try {
-      return db.collection('modcalls')
-        .where('chatId', '==', chatId)
-        .onSnapshot(
-          snap => cb(snap.docs.map(d => d.data())),
-          e => console.error('[RF] onChatModCalls', e)
-        );
-    } catch(e) { console.error('[RF] onChatModCalls setup', e); return () => {}; }
-  }
-
-  function onAllModCalls(cb) {
-    return db.collection('modcalls')
-      .onSnapshot(
-        snap => cb(snap.docs.map(d => d.data())),
-        e => console.error('[RF] onAllModCalls', e)
-      );
   }
 
   return {
@@ -273,12 +254,12 @@ const RF = (function() {
     saveViolations, saveDeal, saveMeeting, saveJoinSlots,
     appendModLog, updateModLogEntry, onModLog,
     saveAppeal, updateAppeal, onAppeals,
+    saveContact, updateContact, onContacts,
     saveAssignment, deleteAssignment, getAssignment, onAssignments,
     setModActive, onModsActive,
     banUser, unbanUser, onBanned,
     onAllChats, onDeals, deleteDeal, saveDefaulter,
     getUserChats, saveUserChats,
-    saveModCall, updateModCall, onModCalls, onAllModCalls, onChatModCalls,
     postSystemMsg
   };
 

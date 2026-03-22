@@ -601,6 +601,7 @@
     <div class="dash-tab" data-tab="archived" onclick="switchTab('archived')">📁 Archived <span class="tab-count" id="tab-archived-count" style="background:rgba(255,255,255,0.06);color:var(--muted);">0</span></div>
     <div class="dash-tab" data-tab="history" onclick="switchTab('history')">🕓 History <span class="tab-count" id="tab-history-count" style="background:rgba(255,255,255,0.06);color:var(--muted);">0</span></div>
     <div class="dash-tab" data-tab="defaulters" onclick="switchTab('defaulters')">🚫 Defaulters <span class="tab-count" id="tab-defaulters-count" style="background:rgba(239,68,68,0.18);color:#fca5a5;">0</span></div>
+    <div class="dash-tab" data-tab="contacts" onclick="switchTab('contacts')">📩 Contacts <span class="tab-count purple" id="tab-contacts-count">0</span></div>
   </div>
 
   <div class="dash-content">
@@ -644,6 +645,16 @@
             <div class="stat-value blue" id="stat-appeals">0</div>
             <div class="stat-arrow">→ Appeals</div>
           </div>
+          <div class="stat-card" onclick="switchTab('contacts')" title="View user contacts">
+            <div class="stat-label">Total Contacts</div>
+            <div class="stat-value purple" id="stat-contacts-total">0</div>
+            <div class="stat-arrow">→ Contacts</div>
+          </div>
+          <div class="stat-card" onclick="switchTab('contacts')" title="View answered contacts">
+            <div class="stat-label">Contacts Answered</div>
+            <div class="stat-value green" id="stat-contacts-answered">0</div>
+            <div class="stat-arrow">→ Contacts</div>
+          </div>
           <div class="stat-card" onclick="switchTab('users')" title="View suspended chats">
             <div class="stat-label">Suspended Chats</div>
             <div class="stat-value red" id="stat-suspended">0</div>
@@ -666,7 +677,7 @@
       <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
         <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
           <table class="mod-metrics-table" style="min-width:560px;"><thead><tr>
-            <th>Mod / Admin</th><th>Reviewed</th><th>Approved / Dismissed</th><th>Approval %</th><th>Avg Response</th><th>Calls</th><th>Last Action</th>
+            <th>Mod / Admin</th><th>Reviewed</th><th>Approved / Dismissed</th><th>Approval %</th><th>Avg Response</th><th>Contacts</th><th>Last Action</th>
           </tr></thead><tbody id="mod-metrics-body"></tbody></table>
         </div>
       </div>
@@ -769,6 +780,19 @@
         <span class="tab-search-count" id="search-defaulters-count"></span>
       </div>
       <div id="defaulters-list" style="display:flex;flex-direction:column;gap:12px;"></div>
+    </div>
+
+    <!-- CONTACTS -->
+    <div class="tab-panel" id="panel-contacts">
+      <div class="section-header">
+        <div><div class="section-title">User Contacts</div><div class="section-sub">Messages sent by users to their assigned moderator</div></div>
+        <div style="display:flex;gap:8px;">
+          <button class="perf-period-btn active" onclick="filterContacts('all')" id="contacts-filter-all">All</button>
+          <button class="perf-period-btn" onclick="filterContacts('open')" id="contacts-filter-open">Open</button>
+          <button class="perf-period-btn" onclick="filterContacts('answered')" id="contacts-filter-answered">Answered</button>
+        </div>
+      </div>
+      <div id="contacts-list" style="display:flex;flex-direction:column;gap:12px;"></div>
     </div>
 
 
@@ -1046,7 +1070,6 @@
   let _banned          = {};
   let _modsActive      = { 'mod-1': true, 'mod-2': true };
   let _defaulters      = [];
-  let _modCalls        = [];
 
   // ── DATA ACCESSORS (read from in-memory, write to Firestore) ──
   const getModLog      = () => _modLog;
@@ -1060,6 +1083,11 @@
   const getAssignments = () => _assignments;
   const getDefaulters  = () => _defaulters;
   const saveDefaulters = d => { _defaulters = Array.isArray(d) ? d : [d]; _defaulters.forEach(x => RF.saveDefaulter(x).catch(e => console.warn('[RF] saveDefaulter', e))); };
+
+  // Contacts cache
+  let _contacts = [];
+  try { _contacts = JSON.parse(localStorage.getItem('rf_mod_contacts') || '[]'); } catch {}
+  const getContacts = () => _contacts;
 
   function getJoinSlots(chatId) {
     return _joinSlotsByChat[chatId] || { admin: null, mod: null };
@@ -1177,6 +1205,15 @@
     const defCount = getDefaulters().length;
     const defEl = document.getElementById('stat-defaulters'); if (defEl) defEl.textContent = defCount;
     const defTab = document.getElementById('tab-defaulters-count'); if (defTab) defTab.textContent = defCount;
+
+    // Contacts stats
+    const allContacts = getContacts();
+    const openContacts = allContacts.filter(c => c.status === 'open').length;
+    const answeredContacts = allContacts.filter(c => c.status === 'answered').length;
+    const ctTotal = document.getElementById('stat-contacts-total'); if (ctTotal) ctTotal.textContent = allContacts.length;
+    const ctAns   = document.getElementById('stat-contacts-answered'); if (ctAns) ctAns.textContent = answeredContacts;
+    const ctTab   = document.getElementById('tab-contacts-count'); if (ctTab) ctTab.textContent = openContacts;
+    renderContactsList(allContacts, document.getElementById('contacts-list'));
   }
 
   // ── CHATS LIST ───────────────────────────────────────────────
@@ -1709,6 +1746,86 @@
     renderModMetrics();
   }
 
+  // ── CONTACTS ─────────────────────────────────────────────────
+  let _contactsFilter = 'all';
+
+  function filterContacts(filter) {
+    _contactsFilter = filter;
+    ['all','open','answered'].forEach(f => {
+      const btn = document.getElementById(`contacts-filter-${f}`);
+      if (btn) btn.classList.toggle('active', f === filter);
+    });
+    renderContactsList(getContacts(), document.getElementById('contacts-list'));
+  }
+
+  function renderContactsList(contacts, container) {
+    if (!container) return;
+    const filtered = _contactsFilter === 'all' ? contacts : contacts.filter(c => c.status === _contactsFilter);
+    if (!filtered.length) {
+      container.innerHTML = `<div class="empty-state"><div class="empty-icon">📩</div><h3>No ${_contactsFilter === 'all' ? '' : _contactsFilter + ' '}contacts yet</h3><p style="color:var(--muted);font-size:13px;margin-top:6px;">Users can reach out to their moderator from the chat.</p></div>`;
+      return;
+    }
+    container.innerHTML = '';
+    filtered.forEach(c => {
+      const ts = c.ts ? new Date(c.ts).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
+      const isOpen = c.status === 'open';
+      const card = document.createElement('div');
+      card.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:12px;';
+      card.innerHTML = `
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
+              <span style="font-size:13px;font-weight:700;color:var(--text);">${escH(c.userName)}</span>
+              <span style="font-size:10px;color:var(--muted);background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:20px;padding:1px 8px;">${escH(c.userRole)}</span>
+              <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;${isOpen ? 'background:rgba(251,146,60,0.15);color:#fb923c;border:1px solid rgba(251,146,60,0.3);' : 'background:rgba(16,185,129,0.12);color:#6ee7b7;border:1px solid rgba(16,185,129,0.3);'}">${isOpen ? 'Open' : '✓ Answered'}</span>
+            </div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:2px;">${escH(c.listing)} · ${ts}</div>
+            <div style="font-size:12px;font-weight:600;color:var(--gold);margin-bottom:6px;">Subject: ${escH(c.subject)}</div>
+            <div style="font-size:13px;color:var(--text);line-height:1.5;background:rgba(255,255,255,0.03);border-radius:8px;padding:10px 12px;">${escH(c.message)}</div>
+          </div>
+        </div>
+        ${c.reply ? `
+          <div style="border-top:1px solid var(--border);padding-top:10px;">
+            <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;">MOD REPLY · ${c.repliedTs ? new Date(c.repliedTs).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : ''}</div>
+            <div style="font-size:13px;color:var(--text);line-height:1.5;">${escH(c.reply)}</div>
+          </div>` : ''}
+        ${isOpen ? `
+          <div style="display:flex;gap:8px;align-items:flex-end;">
+            <textarea id="contact-reply-${c.id}" placeholder="Type a reply…" maxlength="500" style="flex:1;resize:none;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--text);background:rgba(255,255,255,0.04);outline:none;min-height:60px;"></textarea>
+            <button onclick="replyToContact(${c.id})" style="padding:9px 18px;border:none;border-radius:8px;background:#2d5a8e;color:#e8f0fb;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">Reply & Close</button>
+          </div>` : ''}`;
+      container.appendChild(card);
+    });
+  }
+
+  function replyToContact(contactId) {
+    const textarea = document.getElementById(`contact-reply-${contactId}`);
+    if (!textarea) return;
+    const reply = textarea.value.trim();
+    if (!reply) { textarea.style.borderColor = '#ef4444'; return; }
+
+    // Update in localStorage
+    const contacts = JSON.parse(localStorage.getItem('rf_mod_contacts') || '[]');
+    const idx = contacts.findIndex(c => c.id === contactId);
+    if (idx !== -1) {
+      contacts[idx].reply = reply;
+      contacts[idx].repliedTs = Date.now();
+      contacts[idx].status = 'answered';
+      localStorage.setItem('rf_mod_contacts', JSON.stringify(contacts));
+      _contacts = contacts;
+    } else {
+      // Update in memory
+      const c = _contacts.find(c => c.id === contactId);
+      if (c) { c.reply = reply; c.repliedTs = Date.now(); c.status = 'answered'; }
+    }
+
+    // Update Firestore
+    RF.updateContact(contactId, { reply, repliedTs: Date.now(), status: 'answered' }).catch(e => console.warn('[RF] updateContact', e));
+
+    showToast('✓ Reply sent', 'success');
+    loadDashboard();
+  }
+
   function renderModMetrics() {
     const container = document.getElementById('mod-metrics-body');
     if (!container) return;
@@ -1735,6 +1852,7 @@
 
     container.innerHTML = '';
     const maxTotal = Math.max(...Object.values(byMod).map(m => m.approved + m.dismissed), 1);
+    const allContacts = getContacts();
 
     // Sort: most active first, then alphabetical
     Object.entries(byMod)
@@ -1746,17 +1864,13 @@
         const avgStr = avgMins !== null ? (avgMins < 60 ? `${avgMins}m` : `${Math.round(avgMins/60)}h`) : '—';
         const barW = total ? Math.round((total / maxTotal) * 80) : 0;
         const lastStr = d.lastTs ? fmtTs(d.lastTs) : '—';
-        const modCalls = _modCalls.filter(c => {
-          const modId = MODS.find(m => m.name === name)?.id;
-          return modId && c.assignedModId === modId;
-        });
-        const answeredCalls = modCalls.filter(c => c.status === 'answered').length;
-        const callsStr = modCalls.length
-          ? `<span style="font-weight:600;">${answeredCalls}</span><span style="color:var(--muted);"> / ${modCalls.length}</span>`
-          : '<span style="color:var(--muted);">—</span>';
         const rateStr = approvalRate !== null
           ? `<span style="color:${approvalRate>=70?'#34d399':approvalRate>=40?'#fcd34d':'#f87171'};font-weight:700;">${approvalRate}%</span>`
           : '<span style="color:var(--muted);">—</span>';
+        // Contacts for this mod
+        const modContacts = allContacts.filter(c => c.assignedModName === name || (name === 'Admin'));
+        const modContactsAns = modContacts.filter(c => c.status === 'answered').length;
+        const contactsStr = modContacts.length ? `${modContactsAns}/${modContacts.length}` : '—';
         const tr = document.createElement('tr');
         tr.style.opacity = total === 0 ? '0.45' : '1';
         tr.innerHTML = `
@@ -1765,7 +1879,7 @@
           <td><span style="color:#34d399;">${d.approved}</span> / <span style="color:#f87171;">${d.dismissed}</span></td>
           <td>${rateStr}</td>
           <td style="color:var(--muted);">${avgStr}</td>
-          <td>${callsStr}</td>
+          <td style="color:var(--muted);">${contactsStr}</td>
           <td style="color:var(--muted);font-size:11px;">${lastStr}</td>`;
         container.appendChild(tr);
       });
@@ -2626,11 +2740,6 @@ if (_sess) {
       loadDashboard();
     }, e => console.warn('[RF] defaulters', e));
 
-    // All mod calls — admin can see all
-    RF.onAllModCalls(calls => {
-      _modCalls = calls;
-    });
-
     // Banned → write to rf_banned_users localStorage
     RF.onBanned(banned => {
       _banned = banned;
@@ -2640,6 +2749,13 @@ if (_sess) {
     RF.onModsActive(map => {
       _modsActive = map;
       renderModPanel();
+    });
+
+    // Contacts → sync to _contacts cache and localStorage
+    RF.onContacts(contacts => {
+      _contacts = contacts;
+      try { localStorage.setItem('rf_mod_contacts', JSON.stringify(contacts)); } catch {}
+      loadDashboard();
     });
   }
 
