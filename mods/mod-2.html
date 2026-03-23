@@ -390,10 +390,21 @@
     .section-header { flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
     .section-title { font-size: 14px; }
 
-    /* Pipeline */
-    .pipeline-stage { padding: 10px 12px; gap: 10px; }
+    /* Pipeline — stack action button below body on mobile */
+    .pipeline-stage { padding: 10px 12px; gap: 8px; flex-wrap: wrap; align-items: flex-start; }
     .pipeline-title { font-size: 12px; }
     .pipeline-sub { font-size: 10px; }
+    .pipeline-num { flex-shrink: 0; margin-top: 2px; }
+    .pipeline-body { min-width: 0; flex: 1; width: 0; }
+    .pipeline-action-btn { width: 100%; text-align: center; padding: 10px 12px; font-size: 13px; margin-top: 4px; flex-shrink: 0; box-sizing: border-box; }
+    .pipeline-done-tag { font-size: 10px; margin-top: 2px; }
+    .pipeline-stage > .pipeline-action-btn,
+    .pipeline-stage > .pipeline-done-tag,
+    .pipeline-stage > span { order: 3; flex-basis: 100%; margin-left: 36px; }
+    .payment-toggles { flex-direction: column; }
+    .pay-toggle { width: 100%; box-sizing: border-box; }
+    .acc-deal-hdr-listing { display: none; }
+    .acc-deal-hdr-ts { display: none; }
 
     /* Appeal cards */
     .appeal-actions { justify-content: flex-start; }
@@ -413,6 +424,8 @@
     .flag-card { padding: 12px 12px; }
     .mod-grid { grid-template-columns: 1fr; }
     .deal-card-icon { width: 36px; height: 36px; font-size: 16px; }
+    .pipeline-action-btn { font-size: 12px; padding: 9px 10px; }
+    .pipeline-stage { padding: 8px 10px; }
   }
 
   /* User Profile Modal */
@@ -1053,9 +1066,9 @@
       const hdr = document.createElement('div');
       hdr.style.cssText = 'display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;user-select:none;';
       hdr.innerHTML = `
-        <span style="font-size:10px;font-weight:700;color:var(--muted);background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:2px 7px;flex-shrink:0;">ID: ${dealId}</span>
-        <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escH(d.userA)} ↔ ${escH(d.userB)}</span>
-        <span style="font-size:11px;color:var(--muted);white-space:nowrap;max-width:140px;overflow:hidden;text-overflow:ellipsis;" title="${escH(d.listing||'')}">${escH(d.listing||'—')}</span>
+        <span style="font-size:10px;font-weight:700;color:var(--muted);background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:2px 7px;flex-shrink:0;white-space:nowrap;">ID: ${dealId}</span>
+        <span style="flex:1;min-width:0;font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escH(d.userA)} ↔ ${escH(d.userB)}</span>
+        <span class="acc-deal-hdr-listing" style="font-size:11px;color:var(--muted);white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis;" title="${escH(d.listing||'')}">${escH(d.listing||'—')}</span>
         <span style="font-size:11px;font-weight:700;color:#34d399;padding:2px 8px;border-radius:20px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);white-space:nowrap;">● ${escH(stageLabel)}</span>
         <span style="color:var(--muted);font-size:16px;transition:transform 0.2s;" class="acc-chev">›</span>`;
       const bdy = document.createElement('div');
@@ -1072,7 +1085,8 @@
         if (chev) chev.style.transform = '';
       });
       hdr.appendChild(closeBtn);
-      hdr.addEventListener('click', () => {
+      hdr.addEventListener('click', (e) => {
+        if (e.target === closeBtn) return;
         const isOpen = bdy.style.display !== 'none';
         const chev = hdr.querySelector('.acc-chev');
         if (isOpen) {
@@ -1088,7 +1102,7 @@
           if (!bdy.innerHTML) renderDealCard(d, bdy, false);
         }
       });
-      bdy.addEventListener('click', e => e.stopPropagation());
+      // No stopPropagation — hdr listener is on hdr, not on parent
       // Restore open state — clear first to prevent duplicates
       if (_openDealIds.has(d.chatId)) {
         bdy.style.display = 'block';
@@ -1179,7 +1193,7 @@
       }
       stageEl.innerHTML = `
         <div class="pipeline-num">${isDone ? '✓' : (i + 1)}</div>
-        <div class="pipeline-body">
+        <div class="pipeline-body" style="min-width:0;overflow:hidden;">
           <div class="pipeline-title">${stage.icon} ${stage.label}</div>
           <div class="pipeline-sub">${stage.sub}</div>
           ${isActive && stage.gateType === 'payment' ? buildPaymentToggles(d, stage.key) : ''}
@@ -1286,11 +1300,21 @@
     deal[stageKey + '_days_A'] = daysA; deal[stageKey + '_days_B'] = daysB;
     deal[stageKey + '_days'] = Math.round((daysA + daysB) / 2);
     const amtNote = daysA === daysB ? `${daysA} day(s) rent each` : `${daysA} days (${deal.userA}), ${daysB} days (${deal.userB})`;
-    askConfirm(`Confirm amounts: ${amtNote}?`, () => _doModSelectStage(chatId, stageKey), 'Confirm Payment Amounts'); return;
+    askConfirm(`Confirm amounts: ${amtNote}?`, () => _doModSelectStage(chatId, stageKey, daysA, daysB, label), 'Confirm Payment Amounts');
+  }
+
+  function _doModSelectStage(chatId, stageKey, daysA, daysB, label) {
+    const deals = getDeals();
+    const deal  = deals.find(d => d.chatId === chatId);
+    if (!deal) return;
     deal[`stage_${stageKey}`]    = true;
     deal[`stage_${stageKey}_ts`] = Date.now();
     deal.lastActionTs = Date.now();
+    // Update stage label so accordion header stays accurate
+    const newIdx = (() => { let idx = -1; for (let i = 0; i < PIPELINE.length; i++) { if (deal[`stage_${PIPELINE[i].key}`]) idx = i; } return idx; })();
+    deal.stage = newIdx >= 0 ? PIPELINE[newIdx].label : 'Initiated';
     postDealSystemMsg(chatId, `💳 ${label}: ${deal.userA}: ${daysA} day(s) rent · ${deal.userB}: ${daysB} day(s) rent. Use the Pay Now button in chat.`);
+    const di = _deals.findIndex(x => x.chatId === chatId); if (di !== -1) _deals[di] = deal;
     saveDeals(deals);
     syncDealToChat(chatId, deal);
     showToast(`✓ ${label} confirmed — parties notified`, 'success');
@@ -1306,8 +1330,13 @@
     if (!minPaid) { showToast(stageKey === 'final_received' ? 'At least one payment must be ticked.' : 'Both payments must be ticked.', 'error'); return; }
     deal[`stage_${stageKey}`]    = true;
     deal[`stage_${stageKey}_ts`] = Date.now();
+    deal.lastActionTs = Date.now();
+    // Update stage label so accordion header stays accurate
+    const newIdx = (() => { let idx = -1; for (let i = 0; i < PIPELINE.length; i++) { if (deal[`stage_${PIPELINE[i].key}`]) idx = i; } return idx; })();
+    deal.stage = newIdx >= 0 ? PIPELINE[newIdx].label : 'Initiated';
     const label = PIPELINE.find(p => p.key === stageKey)?.label || stageKey;
     postDealSystemMsg(chatId, `✅ ${label} confirmed by RenterFinder. Moving to next stage.`);
+    const di = _deals.findIndex(x => x.chatId === chatId); if (di !== -1) _deals[di] = deal;
     saveDeals(deals);
     syncDealToChat(chatId, deal);
     showToast(`✓ ${label} stage completed`, 'success');
@@ -1320,8 +1349,13 @@
     if (!deal) return;
     deal[`stage_${stageKey}`]    = true;
     deal[`stage_${stageKey}_ts`] = Date.now();
+    deal.lastActionTs = Date.now();
+    // Update stage label so accordion header stays accurate
+    const newIdx = (() => { let idx = -1; for (let i = 0; i < PIPELINE.length; i++) { if (deal[`stage_${PIPELINE[i].key}`]) idx = i; } return idx; })();
+    deal.stage = newIdx >= 0 ? PIPELINE[newIdx].label : 'Initiated';
     const label = PIPELINE.find(p => p.key === stageKey)?.label || stageKey;
     postDealSystemMsg(chatId, `✅ ${label} confirmed by RenterFinder. Moving to next stage.`);
+    const di = _deals.findIndex(x => x.chatId === chatId); if (di !== -1) _deals[di] = deal;
     saveDeals(deals);
     syncDealToChat(chatId, deal);
     showToast(`✓ ${label} confirmed`, 'success');
@@ -1995,7 +2029,12 @@ if (_sess) {
     RF.onDeals(deals => {
       const sorted = [...deals].sort((a,b) => (b.initiatedTs||0)-(a.initiatedTs||0));
       _deals = sorted;
-      deals.forEach(d => { if (d.chatId) _dealByChat[d.chatId] = d; });
+      deals.forEach(d => {
+        if (d.chatId) {
+          _dealByChat[d.chatId] = d;
+          _refreshDealCard(d.chatId, d);
+        }
+      });
     });
 
     // Appeals → write to rf_appeals localStorage
