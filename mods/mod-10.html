@@ -995,6 +995,7 @@
     { key:'advance_select',   label:'Advance — Set Amount',       sub:'Select amount (default 6 days rent). On confirm, both parties receive a payment button.',  gateType:'select',   icon:'💳' },
     { key:'advance_received', label:'Advance — Payment Received',  sub:'Tick off advance payment received from both parties, then confirm.',                       gateType:'payment',  icon:'✅' },
     { key:'meeting',          label:'Meeting Arrangement',         sub:'Parties select dates via the calendar button in chat.',                                   gateType:'action',   icon:'📅' },
+    { key:'deal_done',        label:'Deal Done Confirmation',      sub:'Auto-ticked when both parties click Deal Done in chat after the meeting.',                gateType:'both_confirm', icon:'🤝' },
     { key:'closure',          label:'Deal Closure',                sub:'Confirm once rent agreement and deal terms are finalised.',                               gateType:'action',   icon:'📝' },
     { key:'final_select',     label:'Final Payment — Set Amount',  sub:'Select amount (default 6 days rent). On confirm, both parties receive a payment button.',  gateType:'select',   icon:'💰' },
     { key:'final_received',   label:'Final Payment — Received',    sub:'Tick off final payment received from both parties, then confirm.',                         gateType:'payment',  icon:'✅' },
@@ -1030,8 +1031,8 @@
       hdr.style.cssText = 'display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;user-select:none;';
       hdr.innerHTML = `
         <span style="font-size:10px;font-weight:700;color:var(--muted);background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:2px 7px;flex-shrink:0;">ID: ${dealId}</span>
-        <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escH(d.listing||'—')}</span>
-        <span style="font-size:11px;color:var(--muted);white-space:nowrap;">${escH(d.userA)} ↔ ${escH(d.userB)}</span>
+        <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escH(d.userA)} ↔ ${escH(d.userB)}</span>
+        <span style="font-size:11px;color:var(--muted);white-space:nowrap;max-width:140px;overflow:hidden;text-overflow:ellipsis;" title="${escH(d.listing||'')}">${escH(d.listing||'—')}</span>
         <span style="font-size:11px;font-weight:700;color:#34d399;padding:2px 8px;border-radius:20px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);white-space:nowrap;">● ${escH(stageLabel)}</span>
         <span style="color:var(--muted);font-size:16px;transition:transform 0.2s;" class="acc-chev">›</span>`;
       const bdy = document.createElement('div');
@@ -1413,6 +1414,7 @@
       delete deal[`pay_${last.key}_B`]; delete deal[`pay_${last.key}_B_ts`];
     }
     if (last.gateType === 'select') postDealSystemMsg(chatId, `↩ ${last.label} reversed. Awaiting updated instructions.`);
+    if (last.key === 'deal_done') { delete deal.deal_done_A; delete deal.deal_done_B; }
     // Clear meeting if reversing meeting step or any step after it
     if (last.key === 'meeting') {
       delete deal.meeting; delete deal.stage_meeting; delete deal.stage_meeting_ts;

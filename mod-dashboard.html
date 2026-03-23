@@ -1399,6 +1399,7 @@
     { key:'advance_select',   label:'Advance — Set Amount',    sub:'Select amount (default 6 days rent). On confirm, both parties receive a payment button in chat.',  gateType:'select',   icon:'💳' },
     { key:'advance_received', label:'Advance — Payment Received', sub:'Tick off advance payment received from both parties, then confirm.',                             gateType:'payment',  icon:'✅' },
     { key:'meeting',          label:'Meeting Arrangement',     sub:'Parties select dates via the calendar button in chat. Auto-confirms once both agree on a slot.',   gateType:'action',   icon:'📅' },
+    { key:'deal_done',        label:'Deal Done Confirmation',  sub:'Auto-ticked when both parties click the "✅ Deal Done" button in their chat after the meeting.',    gateType:'both_confirm', icon:'🤝' },
     { key:'closure',          label:'Deal Closure',            sub:'Confirm once rent agreement and deal terms are finalised.',                                        gateType:'action',   icon:'📝' },
     { key:'final_select',     label:'Final Payment — Set Amount', sub:'Select amount (default 6 days rent). On confirm, both parties receive a payment button in chat.', gateType:'select',  icon:'💰' },
     { key:'final_received',   label:'Final Payment — Received', sub:'Tick off final payment received from both parties, then confirm.',                                 gateType:'payment',  icon:'✅' },
@@ -1437,8 +1438,8 @@
       hdr.style.cssText = 'display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none;';
       hdr.innerHTML = `
         <span style="font-size:10px;font-weight:700;color:var(--muted);background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:2px 7px;flex-shrink:0;">ID: ${dealId}</span>
-        <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);">${escH(d.listing||'—')}</span>
-        <span style="font-size:11px;color:var(--muted);">${escH(d.userA)} ↔ ${escH(d.userB)}</span>
+        <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);">${escH(d.userA)} ↔ ${escH(d.userB)}</span>
+        <span style="font-size:11px;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escH(d.listing||'')}">${escH(d.listing||'—')}</span>
         <span style="font-size:11px;font-weight:700;color:#34d399;padding:2px 8px;border-radius:20px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);">● ${escH(stageLabel)}</span>
         <span style="font-size:11px;color:var(--muted);">${ts}</span>
         <span style="color:var(--muted);font-size:16px;transition:transform 0.2s;" class="acc-chev">›</span>`;
@@ -1553,7 +1554,13 @@
           rightEl = `<span class="pipeline-done-tag">✓ Done${ts}</span>`;
         }
       } else if (isActive) {
-        if (stage.gateType === 'select') {
+        if (stage.key === 'deal_done') {
+          const doneA = !!d.deal_done_A; const doneB = !!d.deal_done_B;
+          rightEl = `<span style="font-size:11px;line-height:1.6;text-align:right;color:var(--muted);">
+            ${doneA ? '✅' : '⏳'} ${escH(d.userA)}<br>
+            ${doneB ? '✅' : '⏳'} ${escH(d.userB)}
+          </span>`;
+        } else if (stage.gateType === 'select') {
           const days = d[stage.key + '_days'] != null ? d[stage.key + '_days'] : 6;
           rightEl = `<button class="pipeline-action-btn green" onclick="proceedSelectStage('${d.chatId}','${stage.key}')">Confirm & Notify →</button>`;
         } else if (stage.gateType === 'payment') {
@@ -1820,6 +1827,9 @@
       delete deal[`${stage.key}_days_A`];
       delete deal[`${stage.key}_days_B`];
     }
+    if (stage.key === 'deal_done') {
+      delete deal.deal_done_A; delete deal.deal_done_B;
+    }
     if (stage.key === 'meeting') {
       delete deal.meeting; delete deal.stage_meeting; delete deal.stage_meeting_ts;
       deal.meeting_reversed = true;
@@ -2040,8 +2050,8 @@
       acc.innerHTML = `
         <summary style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;list-style:none;user-select:none;">
           <span style="font-size:10px;font-weight:700;color:var(--muted);background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:2px 7px;flex-shrink:0;">ID: ${String(d.chatId||'').slice(-8).toUpperCase()}</span>
-          <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);">${escH(d.listing||'—')}</span>
-          <span style="font-size:11px;color:var(--muted);">${escH(d.userA)} ↔ ${escH(d.userB)}</span>
+          <span style="flex:1;font-size:13px;font-weight:600;color:var(--text);">${escH(d.userA)} ↔ ${escH(d.userB)}</span>
+          <span style="font-size:11px;color:var(--muted);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escH(d.listing||'')}">${escH(d.listing||'—')}</span>
           <span style="font-size:11px;font-weight:700;color:${statusColor};padding:2px 8px;border-radius:20px;background:${statusColor}22;border:1px solid ${statusColor}44;">${statusLabel}</span>
           <span style="font-size:11px;color:var(--muted);">${ts}</span>
           <span style="color:var(--muted);font-size:14px;transition:transform 0.2s;" class="acc-chevron">›</span>

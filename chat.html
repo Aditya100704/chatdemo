@@ -426,6 +426,7 @@
       </div>
     </div>
   </div>
+  <button id="deal-done-btn" onclick="confirmDealDone()" style="display:none;padding:5px 12px;border-radius:20px;background:linear-gradient(135deg,#7c3aed,#8b5cf6);border:none;color:#fff;font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 2px 8px rgba(124,58,237,0.4);">✅ Deal Done</button>
   <button id="pay-now-btn" onclick="openPaymentGateway()" style="display:none;padding:5px 12px;border-radius:20px;background:linear-gradient(135deg,#1d4ed8,#2563eb);border:none;color:#fff;font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 2px 8px rgba(37,99,235,0.4);">💳 Pay Now</button>
   <button class="topbar-calendar-btn" id="calendar-btn" onclick="openCalendarModal()">📅 Schedule</button>
   <button class="topbar-contact-btn" id="topbar-contact-btn" onclick="openContactMod()" title="Contact your moderator">🛡️ Contact Moderator</button>
@@ -1280,7 +1281,7 @@ Message: ${JSON.stringify(text)}`;
     _chatMeta = data;
     if (data.violations !== undefined) _violations = data.violations;
     if (data.deal       !== undefined) { _deal    = data.deal;    updateDealBar();    checkDealCancelledBanner(); updatePayBtn(); updateCalendarBtn(); }
-    if (data.meeting    !== undefined) { _meeting = data.meeting; updateCalendarBtn(); updatePayBtn(); }
+    if (data.meeting    !== undefined) { _meeting = data.meeting; updateCalendarBtn(); updatePayBtn(); updateDealDoneBtn(); }
     if (data.joinSlots  !== undefined) {
       const wasJoined = isModJoined();
       _joinSlots = data.joinSlots;
@@ -1365,7 +1366,7 @@ Message: ${JSON.stringify(text)}`;
     }
     markRead();
     updateDealBar();
-    updateCalendarBtn(); updatePayBtn();
+    updateCalendarBtn(); updatePayBtn(); updateDealDoneBtn();
     checkWelcome();
     renderMessages();
   }
@@ -1555,7 +1556,7 @@ Message: ${JSON.stringify(text)}`;
     }
 
     updateDealBar();
-    updateCalendarBtn(); updatePayBtn();
+    updateCalendarBtn(); updatePayBtn(); updateDealDoneBtn();
     renderMessages();
   }
 
@@ -1632,6 +1633,53 @@ Message: ${JSON.stringify(text)}`;
 
   function openPaymentGateway() {
     alert('Payment gateway coming soon. Please use the secure payment link sent to your registered contact.');
+  }
+
+  function updateDealDoneBtn() {
+    const btn = document.getElementById('deal-done-btn');
+    if (!btn || currentIdentity === 'MOD') { if (btn) btn.style.display = 'none'; return; }
+    const deal = loadDeal();
+    if (!deal || !(deal.confirmedA && deal.confirmedB)) { btn.style.display = 'none'; return; }
+    // Show only after meeting is confirmed AND deal_done step is not yet complete
+    const meetingDone = deal.stage_meeting === true;
+    const dealDoneDone = deal.stage_deal_done === true;
+    const myDone = deal[`deal_done_${currentIdentity}`];
+    if (meetingDone && !dealDoneDone) {
+      btn.style.display = '';
+      btn.textContent = myDone ? '⏳ Waiting for other party…' : '✅ Deal Done';
+      btn.disabled = !!myDone;
+      btn.style.opacity = myDone ? '0.6' : '1';
+    } else {
+      btn.style.display = 'none';
+    }
+  }
+
+  function confirmDealDone() {
+    const deal = loadDeal();
+    if (!deal) return;
+    if (!confirm('Confirm the deal is done after your meeting? This will notify RenterFinder.')) return;
+    deal[`deal_done_${currentIdentity}`] = true;
+    deal[`deal_done_${currentIdentity}_ts`] = Date.now();
+    // If both parties confirmed → auto-tick deal_done stage
+    if (deal.deal_done_A && deal.deal_done_B) {
+      deal.stage_deal_done    = true;
+      deal.stage_deal_done_ts = Date.now();
+      deal.lastActionTs = Date.now();
+      const msgs = loadMessages();
+      msgs.push({ id: Date.now(), senderIdentity:'SYS', senderId:'system', senderName:'System',
+        text: '✅ Both parties have confirmed the deal is done. Moving to closure stage.',
+        ts: Date.now(), isSystem: true });
+      saveMessages(msgs);
+    } else {
+      const msgs = loadMessages();
+      msgs.push({ id: Date.now(), senderIdentity:'SYS', senderId:'system', senderName:'System',
+        text: `✅ ${USERS[currentIdentity].name} has confirmed the deal is done. Awaiting the other party.`,
+        ts: Date.now(), isSystem: true });
+      saveMessages(msgs);
+    }
+    saveDeal(deal);
+    RF.updateChatMeta(CHAT_ID, { deal }).catch(e => console.warn('[RF] dealDone', e));
+    updateDealDoneBtn(); updatePayBtn(); renderMessages();
   }
 
   function updateCalendarBtn() {
@@ -1847,7 +1895,7 @@ Message: ${JSON.stringify(text)}`;
     saveMessages(msgs);
 
     closeCalendarModal();
-    updateCalendarBtn(); updatePayBtn();
+    updateCalendarBtn(); updatePayBtn(); updateDealDoneBtn();
     renderMessages();
   }
 
@@ -1931,7 +1979,7 @@ Message: ${JSON.stringify(text)}`;
     document.getElementById('cal-done-sub').textContent = `Meeting confirmed: ${dateLabel}, ${slotLabel}`;
     document.getElementById('cal-pick-view').style.display = 'none';
     document.getElementById('cal-done-view').style.display = 'flex';
-    updateCalendarBtn(); updatePayBtn();
+    updateCalendarBtn(); updatePayBtn(); updateDealDoneBtn();
     renderMessages();
   }
 
@@ -1974,7 +2022,7 @@ Message: ${JSON.stringify(text)}`;
     saveMessages(msgs);
 
     closeCalendarModal();
-    updateCalendarBtn(); updatePayBtn();
+    updateCalendarBtn(); updatePayBtn(); updateDealDoneBtn();
     renderMessages();
   }
 
@@ -2013,7 +2061,7 @@ Message: ${JSON.stringify(text)}`;
     // UI will be populated by the Firebase onMessages + onChatMeta listeners above.
     // Call lightweight UI setup that doesn't depend on Firestore data.
     updateDealBar();
-    updateCalendarBtn(); updatePayBtn();
+    updateCalendarBtn(); updatePayBtn(); updateDealDoneBtn();
     renderMessages();   // renders empty state initially; listeners will re-render with data
     checkWelcome();
 
