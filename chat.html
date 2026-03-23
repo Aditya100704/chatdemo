@@ -1688,7 +1688,11 @@ Message: ${JSON.stringify(text)}`;
   function confirmDealDone() {
     const deal = loadDeal();
     if (!deal) return;
-    chatConfirm('Confirm the deal is done after your meeting? This will notify RenterFinder.', _doDealDone, 'Deal Done'); return;
+    chatConfirm('Confirm the deal is done after your meeting? This will notify RenterFinder.', _doDealDone, 'Deal Done');
+  }
+  function _doDealDone() {
+    const deal = loadDeal();
+    if (!deal) return;
     deal[`deal_done_${currentIdentity}`] = true;
     deal[`deal_done_${currentIdentity}_ts`] = Date.now();
     // If both parties confirmed → auto-tick deal_done stage
