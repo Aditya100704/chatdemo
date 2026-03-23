@@ -1140,8 +1140,7 @@
         }
       } else if (isActive) {
         if (stage.gateType === 'select') {
-          const days = d[stage.key + '_days'] != null ? d[stage.key + '_days'] : 6;
-          rightEl = `<span style="font-size:11px;color:var(--muted);">${days} days rent selected</span>`;
+          rightEl = `<button class="pipeline-action-btn green" onclick="proceedSelectStage('${d.chatId}','${stage.key}')">Confirm & Notify →</button>`;
         } else if (stage.gateType === 'payment') {
           const payA = d[`pay_${stage.key}_A`]; const payB = d[`pay_${stage.key}_B`];
           const canProceed = stage.key === 'final_received' ? (payA || payB) : (payA && payB);
@@ -1161,22 +1160,19 @@
           <div class="pipeline-sub">${stage.sub}</div>
           ${isActive && stage.gateType === 'payment' ? buildPaymentToggles(d, stage.key) : ''}
           ${isActive && stage.gateType === 'select' ? `
-            <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;">
-              <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;">Payment Amount (days of rent)</div>
+            <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
+              <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;">Payment Amount</div>
               <div style="display:flex;flex-wrap:wrap;gap:8px;">
-                <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:7px 10px;">
+                <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:7px 12px;">
                   <span style="font-size:12px;color:var(--text);font-weight:600;">👤 ${escH(d.userA)}</span>
-                  <select onchange="setAdvanceDays('${d.chatId}','${stage.key}','A',this.value)" style="padding:3px 7px;border-radius:6px;border:1px solid var(--border);background:var(--card2,#1a1a2e);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;">
-                    ${[1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`<option value="${n}" ${((d[stage.key+'_days_A']??6))==n?'selected':''}>${n} day${n>1?'s':''}</option>`).join('')}
-                  </select>
+                  <span style="font-size:13px;font-weight:700;color:#34d399;">${d[stage.key+'_days_A'] ?? 6} days rent</span>
                 </div>
-                <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:7px 10px;">
+                <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:7px 12px;">
                   <span style="font-size:12px;color:var(--text);font-weight:600;">👤 ${escH(d.userB)}</span>
-                  <select onchange="setAdvanceDays('${d.chatId}','${stage.key}','B',this.value)" style="padding:3px 7px;border-radius:6px;border:1px solid var(--border);background:var(--card2,#1a1a2e);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;">
-                    ${[1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`<option value="${n}" ${((d[stage.key+'_days_B']??6))==n?'selected':''}>${n} day${n>1?'s':''}</option>`).join('')}
-                  </select>
+                  <span style="font-size:13px;font-weight:700;color:#34d399;">${d[stage.key+'_days_B'] ?? 6} days rent</span>
                 </div>
               </div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px;">Amount set by Admin. Click Confirm &amp; Notify to proceed.</div>
             </div>` : ''}
         </div>
         ${rightEl}`;
