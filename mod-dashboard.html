@@ -1829,47 +1829,60 @@
     askConfirm(`Reverse "${stage.label}"? The deal returns to this step.`, () => _doReverseStep(chatId, deals, deal, stage, lastDoneIdx), 'Reverse Step');
   }
   function _doReverseStep(chatId, deals, deal, stage, lastDoneIdx) {
+    // Always re-fetch deal fresh from _deals to avoid stale-closure bugs
+    deal = _deals.find(d => d.chatId === chatId) || deal;
+
     delete deal[`stage_${stage.key}`];
     delete deal[`stage_${stage.key}_ts`];
+
+    // Clear payment toggles when reversing a payment gate
     if (stage.gateType === 'payment') {
       delete deal[`pay_${stage.key}_A`]; delete deal[`pay_${stage.key}_A_ts`];
       delete deal[`pay_${stage.key}_B`]; delete deal[`pay_${stage.key}_B_ts`];
     }
+    // Clear days selection when reversing a select gate
     if (stage.gateType === 'select') {
       delete deal[`${stage.key}_days`];
       delete deal[`${stage.key}_days_A`];
       delete deal[`${stage.key}_days_B`];
     }
+    // Clear per-party deal_done flags when reversing deal_done stage
     if (stage.key === 'deal_done') {
-      delete deal.deal_done_A; delete deal.deal_done_B;
+      delete deal.deal_done_A; delete deal.deal_done_A_ts;
+      delete deal.deal_done_B; delete deal.deal_done_B_ts;
     }
+    // Only clear meeting data when the meeting step itself is being reversed.
+    // For reversals of deal_done / final_select / final_received / complete,
+    // the meeting already happened — preserve it completely.
     if (stage.key === 'meeting') {
-      delete deal.meeting; delete deal.stage_meeting; delete deal.stage_meeting_ts;
-      deal.meeting_reversed = true;
+      delete deal.meeting;
+      delete deal.stage_meeting;
+      delete deal.stage_meeting_ts;
+      deal.meeting_reversed = true;   // suppress auto-tick when parties re-schedule
       _meetingByChat[chatId] = null;
+      // Write meeting:null to chatMeta so chat.html clears its _meeting state
       RF.updateChatMeta(chatId, { meeting: null }).catch(e => console.warn('[RF] clearMeeting', e));
+    } else {
+      // For any other reversal: ensure meeting_reversed is cleared so the
+      // calendar button stays hidden (meeting was already confirmed and stands)
+      delete deal.meeting_reversed;
     }
-    // If reversing a step AFTER meeting, also un-confirm the meeting so parties can re-schedule
-    const _meetingIdx = PIPELINE.findIndex(p => p.key === 'meeting');
-    if (lastDoneIdx > _meetingIdx && stage.key !== 'meeting') {
-      delete deal.meeting; delete deal.stage_meeting; delete deal.stage_meeting_ts;
-      deal.meeting_reversed = true;
-      _meetingByChat[chatId] = null;
-      RF.updateChatMeta(chatId, { meeting: null }).catch(e => console.warn('[RF] clearMeetingPost', e));
-    }
+
     deal.lastActionTs = Date.now();
-    // Recalculate stage label so accordion header shows correct current step
-    const newLastDoneIdx = (() => { let idx = -1; for (let i = 0; i < PIPELINE.length; i++) { if (deal[`stage_${PIPELINE[i].key}`]) idx = i; } return idx; })();
+    // Recalculate stage label from remaining completed flags
+    const newLastDoneIdx = (() => {
+      let idx = -1;
+      for (let i = 0; i < PIPELINE.length; i++) { if (deal[`stage_${PIPELINE[i].key}`]) idx = i; }
+      return idx;
+    })();
     deal.stage = newLastDoneIdx >= 0 ? PIPELINE[newLastDoneIdx].label : 'Initiated';
+
     postDealSystemMsg(chatId, `↩ "${stage.label}" has been reversed by RenterFinder. Returning to this step.`);
-    // Update in-memory _deals immediately so renderDealCard gets fresh data
     const dealIdx = _deals.findIndex(x => x.chatId === chatId);
     if (dealIdx !== -1) _deals[dealIdx] = deal;
     saveDeals(deals);
-    // Strip undefined/deleted keys before writing to Firestore
     const cleanDeal = JSON.parse(JSON.stringify(deal));
     syncDealToChat(chatId, cleanDeal);
-    // Also explicitly update chatMeta so chat.html onChatMeta fires with clean data
     RF.updateChatMeta(chatId, { deal: cleanDeal }).catch(e => console.warn('[RF] reversal meta', e));
     showToast(`↩ "${stage.label}" reversed`, 'success');
     _refreshDealCard(chatId, deal);

@@ -1555,40 +1555,57 @@
   }
   function _doModReverse(chatId, last) {
     const deals = getDeals();
-    const deal  = deals.find(d => d.chatId === chatId);
+    let deal = deals.find(d => d.chatId === chatId);
     if (!deal) return;
+
     delete deal[`stage_${last.key}`]; delete deal[`stage_${last.key}_ts`];
+
+    // Clear payment toggles when reversing a payment gate
     if (last.gateType === 'payment') {
       delete deal[`pay_${last.key}_A`]; delete deal[`pay_${last.key}_A_ts`];
       delete deal[`pay_${last.key}_B`]; delete deal[`pay_${last.key}_B_ts`];
     }
+    // Clear days selection when reversing a select gate
     if (last.gateType === 'select') {
       delete deal[`${last.key}_days`];
       delete deal[`${last.key}_days_A`];
       delete deal[`${last.key}_days_B`];
     }
-    if (last.key === 'deal_done') { delete deal.deal_done_A; delete deal.deal_done_B; }
-    // Clear meeting if reversing meeting step or any step after it
+    // Clear per-party deal_done flags when reversing deal_done stage
+    if (last.key === 'deal_done') {
+      delete deal.deal_done_A; delete deal.deal_done_A_ts;
+      delete deal.deal_done_B; delete deal.deal_done_B_ts;
+    }
+    // Only clear meeting data when the meeting step itself is being reversed.
+    // For reversals of deal_done / final_select / final_received / complete,
+    // the meeting already happened — preserve it completely.
     if (last.key === 'meeting') {
-      delete deal.meeting; delete deal.stage_meeting; delete deal.stage_meeting_ts;
-      deal.meeting_reversed = true;
+      delete deal.meeting;
+      delete deal.stage_meeting;
+      delete deal.stage_meeting_ts;
+      deal.meeting_reversed = true;   // suppress auto-tick when parties re-schedule
       if (typeof _meetingByChat !== 'undefined') _meetingByChat[chatId] = null;
       RF.updateChatMeta(chatId, { meeting: null }).catch(e => console.warn('[RF] clearMeeting', e));
     } else {
-      const _mIdx = PIPELINE.findIndex(p => p.key === 'meeting');
-      const _lIdx = PIPELINE.findIndex(p => p.key === last.key);
-      if (_lIdx > _mIdx) {
-        delete deal.meeting; delete deal.stage_meeting; delete deal.stage_meeting_ts;
-        deal.meeting_reversed = true;
-        if (typeof _meetingByChat !== 'undefined') _meetingByChat[chatId] = null;
-        RF.updateChatMeta(chatId, { meeting: null }).catch(e => console.warn('[RF] clearMeetingPost', e));
-      }
+      // For any other reversal: clear meeting_reversed so the calendar button
+      // stays hidden (meeting was already confirmed and stands)
+      delete deal.meeting_reversed;
     }
-    deal.lastActionTs = Date.now(); deal.stage = 'Initiated';
+
+    deal.lastActionTs = Date.now();
+    // Recalculate stage label from remaining completed flags
+    const newIdx = (() => {
+      let idx = -1;
+      for (let i = 0; i < PIPELINE.length; i++) { if (deal[`stage_${PIPELINE[i].key}`]) idx = i; }
+      return idx;
+    })();
+    deal.stage = newIdx >= 0 ? PIPELINE[newIdx].label : 'Initiated';
+
     const didx = _deals.findIndex(x => x.chatId === chatId);
     if (didx !== -1) _deals[didx] = deal;
     const cleanDeal = JSON.parse(JSON.stringify(deal));
     saveDeals(deals); syncDealToChat(chatId, cleanDeal);
+    RF.updateChatMeta(chatId, { deal: cleanDeal }).catch(e => console.warn('[RF] reversal meta', e));
     postDealSystemMsg(chatId, `↩ "${last.label}" has been reversed by RenterFinder. Returning to this step.`);
     showToast(`↩ Reversed: ${last.label}`, 'success');
     _refreshDealCard(chatId, deal);

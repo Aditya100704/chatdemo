@@ -1671,11 +1671,13 @@ Message: ${JSON.stringify(text)}`;
     if (!btn || currentIdentity === 'MOD') { if (btn) btn.style.display = 'none'; return; }
     const deal = loadDeal();
     if (!deal || !(deal.confirmedA && deal.confirmedB)) { btn.style.display = 'none'; return; }
-    // Show only after meeting is confirmed AND deal_done step is not yet complete
-    const meetingDone = deal.stage_meeting === true;
+    // Show only after meeting is confirmed, deal_done not yet complete, and
+    // final payment stages haven't started (guards against post-reversal flicker)
+    const meetingDone  = deal.stage_meeting === true;
     const dealDoneDone = deal.stage_deal_done === true;
+    const finalStarted = deal.stage_final_select || deal.stage_final_received || deal.stage_complete;
     const myDone = deal[`deal_done_${currentIdentity}`];
-    if (meetingDone && !dealDoneDone) {
+    if (meetingDone && !dealDoneDone && !finalStarted) {
       btn.style.display = '';
       btn.textContent = myDone ? '⏳ Waiting for other party…' : '✅ Deal Done';
       btn.disabled = !!myDone;
@@ -1733,10 +1735,15 @@ Message: ${JSON.stringify(text)}`;
     if (!bothConfirmed || !advanceDone) { btn.classList.remove('show'); return; }
     // Hide once deal_done is confirmed (no more scheduling needed)
     if (deal?.stage_deal_done) { btn.classList.remove('show'); return; }
-    // Hide if meeting is confirmed and NOT reversed (meeting already done)
+    // Hide if final payment stage has started (meeting was completed; no need to reschedule)
+    if (deal?.stage_final_select || deal?.stage_final_received || deal?.stage_complete) { btn.classList.remove('show'); return; }
+    // Hide if meeting is confirmed AND has not been explicitly reversed by a mod
     if (meeting?.status === 'confirmed' && !deal?.meeting_reversed) { btn.classList.remove('show'); return; }
+    // Also hide if stage_meeting flag is set but meeting_reversed isn't
+    // (handles the race where _meeting update arrives before _deal)
+    if (deal?.stage_meeting && !deal?.meeting_reversed) { btn.classList.remove('show'); return; }
 
-    const originalProposer = deal.initiatedBy;   // Party 1 always starts
+    const originalProposer = deal.initiatedBy;
     const isOriginalProposer = currentIdentity === originalProposer;
 
     if (!meeting || meeting.status === undefined) {
