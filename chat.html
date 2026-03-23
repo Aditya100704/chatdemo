@@ -1695,11 +1695,11 @@ Message: ${JSON.stringify(text)}`;
     if (!deal) return;
     deal[`deal_done_${currentIdentity}`] = true;
     deal[`deal_done_${currentIdentity}_ts`] = Date.now();
+    deal.lastActionTs = Date.now(); // always update so dashboard refreshes immediately
     // If both parties confirmed → auto-tick deal_done stage
     if (deal.deal_done_A && deal.deal_done_B) {
       deal.stage_deal_done    = true;
       deal.stage_deal_done_ts = Date.now();
-      deal.lastActionTs = Date.now();
       const msgs = loadMessages();
       msgs.push({ id: Date.now(), senderIdentity:'SYS', senderId:'system', senderName:'System',
         text: '✅ Both parties have confirmed the deal is done. Moving to closure stage.',
@@ -1712,6 +1712,7 @@ Message: ${JSON.stringify(text)}`;
         ts: Date.now(), isSystem: true });
       saveMessages(msgs);
     }
+    // Write to both deals/{chatId} AND chatMeta so dashboard onDeals fires immediately
     saveDeal(deal);
     RF.updateChatMeta(CHAT_ID, { deal }).catch(e => console.warn('[RF] dealDone', e));
     updateDealDoneBtn(); updatePayBtn(); renderMessages();
