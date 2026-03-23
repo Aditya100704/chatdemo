@@ -1964,7 +1964,12 @@ Message: ${JSON.stringify(text)}`;
     saveMeeting(meeting);
     syncMeetingToDeal(meeting);
 
-    // Auto-tick meeting stage in deals registry
+    // Auto-tick meeting stage in deals registry AND in chatMeta so deal-done btn shows immediately
+    deal.stage_meeting    = true;
+    deal.stage_meeting_ts = Date.now();
+    deal.meeting          = meeting;
+    saveDeal(deal);
+    RF.updateChatMeta(CHAT_ID, { deal }).catch(e => console.warn('[RF] chatMetaMeeting', e));
     autoTickMeetingStage(meeting, deal);
 
     // Post system message
