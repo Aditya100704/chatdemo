@@ -915,8 +915,15 @@
       if (Math.max(...Object.values(v).concat([0])) >= 3) suspended++;
     });
 
-    const pending      = modLog.filter(e => e.status === 'pending').length;
-    const activeDeals  = getDeals().filter(d => d.stage !== 'Cancelled' && !d.stage_complete).length;
+    // Build the set of chatIds assigned to this mod — used to filter all data
+    const myAssignedChatIds = new Set(myChats.map(c => c.chatId));
+
+    // Filter modLog, deals, and history to only this mod's assigned chats
+    const myModLog   = modLog.filter(e => myAssignedChatIds.has(e.chatId));
+    const myDeals    = getDeals().filter(d => myAssignedChatIds.has(d.chatId));
+
+    const pending      = myModLog.filter(e => e.status === 'pending').length;
+    const activeDeals  = myDeals.filter(d => d.stage !== 'Cancelled' && !d.stage_complete).length;
 
     document.getElementById('stat-total-chats').textContent = myChats.length;
     document.getElementById('stat-total-msgs').textContent  = totalMsgs;
@@ -929,19 +936,18 @@
     document.getElementById('tab-deals-count').textContent  = activeDeals;
 
 
-    renderFlaggedList(modLog.filter(e => e.status === 'pending'), document.getElementById('pending-flagged-list'));
+    renderFlaggedList(myModLog.filter(e => e.status === 'pending'), document.getElementById('pending-flagged-list'));
     renderChatsList(chats, document.getElementById('all-chats-list'));
     document.getElementById('chat-count-sub').textContent = `${chats.length} chat${chats.length !== 1 ? 's' : ''} initiated`;
-    renderFlaggedList(modLog.filter(e => e.status === 'pending'), document.getElementById('flagged-list'), modLog.filter(e => e.status !== 'pending').length);
-    renderDealsList(getDeals(), document.getElementById('deals-list'));
-    renderDealNeedsAction(getDeals(), document.getElementById('deals-list-needs'));
-    renderUsersTable(myChats, modLog, getBanned());
+    renderFlaggedList(myModLog.filter(e => e.status === 'pending'), document.getElementById('flagged-list'), myModLog.filter(e => e.status !== 'pending').length);
+    renderDealsList(myDeals, document.getElementById('deals-list'));
+    renderDealNeedsAction(myDeals, document.getElementById('deals-list-needs'));
+    renderUsersTable(myChats, myModLog, getBanned());
     const _al = document.getElementById('archived-list'); if (_al) renderArchivedList(_al);
-    const _hl = document.getElementById('history-list'); if (_hl) renderHistoryList(_hl);
+    const _hl = document.getElementById('history-list'); if (_hl) renderHistoryList(_hl, myAssignedChatIds);
 
     // Contacts stats — filter to this mod's assigned chats
-    const myAssignedChats = new Set(myChats.map(c => c.chatId));
-    const allContacts  = getContacts().filter(c => myAssignedChats.has(c.chatId));
+    const allContacts  = getContacts().filter(c => myAssignedChatIds.has(c.chatId));
     const openContacts = allContacts.filter(c => c.status === 'open').length;
     const ctTotal = document.getElementById('stat-contacts-total'); if (ctTotal) ctTotal.textContent = allContacts.length;
     const ctTab   = document.getElementById('tab-contacts-count'); if (ctTab) ctTab.textContent = openContacts;
@@ -1618,8 +1624,12 @@
   // ── ARCHIVED TAB ─────────────────────────────────────────────
   function renderArchivedList(container) {
     if (!container) return;
-    const chats    = getChatsIndex();
-    const deals    = getDeals();
+    const assignments = getAssignments();
+    const chats    = getChatsIndex().filter(c => assignments[c.chatId] === MOD_ID);
+    const deals    = getDeals().filter(d => {
+      const assignments2 = getAssignments();
+      return assignments2[d.chatId] === MOD_ID;
+    });
     const modLog   = getModLog();
     const dealChatIds = new Set(deals.map(d => d.chatId));
     const archivedChats = chats.filter(c => (c.archived || c.autoArchived || c.manualArchived) && !dealChatIds.has(c.chatId));
@@ -1959,10 +1969,11 @@
   // ── HISTORY TAB (48hr auto-delete) ───────────────────────────
   const HISTORY_TTL = 48 * 60 * 60 * 1000; // 48 hours in ms
 
-  function renderHistoryList(container) {
+  function renderHistoryList(container, assignedChatIds) {
     const now     = Date.now();
-    const modLog  = getModLog();
-    const appeals = getAppeals();
+    // If assignedChatIds provided, filter to this mod's chats only
+    const modLog  = assignedChatIds ? getModLog().filter(e => assignedChatIds.has(e.chatId)) : getModLog();
+    const appeals = assignedChatIds ? getAppeals().filter(a => assignedChatIds.has(a.chatId)) : getAppeals();
 
     // Auto-purge entries older than 48hrs from storage
     const freshLog     = modLog.filter(e => (now - (e.ts || 0)) < HISTORY_TTL);
@@ -2106,9 +2117,8 @@ if (_sess) {
       // Merge: keep localStorage data for fields Firestore doesn't have
       const existing = {};
       _chatsIndex.forEach(c => { existing[c.chatId] = c; });
-      const merged = chats.map(c => ({ ...existing[c.chatId], ...c }));
-      // Only keep chats assigned to this mod to prevent data leakage
-      _chatsIndex = merged.filter(c => !_assignments || !Object.keys(_assignments).length || _assignments[c.chatId] === MOD_ID || !_assignments[c.chatId]);
+      // Store ALL chats in _chatsIndex; loadDashboard filters to assigned ones via myChats
+      _chatsIndex = chats.map(c => ({ ...existing[c.chatId], ...c }));
       _chatsIndex.forEach(c => {
         if (c.violations) _vioByChat[c.chatId]      = c.violations;
         if (c.deal)       _dealByChat[c.chatId]     = c.deal;

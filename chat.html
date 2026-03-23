@@ -2193,22 +2193,29 @@ Message: ${JSON.stringify(text)}`;
     requestAnimationFrame(() => { msgBox.scrollTop = msgBox.scrollHeight; });
   }
 
-  function submitContactMod() {
+  async function submitContactMod() {
     const subject = document.getElementById('contact-subject').value;
     const message = document.getElementById('contact-message').value.trim();
     if (!subject) { document.getElementById('contact-subject').style.borderColor='#ef4444'; return; }
     if (!message || message.length < 5) { document.getElementById('contact-message').style.borderColor='#ef4444'; return; }
 
-    // Look up which mod is assigned to this chat
+    // Look up which mod is assigned to this chat — prefer Firestore (always current)
     let assignedModId = null, assignedModName = null;
     try {
-      const assignments = JSON.parse(localStorage.getItem('rf_chat_assignments') || '{}');
-      assignedModId = assignments[CHAT_ID] || null;
+      if (!_isLocal) {
+        assignedModId = await RF.getAssignment(CHAT_ID);
+      }
+      // Fallback: localStorage written by mod dashboards (may be stale on fresh devices)
+      if (!assignedModId) {
+        const assignments = JSON.parse(localStorage.getItem('rf_chat_assignments') || '{}');
+        assignedModId = assignments[CHAT_ID] || null;
+      }
       if (assignedModId) {
         const modNum = assignedModId.replace('mod-','');
         assignedModName = `Mod ${modNum}`;
       }
     } catch {}
+
     const contact = {
       id: Date.now(),
       chatId: CHAT_ID,

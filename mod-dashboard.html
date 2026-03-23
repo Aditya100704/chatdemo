@@ -2222,19 +2222,23 @@
   }
 
   function permanentDeleteAllDeals() {
-    askConfirm('Permanently delete ALL archived/cancelled deals?', _doDeleteAllDeals, 'Delete All Archived Deals'); return;
+    askConfirm('Permanently delete ALL archived/cancelled deals? This cannot be undone.', _doDeleteAllDeals, 'Delete All Archived Deals');
+  }
+  function _doDeleteAllDeals() {
     const remaining = getDeals().filter(d => d.stage !== 'Cancelled' && !d.stage_complete && d.stage !== 'Complete');
     const toDelete  = getDeals().filter(d => d.stage === 'Cancelled' || d.stage_complete || d.stage === 'Complete');
-    saveDeals(remaining);
-    toDelete.forEach(d => db.collection('deals').doc(d.chatId).delete().catch(()=>{}));
-    showToast('🗑 All archived deals deleted', '');
+    _deals = remaining;
+    toDelete.forEach(d => RF.deleteDeal(d.chatId).catch(()=>{}));
+    showToast(`🗑 ${toDelete.length} archived deal${toDelete.length!==1?'s':''} deleted`, '');
     loadDashboard();
   }
 
   function permanentDeleteOneDeal(chatId) {
-    askConfirm('Permanently delete this deal?', () => _doDeleteOneDeal(chatId), 'Delete Deal'); return;
-    saveDeals(getDeals().filter(d => d.chatId !== chatId));
-    db.collection('deals').doc(chatId).delete().catch(()=>{});
+    askConfirm('Permanently delete this deal record? This cannot be undone.', () => _doDeleteOneDeal(chatId), 'Delete Deal');
+  }
+  function _doDeleteOneDeal(chatId) {
+    _deals = _deals.filter(d => d.chatId !== chatId);
+    RF.deleteDeal(chatId).catch(e => console.warn('[RF] deleteDeal', e));
     showToast('🗑 Deal deleted', '');
     loadDashboard();
   }
@@ -3393,11 +3397,12 @@
   }
 
   function permanentDeleteDeal(chatId) {
-    if (!confirm(`Permanently delete this deal record? This cannot be undone.`)) return;
-    _deals = _deals.filter(d => d.chatId !== chatId);
-    RF.deleteDeal(chatId).catch(e => console.warn('[RF] deleteDeal', e));
-    showToast('Deal record permanently deleted', 'error');
-    loadDashboard();
+    askConfirm('Permanently delete this deal record? This cannot be undone.', () => {
+      _deals = _deals.filter(d => d.chatId !== chatId);
+      RF.deleteDeal(chatId).catch(e => console.warn('[RF] deleteDeal', e));
+      showToast('Deal record permanently deleted', 'error');
+      loadDashboard();
+    }, 'Delete Deal');
   }
 
   function switchTab(tab) {
@@ -3516,37 +3521,8 @@ if (_sess) {
     });
   }
 
-  // ── FIRESTORE WRITE-THROUGHS (v38 functions that need to also write to Firestore) ──
-  // We override the existing v38 write functions to also fire Firestore writes.
-  // The v38 localStorage logic runs first, then Firestore is updated asynchronously.
-
-  const _origSyncDealToChat = syncDealToChat;
-  syncDealToChat = function(chatId, deal) {
-    _origSyncDealToChat(chatId, deal);  // v38: writes to rf_deal_${chatId}
-  };
-
-  const _origPostDealSystemMsg = postDealSystemMsg;
-  postDealSystemMsg = function(chatId, text) {
-    _origPostDealSystemMsg(chatId, text);  // v38: writes to rf_chat_${chatId}
-    if (!_isLocal) {
-      const msg = { id: Date.now(), senderIdentity:'SYS', senderId:'system', senderName:'System', text, ts:Date.now(), isSystem:true, chatId };
-    }
-  };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  // Firestore real-time listeners are the authoritative source of truth.
+  // syncDealToChat and postDealSystemMsg write to Firestore directly.
 
 </script>
 </body>
