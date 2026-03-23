@@ -647,6 +647,18 @@
   </div>
 </div>
 
+<!-- General Confirm Dialog -->
+<div class="confirm-box" id="ask-confirm-box" style="z-index:1100;">
+  <div class="confirm-inner" style="border-color:rgba(212,160,23,0.3);max-width:420px;text-align:left;">
+    <h3 id="ask-confirm-title" style="font-size:16px;">Confirm</h3>
+    <p id="ask-confirm-msg" style="font-size:13px;color:var(--muted);line-height:1.6;"></p>
+    <div class="confirm-btns" style="justify-content:flex-end;">
+      <button class="confirm-no" onclick="closeAskConfirm()">Cancel</button>
+      <button class="confirm-yes" style="background:rgba(16,185,129,0.2);color:#6ee7b7;border:1px solid rgba(16,185,129,0.4);" onclick="closeAskConfirm();_askConfirmCb&&_askConfirmCb()">Confirm</button>
+    </div>
+  </div>
+</div>
+
 <!-- USER PROFILE MODAL -->
 <div class="user-profile-overlay" id="user-profile-overlay" onclick="if(event.target===this)closeUserProfile()">
   <div class="user-profile-modal">
@@ -809,6 +821,18 @@
     const t = document.getElementById('toast');
     t.textContent = msg; t.className = `toast ${type} show`;
     setTimeout(() => t.className = 'toast', 3500);
+  }
+
+  let _askConfirmCb = null;
+  function askConfirm(msg, onYes, title) {
+    _askConfirmCb = onYes;
+    document.getElementById('ask-confirm-title').textContent = title || 'Confirm';
+    document.getElementById('ask-confirm-msg').textContent   = msg;
+    document.getElementById('ask-confirm-box').classList.add('show');
+  }
+  function closeAskConfirm() {
+    document.getElementById('ask-confirm-box').classList.remove('show');
+    _askConfirmCb = null;
   }
 
   function escH(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -1262,7 +1286,7 @@
     deal[stageKey + '_days_A'] = daysA; deal[stageKey + '_days_B'] = daysB;
     deal[stageKey + '_days'] = Math.round((daysA + daysB) / 2);
     const amtNote = daysA === daysB ? `${daysA} day(s) rent each` : `${daysA} days (${deal.userA}), ${daysB} days (${deal.userB})`;
-    if (!confirm(`Confirm amounts — ${amtNote}? Both parties will be notified.`)) return;
+    askConfirm(`Confirm amounts: ${amtNote}?`, () => _doModSelectStage(chatId, stageKey), 'Confirm Payment Amounts'); return;
     deal[`stage_${stageKey}`]    = true;
     deal[`stage_${stageKey}_ts`] = Date.now();
     deal.lastActionTs = Date.now();
@@ -1396,7 +1420,7 @@
   }
 
   function reverseLastStep(chatId) {
-    if (!confirm('Reverse the last completed step?')) return;
+    askConfirm('Reverse the last completed step?', () => _doModReverse(chatId, deals, deal, last), 'Reverse Step'); return;
     const deals = getDeals();
     const deal  = deals.find(d => d.chatId === chatId);
     if (!deal) return;

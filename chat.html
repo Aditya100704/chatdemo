@@ -547,6 +547,18 @@
   </div>
 </div>
 
+<!-- Inline Confirm Dialog -->
+<div class="modal-overlay" id="chat-confirm-overlay" style="z-index:600;" onclick="if(event.target===this)_chatConfirmNo()">
+  <div class="modal-card" style="max-width:360px;background:#1a2030;border:1px solid rgba(255,255,255,0.1);color:#d4dde8;">
+    <div style="font-size:15px;font-weight:700;color:#d4dde8;" id="chat-confirm-title">Confirm</div>
+    <div style="font-size:13px;color:#8899aa;line-height:1.6;" id="chat-confirm-msg"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:4px;">
+      <button onclick="_chatConfirmNo()" style="padding:8px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:#8899aa;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;">Cancel</button>
+      <button onclick="_chatConfirmYes()" style="padding:8px 18px;border-radius:8px;border:none;background:#2c4a6e;color:#a8c5e0;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Confirm</button>
+    </div>
+  </div>
+</div>
+
 <!-- Deal Confirm Modal -->
 <div class="modal-overlay" id="deal-modal" onclick="if(event.target===this)closeDealConfirm()">
   <div class="modal-card">
@@ -1631,7 +1643,26 @@ Message: ${JSON.stringify(text)}`;
     }
   }
 
+  let _chatConfirmCb = null;
+  function chatConfirm(msg, onYes, title) {
+    _chatConfirmCb = onYes;
+    document.getElementById('chat-confirm-title').textContent = title || 'Confirm';
+    document.getElementById('chat-confirm-msg').textContent   = msg;
+    document.getElementById('chat-confirm-overlay').classList.add('show');
+  }
+  function _chatConfirmYes() {
+    document.getElementById('chat-confirm-overlay').classList.remove('show');
+    if (_chatConfirmCb) { const cb = _chatConfirmCb; _chatConfirmCb = null; cb(); }
+  }
+  function _chatConfirmNo() {
+    document.getElementById('chat-confirm-overlay').classList.remove('show');
+    _chatConfirmCb = null;
+  }
+
   function openPaymentGateway() {
+    chatConfirm('Payment gateway coming soon. Please use the secure payment link sent to your registered contact.', null, 'Payment Gateway');
+  }
+  function _openPaymentGateway_old() {
     alert('Payment gateway coming soon. Please use the secure payment link sent to your registered contact.');
   }
 
@@ -1657,7 +1688,7 @@ Message: ${JSON.stringify(text)}`;
   function confirmDealDone() {
     const deal = loadDeal();
     if (!deal) return;
-    if (!confirm('Confirm the deal is done after your meeting? This will notify RenterFinder.')) return;
+    chatConfirm('Confirm the deal is done after your meeting? This will notify RenterFinder.', _doDealDone, 'Deal Done'); return;
     deal[`deal_done_${currentIdentity}`] = true;
     deal[`deal_done_${currentIdentity}_ts`] = Date.now();
     // If both parties confirmed → auto-tick deal_done stage

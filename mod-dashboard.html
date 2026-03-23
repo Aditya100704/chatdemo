@@ -895,6 +895,18 @@
   </div>
 </div>
 
+<!-- General purpose confirm dialog -->
+<div class="confirm-box" id="ask-confirm-box" style="z-index:1100;">
+  <div class="confirm-inner" style="border-color:rgba(212,160,23,0.3);max-width:420px;text-align:left;">
+    <h3 id="ask-confirm-title" style="font-size:16px;">Confirm</h3>
+    <p id="ask-confirm-msg" style="font-size:13px;color:var(--muted);line-height:1.6;"></p>
+    <div class="confirm-btns" style="justify-content:flex-end;">
+      <button class="confirm-no" onclick="closeAskConfirm()">Cancel</button>
+      <button class="confirm-yes" id="ask-confirm-yes" style="background:rgba(16,185,129,0.2);color:#6ee7b7;border:1px solid rgba(16,185,129,0.4);" onclick="closeAskConfirm();_askConfirmCb&&_askConfirmCb()">Confirm</button>
+    </div>
+  </div>
+</div>
+
 <div class="confirm-box" id="cancel-deal-confirm-box">
   <div class="confirm-inner" style="max-width:420px;text-align:left;gap:12px;">
     <h3>❌ Cancel This Deal?</h3>
@@ -1723,7 +1735,7 @@
     const amtNote = daysA === daysB
       ? `${daysA} day(s) rent each`
       : `${daysA} day(s) rent (${deal.userA}), ${daysB} day(s) rent (${deal.userB})`;
-    if (!confirm(`Confirm payment amounts — ${amtNote}? Both parties will be notified. This cannot be undone.`)) return;
+    askConfirm(`${amtNote}`, () => _doSelectStage(chatId, stageKey, daysA, daysB, amtNote, label), 'Confirm Payment Amounts'); return;
     deal[`stage_${stageKey}`]    = true;
     deal[`stage_${stageKey}_ts`] = Date.now();
     deal.lastActionTs = Date.now();
@@ -1735,50 +1747,40 @@
   }
 
   function proceedPaymentStage(chatId, stageKey) {
-    const label = PIPELINE.find(p => p.key === stageKey)?.label || stageKey;
-    if (!confirm(`Confirm "${label}" stage as complete? This cannot be undone.`)) return;
-    const deals = getDeals();
-    const deal  = deals.find(d => d.chatId === chatId);
-    if (!deal) return;
-    // days already handled in proceedSelectStage
-    const payA = deal[`pay_${stageKey}_A`];
-    const payB = deal[`pay_${stageKey}_B`];
-    // For final_received: allow closing with at least 1 party paid (deal can still close)
+    const deals = getDeals(); const deal = deals.find(d => d.chatId === chatId); if (!deal) return;
+    const payA = deal[`pay_${stageKey}_A`]; const payB = deal[`pay_${stageKey}_B`];
     const minPaid = stageKey === 'final_received' ? (payA || payB) : (payA && payB);
-    if (!minPaid) {
-      showToast(stageKey === 'final_received'
-        ? 'At least one payment must be ticked before closing.'
-        : 'Both payments must be ticked before proceeding.', 'error'); return;
-    }
-    deal[`stage_${stageKey}`]    = true;
-    deal[`stage_${stageKey}_ts`] = Date.now();
-    deal.lastActionTs = Date.now();
-    const daysNote = deal[stageKey + '_days'] ? ` Amount: ${deal[stageKey + '_days']} day(s) rent.` : '';
-    postDealSystemMsg(chatId, `✅ ${label} confirmed by RenterFinder.${daysNote} Moving to next stage.`);
-    saveDeals(deals);
-    syncDealToChat(chatId, deal);
-    showToast(`✓ ${label} stage completed`, 'success');
-    _refreshDealCard(chatId, deal);
+    if (!minPaid) { showToast(stageKey === 'final_received' ? 'At least one payment must be ticked.' : 'Both payments must be ticked.', 'error'); return; }
+    const label = PIPELINE.find(p => p.key === stageKey)?.label || stageKey;
+    askConfirm(`Confirm "${label}" as complete?`, () => _doPaymentStage(chatId, stageKey, label), 'Confirm Payment Stage');
+  }
+  function _doPaymentStage(chatId, stageKey, label) {
+    const deals = getDeals(); const deal = deals.find(d => d.chatId === chatId); if (!deal) return;
+    deal[`stage_${stageKey}`] = true; deal[`stage_${stageKey}_ts`] = Date.now(); deal.lastActionTs = Date.now();
+    const daysNote = deal[stageKey+'_days'] ? ` Amount: ${deal[stageKey+'_days']} day(s) rent.` : '';
+    postDealSystemMsg(chatId, `✅ ${label} confirmed.${daysNote} Moving to next stage.`);
+    const di = _deals.findIndex(x => x.chatId === chatId); if (di !== -1) _deals[di] = deal;
+    saveDeals(deals); syncDealToChat(chatId, deal);
+    showToast(`✓ ${label} stage completed`, 'success'); _refreshDealCard(chatId, deal);
   }
 
   function proceedActionStage(chatId, stageKey) {
     const label = PIPELINE.find(p => p.key === stageKey)?.label || stageKey;
-    if (!confirm(`Confirm "${label}" for this deal? This cannot be undone.`)) return;
-    const deals = getDeals();
-    const deal  = deals.find(d => d.chatId === chatId);
-    if (!deal) return;
-    deal[`stage_${stageKey}`]    = true;
-    deal[`stage_${stageKey}_ts`] = Date.now();
-    deal.lastActionTs = Date.now();
+    askConfirm(`Confirm "${label}" for this deal?`, () => _doActionStage(chatId, stageKey, label), 'Confirm Stage');
+  }
+  function _doActionStage(chatId, stageKey, label) {
+    const deals = getDeals(); const deal = deals.find(d => d.chatId === chatId); if (!deal) return;
+    deal[`stage_${stageKey}`] = true; deal[`stage_${stageKey}_ts`] = Date.now(); deal.lastActionTs = Date.now();
     postDealSystemMsg(chatId, `✅ ${label} confirmed by RenterFinder. Moving to next stage.`);
-    saveDeals(deals);
-    syncDealToChat(chatId, deal);
-    showToast(`✓ ${label} confirmed`, 'success');
-    _refreshDealCard(chatId, deal);
+    const di = _deals.findIndex(x => x.chatId === chatId); if (di !== -1) _deals[di] = deal;
+    saveDeals(deals); syncDealToChat(chatId, deal);
+    showToast(`✓ ${label} confirmed`, 'success'); _refreshDealCard(chatId, deal);
   }
 
   function completeAndArchive(chatId) {
-    if (!confirm('Mark this deal as fully complete and archive it? This cannot be undone.')) return;
+    askConfirm('Mark this deal as fully complete and archive it?', () => _doCompleteArchive(chatId), 'Complete & Archive Deal');
+  }
+  function _doCompleteArchive(chatId) {
     const deals = getDeals();
     const deal  = deals.find(d => d.chatId === chatId);
     if (!deal) return;
@@ -1814,7 +1816,9 @@
     }
     if (lastDoneIdx < 0) { showToast('No completed steps to reverse.', ''); return; }
     const stage = PIPELINE[lastDoneIdx];
-    if (!confirm(`Reverse "${stage.label}"? The deal returns to this step and parties are notified.`)) return;
+    askConfirm(`Reverse "${stage.label}"? The deal returns to this step.`, () => _doReverseStep(chatId, deals, deal, stage, lastDoneIdx), 'Reverse Step');
+  }
+  function _doReverseStep(chatId, deals, deal, stage, lastDoneIdx) {
     delete deal[`stage_${stage.key}`];
     delete deal[`stage_${stage.key}_ts`];
     if (stage.gateType === 'payment') {
@@ -2071,7 +2075,7 @@
   }
 
   function permanentDeleteAllDeals() {
-    if (!confirm('Permanently delete ALL archived/cancelled deals? This cannot be undone.')) return;
+    askConfirm('Permanently delete ALL archived/cancelled deals?', _doDeleteAllDeals, 'Delete All Archived Deals'); return;
     const remaining = getDeals().filter(d => d.stage !== 'Cancelled' && !d.stage_complete && d.stage !== 'Complete');
     const toDelete  = getDeals().filter(d => d.stage === 'Cancelled' || d.stage_complete || d.stage === 'Complete');
     saveDeals(remaining);
@@ -2081,7 +2085,7 @@
   }
 
   function permanentDeleteOneDeal(chatId) {
-    if (!confirm('Permanently delete this deal? This cannot be undone.')) return;
+    askConfirm('Permanently delete this deal?', () => _doDeleteOneDeal(chatId), 'Delete Deal'); return;
     saveDeals(getDeals().filter(d => d.chatId !== chatId));
     db.collection('deals').doc(chatId).delete().catch(()=>{});
     showToast('🗑 Deal deleted', '');
@@ -2588,6 +2592,19 @@
   let pendingBanId = null, pendingBanName = null;
   function confirmBan(userId, userName) { pendingBanId = userId; pendingBanName = userName; document.getElementById('confirm-msg').textContent = `Ban ${userName}? They will be unable to send further messages.`; document.getElementById('confirm-box').classList.add('show'); }
   function closeConfirm() { document.getElementById('confirm-box').classList.remove('show'); }
+
+  let _askConfirmCb = null;
+  function askConfirm(msg, onYes, title) {
+    _askConfirmCb = onYes;
+    const box = document.getElementById('ask-confirm-box');
+    document.getElementById('ask-confirm-title').textContent = title || 'Confirm';
+    document.getElementById('ask-confirm-msg').textContent   = msg;
+    box.classList.add('show');
+  }
+  function closeAskConfirm() {
+    document.getElementById('ask-confirm-box').classList.remove('show');
+    _askConfirmCb = null;
+  }
   function executeBan() {
     if (!pendingBanId) return;
     const banned = getBanned(); banned[pendingBanId] = { name: pendingBanName, ts: Date.now() }; saveBanned(banned);
